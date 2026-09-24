@@ -18,9 +18,11 @@ interface Props {
   readonly titulo: string;
   readonly descripcion?: string;
   readonly jsonLd?: readonly Record<string, unknown>[];
+  readonly og?: string;
 }
 
-const { titulo, descripcion = SITE.descripcion, jsonLd = [] } = Astro.props;
+const { titulo, descripcion = SITE.descripcion, jsonLd = [], og = 'index' } = Astro.props;
+const imagenOg = new URL(`/og/${og}.png`, Astro.site);
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const tituloCompleto = titulo === SITE.nombre ? `${SITE.nombre} · Buceo en Cabo de Palos y Madrid` : `${titulo} · ${SITE.nombre}`;
 const produccion = INDEXAR && CF_PAGES_BRANCH === 'main';
@@ -43,7 +45,12 @@ const produccion = INDEXAR && CF_PAGES_BRANCH === 'main';
     <meta property="og:title" content={tituloCompleto} />
     <meta property="og:description" content={descripcion} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={imagenOg} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={titulo} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={imagenOg} />
     {jsonLd.length > 0 && <script is:inline type="application/ld+json" set:html={serializar(jsonLd)} />}
   </head>
   <body>

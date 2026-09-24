@@ -9,3 +9,18 @@ export const SITE = {
   email: 'hola@diveclif.es',
   geo: { lat: 37.6346, lon: -0.6906 },
 } as const;
+
+// null = dato pendiente de Pelayo; la página lo muestra marcado como hueco
+export const LEGAL = {
+  titular: null as string | null,
+  nif: null as string | null,
+  domicilio: null as string | null,
+  emailContacto: SITE.email,
+  numeroPadi: null as string | null,
+  numeroSsi: null as string | null,
+  teMoana: {
+    razonSocial: null as string | null,
+    tituloLicencia: null as string | null,
+  },
+  actualizado: '2026-09-24',
+} as const;

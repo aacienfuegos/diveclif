@@ -7,7 +7,7 @@ lon: -0.6743
 profundidad: {"min": 10, "max": 18, "aproximada": false}
 nivel: "open-water"
 corriente: "Baja"
-fauna: ["Rayas pastinaca", "Peces guitarra", "Sepias"]
+fauna: ["Peces guitarra (también crías)", "Rayas pastinaca", "Sepias"]
 resumen: "El fondo de The Sunset, todos los viernes al atardecer."
 ---
 

@@ -46,6 +46,11 @@
 .facts div { background: rgba(2, 12, 24, .45); padding: 16px 18px; display: grid; gap: 4px }
 .facts dt { font-family: var(--f-mono); font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: var(--tail) }
 .facts dd { margin: 0; font-size: 1.05rem }
+.legal .prose h2 { font-family: var(--f-display); font-weight: 800; font-size: 1.8rem; text-transform: uppercase; color: var(--foam); margin: 2em 0 .5em; line-height: 1 }
+.legal .prose ul { padding-left: 20px; display: grid; gap: 6px; margin: 0 0 1em }
+.legal .prose a { color: var(--tail) }
+.legal .prose strong { color: var(--foam); font-weight: 600 }
+.hueco { background: rgba(255, 106, 61, .2); color: #ffc2ad; padding: 0 4px; border-radius: 3px; font-family: var(--f-mono); font-size: .85em }
 .species-inline { display: flex; gap: 8px; flex-wrap: wrap; margin-block: 16px }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 48px; margin-block: 32px }
 .two h2 { font-family: var(--f-mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--tail); font-weight: 400; margin: 0 0 10px }

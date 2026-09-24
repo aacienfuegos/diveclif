@@ -2,15 +2,15 @@
 nombre: "Naranjito"
 orden: 6
 tipo: "pecio"
-lat: 37.6607
-lon: -0.6216
-profundidad: {"min": 30, "max": 42, "aproximada": true}
+lat: 37.6433
+lon: -0.6392
+profundidad: {"min": 28, "max": 43, "aproximada": false}
 nivel: "deep"
 corriente: "Media"
-fauna: ["Congrios", "Meros", "Gorgonias rojas"]
-resumen: "Mercante hundido cerca del Bajo de Fuera. Casco casi entero sobre arena."
+fauna: ["Congrios", "Meros", "Gorgonias"]
+resumen: "Una de las inmersiones estrella de Cabo de Palos y fija en nuestra Wreck Week. Con buena visibilidad se recorre el barco entero, cubierto de vida."
 ---
 
-Mercante hundido cerca del Bajo de Fuera. Casco casi entero sobre arena.
+Una de las inmersiones estrella de Cabo de Palos y fija en nuestra Wreck Week. Con el mar en calma y buena visibilidad se recorre el barco entero, completamente cubierto de vida. Inmersión profunda, exigente y muy gratificante.
 
-Ficha de ejemplo: posición y profundidades orientativas pendientes de validar por Pelayo.
+Posición en la carta orientativa, pendiente de validar por Pelayo.

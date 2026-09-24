@@ -28,7 +28,7 @@ const jsonLd = [
   migas([{ nombre: 'Inicio', url: `${SITE.url}/` }, { nombre: 'Viajes', url: `${SITE.url}/#viajes` }, { nombre: v.titulo, url }]),
 ];
 ---
-<Base titulo={`Viaje de buceo a ${v.titulo}`} descripcion={v.resumen} jsonLd={jsonLd}>
+<Base titulo={`Viaje de buceo a ${v.titulo}`} descripcion={v.resumen} jsonLd={jsonLd} og={`viajes/${viaje.id}`}>
   <Nav oscura />
   <main class="page">
     <div class="wrap">

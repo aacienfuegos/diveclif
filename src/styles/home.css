@@ -96,6 +96,8 @@ a.channel:hover { background: rgba(2, 12, 24, .55) }
 .form input:focus, .form select:focus, .form textarea:focus { outline: none; border-bottom-color: var(--coral) }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px }
 .form .trampa { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden }
+.form-legal { margin: 0; font-size: .78rem; color: var(--foam-3) }
+.form-legal a { color: var(--foam-2) }
 .form-note { min-height: 1.4em; font-family: var(--f-mono); font-size: .66rem; color: var(--sand) }
 .form-note.error { color: #ffb59d }
 .form button[type="submit"] { justify-self: start }
