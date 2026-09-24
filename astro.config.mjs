@@ -2,7 +2,7 @@ import { defineConfig, envField } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://diveclif.es',
+  site: process.env.SITE_URL ?? 'https://diveclif.es',
   integrations: [sitemap()],
   build: {
     // CSP sin 'unsafe-inline': todo el CSS y JS sale como fichero
@@ -14,6 +14,8 @@ export default defineConfig({
   env: {
     schema: {
       CF_PAGES_BRANCH: envField.string({ context: 'server', access: 'public', optional: true }),
+      // solo el dominio definitivo se indexa; demos y previews nunca
+      INDEXAR: envField.boolean({ context: 'server', access: 'public', default: false }),
       PUBLIC_TURNSTILE_SITE_KEY: envField.string({
         context: 'client',
         access: 'public',

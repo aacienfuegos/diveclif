@@ -10,7 +10,7 @@ import '@fontsource/martian-mono/latin-400';
 import '@fontsource/martian-mono/latin-500';
 import '@/styles/base.css';
 import '@/styles/marco.css';
-import { CF_PAGES_BRANCH } from 'astro:env/server';
+import { CF_PAGES_BRANCH, INDEXAR } from 'astro:env/server';
 import { SITE } from '@/config';
 import { serializar } from '@/lib/jsonld';
 
@@ -23,7 +23,7 @@ interface Props {
 const { titulo, descripcion = SITE.descripcion, jsonLd = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const tituloCompleto = titulo === SITE.nombre ? `${SITE.nombre} · Buceo en Cabo de Palos y Madrid` : `${titulo} · ${SITE.nombre}`;
-const produccion = CF_PAGES_BRANCH === 'main';
+const produccion = INDEXAR && CF_PAGES_BRANCH === 'main';
 ---
 <!doctype html>
 <html lang="es">

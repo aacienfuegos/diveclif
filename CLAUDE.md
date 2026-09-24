@@ -23,4 +23,4 @@ Web estática de Dive Clif (Pelayo, instructor de buceo) con Astro 7 + content c
 - Marca: "Dive Clif" o "Pelayo", nunca "Clif" a secas.
 - Los viajes los organiza Te Moana Expeditions; cada ficha debe decirlo (normativa de viajes combinados).
 - Datos de viajes y puntos de inmersión son de ejemplo hasta que Pelayo los valide.
-- `noindex` fuera de `main`: lo controla `CF_PAGES_BRANCH` (meta robots y `robots.txt`) más `X-Robots-Tag` en `*.pages.dev`.
+- Indexación: solo con `INDEXAR=true` y rama `main` (meta robots y `robots.txt`), más `X-Robots-Tag` en `*.pages.dev`. La demo en ciencre.xyz va sin `INDEXAR`, para que Google no la indexe y luego no compita con el dominio definitivo. `SITE_URL` fija el dominio de canonical y sitemap.
