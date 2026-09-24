@@ -1,0 +1,6 @@
+# Copiar a .dev.vars para probar la función en local con: npx wrangler pages dev dist
+# Claves de prueba oficiales de Turnstile: 1x...AA siempre valida, 2x...AA siempre falla
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+RESEND_API_KEY=
+CONTACTO_PARA=
+CONTACTO_DESDE=Web Dive Clif <web@diveclif.es>

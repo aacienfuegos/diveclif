@@ -1,0 +1,26 @@
+---
+import { banco } from '@/lib/arte';
+
+interface Props {
+  readonly n: number;
+  readonly cx: number;
+  readonly cy: number;
+  readonly rx: number;
+  readonly ry: number;
+  readonly ancho: number;
+  readonly semilla: number;
+  readonly color: string;
+  readonly haciaIzquierda?: boolean;
+}
+const { n, cx, cy, rx, ry, ancho, semilla, color, haciaIzquierda = false } = Astro.props;
+const peces = banco(n, cx, cy, rx, ry, ancho, semilla);
+const escala = haciaIzquierda ? -1 : 1;
+---
+<g fill={color}>
+  {peces.map((p) => (
+    <path
+      transform={`translate(${p.x} ${p.y}) scale(${escala * p.ancho / 60} ${p.ancho / 60}) rotate(${p.giro})`}
+      d="M0 0 C10 -6 38 -6 50 0 C38 6 10 6 0 0Z M50 0 L60 -6 L57 0 L60 6Z"
+    />
+  ))}
+</g>

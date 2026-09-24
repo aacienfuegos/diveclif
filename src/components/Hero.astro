@@ -1,0 +1,70 @@
+---
+import Nav from './Nav.astro';
+---
+<svg width="0" height="0" class="sr-only" aria-hidden="true">
+  <filter id="water" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.06" numOctaves="2" seed="4" result="n">
+      <animate attributeName="baseFrequency" dur="7s" values="0.012 0.06;0.016 0.045;0.012 0.06" repeatCount="indefinite" />
+    </feTurbulence>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="9" />
+  </filter>
+</svg>
+<header class="hero" id="superficie" data-depth="0" data-depth-end="3">
+  <div class="sky-clip"><div class="sun"></div></div>
+  <div class="sun-reflect"></div>
+  <div class="rays"></div>
+  <svg class="wave" viewBox="0 0 1200 26" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 13 Q50 0 100 13 T200 13 T300 13 T400 13 T500 13 T600 13 T700 13 T800 13 T900 13 T1000 13 T1100 13 T1200 13 V26 H0Z" fill="#1e9db0" />
+    <path d="M0 13 Q50 0 100 13 T200 13 T300 13 T400 13 T500 13 T600 13 T700 13 T800 13 T900 13 T1000 13 T1100 13 T1200 13" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.5" />
+  </svg>
+  <div class="bubbles" data-bubbles></div>
+  <Nav />
+  <div class="wrap">
+    <div class="hero-eyebrow mono">
+      <span>Pelayo · IDC Staff Instructor PADI</span><span>Divemaster Instructor SSI</span><span>Cabo de Palos ⇄ Madrid</span>
+    </div>
+    <div class="wl" data-wl>
+      <h1>Dive<br /><em>Clif</em></h1>
+      <div class="wl-under" aria-hidden="true">Dive<br /><em>Clif</em></div>
+    </div>
+    <div class="hero-under">
+      <p><strong>Cursos de buceo de todos los niveles y viajes a los mejores fondos del planeta.</strong> Con Pelayo, del Mediterráneo de Cabo de Palos al azul de Farasan Banks, siempre en grupo pequeño.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-coral" href="#viajes">Próximos viajes</a>
+        <a class="btn btn-ghost" href="#cursos">Hazte buceador</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('.hero');
+  const wl = document.querySelector<HTMLElement>('[data-wl]');
+  const bubbles = document.querySelector<HTMLElement>('[data-bubbles]');
+
+  if (hero && wl) {
+    const colocarLinea = () => {
+      const h1 = wl.querySelector('h1');
+      if (!h1) return;
+      const y = wl.offsetTop + h1.offsetHeight * 0.71;
+      hero.style.setProperty('--wly', `${(y / hero.offsetHeight) * 100}%`);
+    };
+    colocarLinea();
+    addEventListener('resize', colocarLinea);
+    void document.fonts.ready.then(colocarLinea);
+  }
+
+  if (bubbles && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    for (let i = 0; i < 18; i++) {
+      const b = document.createElement('i');
+      const s = 4 + Math.random() * 14;
+      b.style.setProperty('left', `${Math.random() * 100}%`);
+      b.style.setProperty('width', `${s}px`);
+      b.style.setProperty('height', `${s}px`);
+      b.style.setProperty('--dx', `${(Math.random() - 0.5) * 60}px`);
+      b.style.setProperty('animation-duration', `${6 + Math.random() * 8}s`);
+      b.style.setProperty('animation-delay', `${-Math.random() * 10}s`);
+      bubbles.appendChild(b);
+    }
+  }
+</script>

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "farasan-2026",
+    "titulo": "Farasan Banks",
+    "cuando": "2026",
+    "resumen": "Arabia Saudí · tiburones en el azul y seis delfines en una sola inmersión",
+    "tipo": "internacional",
+    "orden": 1
+  },
+  {
+    "id": "maldivas",
+    "titulo": "Maldivas",
+    "cuando": "—",
+    "resumen": "Vida a bordo entre atolones, mantas y tiburones de arrecife",
+    "tipo": "internacional",
+    "orden": 2
+  },
+  {
+    "id": "gran-canaria-2025",
+    "titulo": "Gran Canaria",
+    "cuando": "2025",
+    "resumen": "Nacional · Atlántico, rayas y fondos volcánicos",
+    "tipo": "nacional",
+    "orden": 3
+  },
+  {
+    "id": "tenerife-2024",
+    "titulo": "Tenerife",
+    "cuando": "2024",
+    "resumen": "Nacional · tortugas y paredes de lava",
+    "tipo": "nacional",
+    "orden": 4
+  },
+  {
+    "id": "day-trips",
+    "titulo": "Day trips",
+    "cuando": "Todo el año",
+    "resumen": "Salidas de un día a Cabo de Palos desde Madrid",
+    "tipo": "day-trip",
+    "orden": 5
+  },
+  {
+    "id": "ruta-de-pecios",
+    "titulo": "Ruta de pecios",
+    "cuando": "Todo el año",
+    "resumen": "Pecios del Mediterráneo, casi ocultos entre gorgonias",
+    "tipo": "pecios",
+    "orden": 6
+  }
+]

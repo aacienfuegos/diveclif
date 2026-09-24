@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '@/layouts/Base.astro';
+import Nav from '@/components/Nav.astro';
+import Pie from '@/components/Pie.astro';
+import Carta from '@/components/Carta.astro';
+import { SITE } from '@/config';
+import { migas, punto } from '@/lib/jsonld';
+
+const puntos = (await getCollection('puntos')).sort((a, b) => a.data.orden - b.data.orden);
+const url = `${SITE.url}/puntos-de-inmersion`;
+const jsonLd = [
+  ...puntos.map((p) => punto({ ...p.data, url: `${url}/${p.id}` })),
+  migas([{ nombre: 'Inicio', url: `${SITE.url}/` }, { nombre: 'Puntos de inmersión', url }]),
+];
+---
+<Base titulo="Puntos de inmersión en Cabo de Palos" descripcion="Carta de los puntos de inmersión de la Reserva Marina de Cabo de Palos e Islas Hormigas: profundidad, nivel, corriente y fauna de cada bajo y pecio." jsonLd={jsonLd}>
+  <Nav oscura />
+  <main class="page puntos">
+    <div class="wrap">
+      <header class="page-head">
+        <nav class="crumbs mono" aria-label="Migas"><a href="/">Inicio</a><span>/</span><span>Puntos de inmersión</span></nav>
+        <h1>Bucear en Cabo de Palos</h1>
+        <p class="lede">La Reserva Marina de Cabo de Palos · Islas Hormigas es uno de los mejores fondos del Mediterráneo. Estos son los puntos donde buceamos, ordenados de la costa hacia fuera.</p>
+      </header>
+      <Carta puntos={puntos} />
+      <div class="cta-row"><a class="btn btn-coral" href="/#contacto">Reservar una salida</a></div>
+    </div>
+  </main>
+  <Pie />
+</Base>

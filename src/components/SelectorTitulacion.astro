@@ -1,0 +1,25 @@
+---
+import { FICHA_INICIAL, TITULACIONES } from '@/lib/buceo';
+---
+<div class="cert" role="group" aria-label="Tu titulación">
+  {TITULACIONES.map((t) => (
+    <button type="button" data-cert={t.rango} aria-pressed={t.rango === FICHA_INICIAL.rango ? 'true' : 'false'}>{t.etiqueta}</button>
+  ))}
+</div>
+
+<script>
+  import { actualizarFicha, alCambiarFicha } from '@/lib/ficha';
+
+  for (const grupo of document.querySelectorAll<HTMLElement>('.cert')) {
+    grupo.addEventListener('click', (e) => {
+      const b = (e.target as Element).closest<HTMLButtonElement>('button[data-cert]');
+      if (b) actualizarFicha({ rango: Number(b.dataset.cert) });
+    });
+  }
+
+  alCambiarFicha((f) => {
+    for (const b of document.querySelectorAll<HTMLButtonElement>('.cert button[data-cert]')) {
+      b.setAttribute('aria-pressed', String(Number(b.dataset.cert) === f.rango));
+    }
+  });
+</script>

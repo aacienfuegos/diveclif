@@ -1,0 +1,37 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Banco from './Banco.astro';
+import { precio } from '@/lib/viajes';
+import { duracionDias } from '@/lib/fechas';
+
+interface Props {
+  readonly viaje: CollectionEntry<'viajes'>;
+}
+const { viaje } = Astro.props;
+const v = viaje.data;
+const dd = (d: Date) => String(d.getUTCDate()).padStart(2, '0');
+const mes = v.inicio.toLocaleDateString('es-ES', { month: 'long', timeZone: 'UTC' });
+const manta = 'M0 62 C40 30 80 18 104 40 C112 34 128 34 136 40 C160 18 200 30 240 62 C198 60 162 72 138 92 L126 104 L122 150 L118 104 L102 92 C78 72 42 60 0 62Z';
+---
+<article class="feature">
+  <div class="feature-art">
+    <svg viewBox="0 0 600 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <path d={manta} transform="translate(150 120) scale(1.375)" fill="rgba(2,12,24,.55)" />
+      <path d={manta} transform="translate(40 330) scale(.58)" fill="rgba(2,12,24,.3)" />
+      <path d={manta} transform="translate(430 60) scale(.46)" fill="rgba(2,12,24,.3)" />
+      <Banco n={40} cx={460} cy={420} rx={150} ry={60} ancho={28} semilla={11} color="rgba(143,216,234,.28)" />
+    </svg>
+    <div class="species">{v.fauna.map((f) => <span>{f}</span>)}</div>
+  </div>
+  <div class="feature-body">
+    <div class="feature-dates"><span class="d">{dd(v.inicio)}—{dd(v.fin)}</span><span class="mono">{mes} · {duracionDias(v.inicio, v.fin)} días</span></div>
+    <h3>{v.titulo}</h3>
+    {v.cita && <p class="quote">“{v.cita}”</p>}
+    <ul class="incl">{v.incluye.slice(0, 4).map((i) => <li>{i}</li>)}</ul>
+    <div class="price"><span class="mono">Desde</span><b>{precio(v.precioDesde)}</b><span class="mono org">Organiza {v.organiza}</span></div>
+    <div class="feature-ctas">
+      <a class="btn btn-coral" href="#contacto">Reservar plaza</a>
+      <a class="btn btn-ghost" href={`/viajes/${viaje.id}`}>Ver itinerario</a>
+    </div>
+  </div>
+</article>

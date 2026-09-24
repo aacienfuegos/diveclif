@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+
+const entradas = (await getCollection('bitacora')).sort((a, b) => a.data.orden - b.data.orden);
+const TIPOS = {
+  internacional: { etiqueta: 'Internacional', clase: 'c-viaje' },
+  nacional: { etiqueta: 'Nacional', clase: 'c-viaje' },
+  'day-trip': { etiqueta: 'Day trip', clase: 'c-daytrip' },
+  pecios: { etiqueta: 'Pecios', clase: 'c-pecio' },
+} as const;
+const FILTROS = [
+  { f: 'todos', etiqueta: 'Todos', clase: 'c-foam' },
+  { f: 'internacional', etiqueta: 'Internacional', clase: 'c-viaje' },
+  { f: 'day-trip', etiqueta: 'Day trip', clase: 'c-daytrip' },
+  { f: 'pecios', etiqueta: 'Pecios', clase: 'c-pecio' },
+] as const;
+---
+<div class="logbook">
+  <div class="logbook-head">
+    <h3>Bitácora de viajes</h3>
+    <div class="filters" role="group" aria-label="Filtrar viajes">
+      {FILTROS.map((x) => <button type="button" class={`chip ${x.clase}`} data-filtro={x.f} aria-pressed={x.f === 'todos' ? 'true' : 'false'}>{x.etiqueta}</button>)}
+    </div>
+  </div>
+  {entradas.map((e) => (
+    <div class="trip" data-tipo={e.data.tipo}>
+      <span class="yr">{e.data.cuando}</span>
+      <h4>{e.data.titulo}</h4>
+      <p>{e.data.resumen}</p>
+      <span class={`chip ${TIPOS[e.data.tipo].clase}`}>{TIPOS[e.data.tipo].etiqueta}</span>
+    </div>
+  ))}
+</div>
+
+<script>
+  const botones = [...document.querySelectorAll<HTMLButtonElement>('[data-filtro]')];
+  const filas = [...document.querySelectorAll<HTMLElement>('.trip[data-tipo]')];
+  for (const b of botones) {
+    b.addEventListener('click', () => {
+      for (const o of botones) o.setAttribute('aria-pressed', String(o === b));
+      const f = b.dataset.filtro;
+      for (const fila of filas) {
+        const tipo = fila.dataset.tipo;
+        const visible = f === 'todos' || tipo === f || (f === 'internacional' && tipo === 'nacional');
+        fila.hidden = !visible;
+      }
+    });
+  }
+</script>

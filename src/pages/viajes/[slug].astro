@@ -1,0 +1,65 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '@/layouts/Base.astro';
+import Nav from '@/components/Nav.astro';
+import Pie from '@/components/Pie.astro';
+import ComunidadWhatsApp from '@/components/ComunidadWhatsApp.astro';
+import { SITE } from '@/config';
+import { NOMBRE_NIVEL } from '@/lib/buceo';
+import { duracionDias, rangoFechas } from '@/lib/fechas';
+import { migas, viaje as viajeLd } from '@/lib/jsonld';
+import { FORMATO, precio } from '@/lib/viajes';
+import '@/styles/viajes.css';
+
+export async function getStaticPaths() {
+  const viajes = await getCollection('viajes');
+  return viajes.map((viaje) => ({ params: { slug: viaje.id }, props: { viaje } }));
+}
+
+interface Props {
+  readonly viaje: CollectionEntry<'viajes'>;
+}
+const { viaje } = Astro.props;
+const v = viaje.data;
+const { Content } = await render(viaje);
+const url = `${SITE.url}/viajes/${viaje.id}`;
+const jsonLd = [
+  viajeLd({ ...v, url, completo: v.estado === 'completo' }),
+  migas([{ nombre: 'Inicio', url: `${SITE.url}/` }, { nombre: 'Viajes', url: `${SITE.url}/#viajes` }, { nombre: v.titulo, url }]),
+];
+---
+<Base titulo={`Viaje de buceo a ${v.titulo}`} descripcion={v.resumen} jsonLd={jsonLd}>
+  <Nav oscura />
+  <main class="page">
+    <div class="wrap">
+      <header class="page-head">
+        <nav class="crumbs mono" aria-label="Migas"><a href="/">Inicio</a><span>/</span><a href="/#viajes">Viajes</a></nav>
+        <span class="mono c-viaje">{rangoFechas(v.inicio, v.fin)} · {duracionDias(v.inicio, v.fin)} días · {v.destino}</span>
+        <h1>{v.titulo}</h1>
+        {v.cita && <p class="quote">“{v.cita}”</p>}
+      </header>
+      <dl class="facts">
+        <div><dt>Desde</dt><dd>{precio(v.precioDesde)}</dd></div>
+        <div><dt>Formato</dt><dd>{FORMATO[v.formato]}</dd></div>
+        <div><dt>Requisito</dt><dd>{NOMBRE_NIVEL[v.nivel]}{v.inmersionesMinimas > 0 && ` · ${v.inmersionesMinimas} inmersiones`}</dd></div>
+        <div><dt>Inmersiones</dt><dd>{v.inmersiones}</dd></div>
+        <div><dt>Agua</dt><dd>{v.agua.temperatura} · traje {v.agua.traje}</dd></div>
+        <div><dt>Organiza</dt><dd>{v.organiza}</dd></div>
+      </dl>
+      <div class="prose"><Content /></div>
+      {v.fauna.length > 0 && <div class="species-inline">{v.fauna.map((f) => <span class="chip c-tail">{f}</span>)}</div>}
+      {(v.incluye.length > 0 || v.noIncluye.length > 0) && (
+        <div class="two">
+          <div><h2>Incluye</h2><ul>{v.incluye.map((i) => <li>{i}</li>)}</ul></div>
+          <div><h2>No incluye</h2><ul>{v.noIncluye.map((i) => <li>{i}</li>)}</ul></div>
+        </div>
+      )}
+      <ComunidadWhatsApp />
+      <div class="cta-row">
+        <a class="btn btn-coral" href="/#contacto">Pedir plaza</a>
+        <a class="btn btn-ghost" href="/#puedo-ir">¿Cumplo los requisitos?</a>
+      </div>
+    </div>
+  </main>
+  <Pie />
+</Base>
