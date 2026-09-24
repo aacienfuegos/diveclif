@@ -1,0 +1,16 @@
+---
+import Marca from './Marca.astro';
+import { SITE } from '@/config';
+---
+<footer class="surface" data-depth="3" data-depth-end="0">
+  <div class="wrap surface-foot">
+    <Marca />
+    <div class="foot-links mono">
+      <a href="/puntos-de-inmersion">Puntos de inmersión</a>
+      <a href={SITE.instagram} rel="noopener" target="_blank">Instagram</a>
+      <a href={SITE.comunidadWhatsApp} rel="noopener" target="_blank">Comunidad WhatsApp</a>
+      <a href="/legal/aviso-legal">Aviso legal</a>
+      <a href="/legal/privacidad">Privacidad</a>
+    </div>
+  </div>
+</footer>

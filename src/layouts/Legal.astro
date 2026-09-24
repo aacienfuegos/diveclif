@@ -1,0 +1,27 @@
+---
+import Base from './Base.astro';
+import Nav from '@/components/Nav.astro';
+import Pie from '@/components/Pie.astro';
+import { LEGAL } from '@/config';
+
+interface Props {
+  readonly titulo: string;
+  readonly descripcion: string;
+}
+const { titulo, descripcion } = Astro.props;
+const fecha = new Date(LEGAL.actualizado).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
+<Base titulo={titulo} descripcion={descripcion}>
+  <Nav oscura />
+  <main class="page">
+    <article class="wrap legal">
+      <header class="page-head">
+        <nav class="crumbs mono" aria-label="Migas"><a href="/">Inicio</a><span>/</span><span>Legal</span></nav>
+        <h1>{titulo}</h1>
+        <span class="mono c-tail">Actualizado el {fecha}</span>
+      </header>
+      <div class="prose"><slot /></div>
+    </article>
+  </main>
+  <Pie />
+</Base>

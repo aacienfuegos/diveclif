@@ -1,0 +1,135 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import CartaFondo from './CartaFondo.astro';
+import SelectorTitulacion from './SelectorTitulacion.astro';
+import { FICHA_INICIAL, NOMBRE_NIVEL, RANGO, alcanzable, evaluarPunto } from '@/lib/buceo';
+import { formatearCoordenadas, proyectar } from '@/lib/carta';
+import '@/styles/carta.css';
+
+interface Props {
+  readonly puntos: readonly CollectionEntry<'puntos'>[];
+  readonly inicial?: string;
+}
+const { puntos, inicial = 'bajo-de-fuera' } = Astro.props;
+const pecios = puntos.filter((p) => p.data.tipo === 'pecio').length;
+const prof = (p: CollectionEntry<'puntos'>) => `${p.data.profundidad.aproximada ? '~' : ''}${p.data.profundidad.min}–${p.data.profundidad.max} m`;
+---
+<div class="chart-head">
+  <div><span class="mono lbl">Tu titulación</span><SelectorTitulacion /></div>
+  <span class="mono">{puntos.length} puntos · {pecios} pecios</span>
+</div>
+<div class="chart-wrap" data-carta>
+  <div>
+    <div class="chart">
+      <svg data-carta-svg viewBox="0 0 800 676" role="img" aria-label="Carta náutica de Cabo de Palos con los puntos de inmersión de la reserva marina">
+        <CartaFondo />
+        <g>
+          {puntos.map((p) => {
+            const { x, y } = proyectar(p.data.lat, p.data.lon);
+            const color = `var(--lv-${RANGO[p.data.nivel]})`;
+            const izquierda = x + 16 + p.data.nombre.length * 6.2 > 796;
+            return (
+              <g class:list={['site', { dim: !alcanzable(FICHA_INICIAL, p.data.nivel), sel: p.id === inicial }]} data-punto={p.id} data-nivel={p.data.nivel} tabindex="0" role="button" aria-label={`${p.data.nombre}, ${prof(p)}, ${NOMBRE_NIVEL[p.data.nivel]}`} transform={`translate(${x} ${y})`}>
+                {p.data.tipo === 'pecio'
+                  ? <rect class="ring" x="-10" y="-10" width="20" height="20" rx="2" transform="rotate(45)" fill={color} stroke="#04131d" stroke-width="1.5" />
+                  : <circle class="ring" r="11" fill={color} stroke="#04131d" stroke-width="1.5" />}
+                <text y="3.5" text-anchor="middle" font-family="Martian Mono, monospace" font-size="10" font-weight="500" fill="#04131d">{p.data.orden}</text>
+                <text x={izquierda ? -16 : 16} y="4" text-anchor={izquierda ? 'end' : 'start'} font-family="Martian Mono, monospace" font-size="9.5" fill="rgba(239,250,251,.92)" paint-order="stroke" stroke="#0a3550" stroke-width="3">{p.data.nombre}</text>
+              </g>
+            );
+          })}
+        </g>
+      </svg>
+      <span class="chart-note">Posiciones y profundidades orientativas</span>
+    </div>
+    <div class="legend" aria-hidden="true">
+      <span><i class="bg-lv-1"></i>Sin titulación / Open Water</span>
+      <span><i class="bg-lv-2"></i>Advanced</span>
+      <span><i class="bg-lv-3"></i>Deep</span>
+      <span><i class="bg-lv-4"></i>Técnico</span>
+      <span>◆ Pecio</span>
+    </div>
+  </div>
+  <div class="site-panel">
+    {puntos.map((p) => {
+      const v = evaluarPunto(FICHA_INICIAL, p.data.nivel);
+      return (
+        <article class="site-card" data-ficha-punto={p.id} data-nivel={p.data.nivel} hidden={p.id !== inicial}>
+          <span class="coords">{String(p.data.orden).padStart(2, '0')} · {formatearCoordenadas(p.data.lat, p.data.lon)}</span>
+          <h3><a href={`/puntos-de-inmersion/${p.id}`}>{p.data.nombre}</a></h3>
+          <dl>
+            <dt>Profundidad</dt><dd>{prof(p)}</dd>
+            <dt>Nivel</dt><dd>{NOMBRE_NIVEL[p.data.nivel]}{p.data.tipo === 'pecio' ? ' · pecio' : ''}</dd>
+            <dt>Corriente</dt><dd>{p.data.corriente}</dd>
+            <dt>Fauna</dt><dd>{p.data.fauna.join(', ')}</dd>
+          </dl>
+          <p>{p.data.resumen}</p>
+          <div class:list={['verdict', { no: !v.ok }]} data-veredicto>{v.texto}</div>
+        </article>
+      );
+    })}
+    <ol class="site-list">
+      {puntos.map((p) => (
+        <li>
+          <button type="button" data-elegir={p.id} data-nivel={p.data.nivel} class:list={{ dim: !alcanzable(FICHA_INICIAL, p.data.nivel) }} aria-current={p.id === inicial ? 'true' : 'false'}>
+            <span class={`num bg-lv-${RANGO[p.data.nivel]}`}>{p.data.orden}</span><span>{p.data.nombre}</span><span class="d">{prof(p)}</span>
+          </button>
+        </li>
+      ))}
+    </ol>
+  </div>
+</div>
+
+<script>
+  import { NIVELES, alcanzable, evaluarPunto, type Nivel } from '@/lib/buceo';
+  import { alCambiarFicha } from '@/lib/ficha';
+
+  const esNivel = (v: string | undefined): v is Nivel => (NIVELES as readonly string[]).includes(v ?? '');
+
+  for (const carta of document.querySelectorAll<HTMLElement>('[data-carta]')) {
+    const svg = carta.querySelector<SVGSVGElement>('[data-carta-svg]');
+    const marcas = [...carta.querySelectorAll<SVGGElement>('.site')];
+    const fichas = [...carta.querySelectorAll<HTMLElement>('[data-ficha-punto]')];
+    const botones = [...carta.querySelectorAll<HTMLButtonElement>('[data-elegir]')];
+
+    const elegir = (id: string) => {
+      for (const m of marcas) m.classList.toggle('sel', m.dataset.punto === id);
+      for (const f of fichas) f.hidden = f.dataset.fichaPunto !== id;
+      for (const b of botones) b.setAttribute('aria-current', String(b.dataset.elegir === id));
+    };
+
+    carta.addEventListener('click', (e) => {
+      const el = (e.target as Element).closest<HTMLElement | SVGGElement>('[data-punto], [data-elegir]');
+      const id = el instanceof HTMLElement ? el.dataset.elegir : el?.dataset.punto;
+      if (id) elegir(id);
+    });
+    carta.addEventListener('keydown', (e) => {
+      const g = (e.target as Element).closest<SVGGElement>('.site');
+      if (g?.dataset.punto && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        elegir(g.dataset.punto);
+      }
+    });
+
+    alCambiarFicha((ficha) => {
+      for (const el of [...marcas, ...botones]) {
+        const nivel = el.dataset.nivel;
+        if (esNivel(nivel)) el.classList.toggle('dim', !alcanzable(ficha, nivel));
+      }
+      for (const f of fichas) {
+        const nivel = f.dataset.nivel;
+        const v = f.querySelector<HTMLElement>('[data-veredicto]');
+        if (!esNivel(nivel) || !v) continue;
+        const r = evaluarPunto(ficha, nivel);
+        v.textContent = r.texto;
+        v.classList.toggle('no', !r.ok);
+      }
+    });
+
+    if (svg) {
+      const ajustar = () => svg.setAttribute('viewBox', svg.clientWidth < 560 ? '388 232 412 336' : '0 0 800 676');
+      ajustar();
+      addEventListener('resize', ajustar);
+    }
+  }
+</script>

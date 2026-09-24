@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import Banco from './Banco.astro';
+
+const posts = (await getCollection('cuaderno')).sort((a, b) => b.data.fecha.getTime() - a.data.fecha.getTime()).slice(0, 4);
+const medusas = [[470, 90, 1], [600, 210, 0.6], [330, 40, 0.45]] as const;
+const tentaculos = Array.from({ length: 7 }, (_, i) => -60 + i * 20);
+---
+<section class="sec fauna" id="fauna" data-depth="30" data-depth-end="15">
+  <div class="wrap">
+    <div class="depth-tag"><b>−25 m</b> Ascenso lento · cuaderno de fauna</div>
+    <h2>¿Sabías <span class="serif">que</span>…?</h2>
+    <p class="lede">Lo que vemos bajo el agua, contado con calma: especies del Mediterráneo, dónde encontrarlas y cómo acercarse sin molestarlas.</p>
+    <div class="fauna-grid">
+      {posts.map((p, i) => (
+        <a class:list={['fcard', `f${i + 1}`, `arte-${p.data.arte}`]} href={`/cuaderno/${p.id}`}>
+          {p.data.arte === 'medusas' && (
+            <svg class="bg" viewBox="0 0 700 380" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><radialGradient id="jg" cx="50%" cy="40%"><stop offset="0" stop-color="#ffb8d9" stop-opacity=".7" /><stop offset="1" stop-color="#a24a8a" stop-opacity=".15" /></radialGradient></defs>
+              <rect width="700" height="380" fill="#051b2c" />
+              {medusas.map(([x, y, s]) => (
+                <g transform={`translate(${x} ${y}) scale(${s})`}>
+                  <path d="M-80 0 C-80 -70 80 -70 80 0 C60 10 40 -2 20 8 C0 -2 -20 10 -40 2 C-60 10 -70 4 -80 0Z" fill="url(#jg)" />
+                  {tentaculos.map((t) => <path d={`M${t} 6 q12 40 -4 80 t4 90`} stroke="rgba(255,190,220,.4)" stroke-width="2" fill="none" />)}
+                </g>
+              ))}
+            </svg>
+          )}
+          {p.data.arte === 'banco' && (
+            <svg class="bg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <Banco n={45} cx={220} cy={95} rx={170} ry={60} ancho={34} semilla={23} color="rgba(191,243,255,.35)" haciaIzquierda />
+            </svg>
+          )}
+          <span class="mono c-fauna">{p.data.etiqueta}</span>
+          <h3>{p.data.titulo}</h3>
+          {p.data.especie && <span class="sci">{p.data.especie}</span>}
+          {i >= 2 && <p>{p.data.resumen}</p>}
+        </a>
+      ))}
+      <article class="fcard f5">
+        <span class="mono">Taller · 3.ª edición en marcha</span>
+        <h3>Biología marina</h3>
+        <p>Corales y nudibranquios. Fin de semana en La Herradura (Granada) con buceo y charlas.</p>
+        <a class="btn btn-ink" href="#contacto">Avísame</a>
+      </article>
+    </div>
+  </div>
+</section>

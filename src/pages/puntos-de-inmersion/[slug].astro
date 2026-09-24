@@ -1,0 +1,53 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '@/layouts/Base.astro';
+import Nav from '@/components/Nav.astro';
+import Pie from '@/components/Pie.astro';
+import { SITE } from '@/config';
+import { NOMBRE_NIVEL } from '@/lib/buceo';
+import { formatearCoordenadas } from '@/lib/carta';
+import { migas, punto as puntoLd } from '@/lib/jsonld';
+
+export async function getStaticPaths() {
+  const puntos = await getCollection('puntos');
+  return puntos.map((punto) => ({ params: { slug: punto.id }, props: { punto } }));
+}
+
+interface Props {
+  readonly punto: CollectionEntry<'puntos'>;
+}
+const { punto } = Astro.props;
+const p = punto.data;
+const { Content } = await render(punto);
+const url = `${SITE.url}/puntos-de-inmersion/${punto.id}`;
+const profundidad = `${p.profundidad.aproximada ? '~' : ''}${p.profundidad.min}–${p.profundidad.max} m`;
+const jsonLd = [
+  puntoLd({ ...p, url }),
+  migas([{ nombre: 'Inicio', url: `${SITE.url}/` }, { nombre: 'Puntos de inmersión', url: `${SITE.url}/puntos-de-inmersion` }, { nombre: p.nombre, url }]),
+];
+---
+<Base titulo={`${p.nombre} · buceo en Cabo de Palos`} descripcion={`${p.nombre}: ${profundidad}, nivel ${NOMBRE_NIVEL[p.nivel]}. ${p.resumen}`} jsonLd={jsonLd} og={`puntos-de-inmersion/${punto.id}`}>
+  <Nav oscura />
+  <main class="page">
+    <div class="wrap">
+      <header class="page-head">
+        <nav class="crumbs mono" aria-label="Migas"><a href="/">Inicio</a><span>/</span><a href="/puntos-de-inmersion">Puntos de inmersión</a></nav>
+        <span class="mono c-tail">{formatearCoordenadas(p.lat, p.lon)}</span>
+        <h1>{p.nombre}</h1>
+      </header>
+      <dl class="facts">
+        <div><dt>Profundidad</dt><dd>{profundidad}</dd></div>
+        <div><dt>Nivel</dt><dd>{NOMBRE_NIVEL[p.nivel]}</dd></div>
+        <div><dt>Tipo</dt><dd>{p.tipo[0]?.toUpperCase()}{p.tipo.slice(1)}</dd></div>
+        <div><dt>Corriente</dt><dd>{p.corriente}</dd></div>
+      </dl>
+      <div class="prose"><Content /></div>
+      <div class="two"><div><h2>Fauna</h2><ul>{p.fauna.map((f) => <li>{f}</li>)}</ul></div></div>
+      <div class="cta-row">
+        <a class="btn btn-coral" href="/#contacto">Bucear aquí con Pelayo</a>
+        <a class="btn btn-ghost" href="/puntos-de-inmersion">Ver la carta</a>
+      </div>
+    </div>
+  </main>
+  <Pie />
+</Base>

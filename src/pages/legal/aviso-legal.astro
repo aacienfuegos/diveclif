@@ -1,0 +1,33 @@
+---
+import Legal from '@/layouts/Legal.astro';
+import Dato from '@/components/Dato.astro';
+import { LEGAL, SITE } from '@/config';
+---
+<Legal titulo="Aviso legal" descripcion="Datos del titular de la web de Dive Clif y condiciones de uso.">
+  <h2>Titular de la web</h2>
+  <p>En cumplimiento del artículo 10 de la Ley 34/2002, de servicios de la sociedad de la información y de comercio electrónico (LSSI-CE), estos son los datos del titular de {SITE.url.replace('https://', '')}:</p>
+  <ul>
+    <li>Titular: <Dato valor={LEGAL.titular} falta="nombre y apellidos" />, trabajador autónomo que opera con el nombre comercial Dive Clif.</li>
+    <li>NIF: <Dato valor={LEGAL.nif} falta="NIF" /></li>
+    <li>Domicilio: <Dato valor={LEGAL.domicilio} falta="domicilio fiscal" /></li>
+    <li>Email: <a href={`mailto:${LEGAL.emailContacto}`}>{LEGAL.emailContacto}</a></li>
+    <li>Actividad: enseñanza de buceo recreativo y acompañamiento de grupos de buceadores.</li>
+    <li>Titulaciones: IDC Staff Instructor PADI (n.º <Dato valor={LEGAL.numeroPadi} falta="número PADI" />) y Divemaster Instructor SSI (n.º <Dato valor={LEGAL.numeroSsi} falta="número SSI" />).</li>
+  </ul>
+
+  <h2>Viajes organizados</h2>
+  <p>Los viajes combinados que se anuncian en esta web los organiza y comercializa <Dato valor={LEGAL.teMoana.razonSocial} falta="razón social de Te Moana Expeditions" /> (Te Moana Expeditions), agencia de viajes con título-licencia <Dato valor={LEGAL.teMoana.tituloLicencia} falta="número de título-licencia" />, que actúa como organizador a efectos del Real Decreto Legislativo 1/2007. Dive Clif participa como instructor y guía de buceo del grupo. La contratación, el pago y las condiciones del viaje se formalizan directamente con la agencia.</p>
+
+  <h2>Condiciones de uso</h2>
+  <p>El acceso a esta web es gratuito y no requiere registro. Quien la visita se compromete a hacer un uso lícito de sus contenidos y a no dañar su funcionamiento.</p>
+  <p>La información sobre cursos, viajes y puntos de inmersión es orientativa. Fechas, precios, plazas y requisitos se confirman siempre antes de cualquier reserva. Las condiciones de cada inmersión dependen del mar y de la valoración del instructor el mismo día.</p>
+
+  <h2>Propiedad intelectual</h2>
+  <p>Los textos, fotografías, vídeos, logotipos y diseño de esta web pertenecen al titular o se usan con permiso de sus autores. No se pueden reproducir con fines comerciales sin autorización. Las marcas PADI y SSI pertenecen a sus respectivos propietarios.</p>
+
+  <h2>Enlaces externos</h2>
+  <p>La web enlaza a servicios de terceros (Instagram, WhatsApp, la agencia de viajes). El titular no controla esos sitios ni responde de su contenido.</p>
+
+  <h2>Legislación aplicable</h2>
+  <p>Estas condiciones se rigen por la legislación española. Si quien usa la web actúa como consumidor, serán competentes los juzgados de su domicilio.</p>
+</Legal>

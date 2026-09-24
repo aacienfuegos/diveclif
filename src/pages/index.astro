@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '@/layouts/Base.astro';
+import Hero from '@/components/Hero.astro';
+import Bases from '@/components/Bases.astro';
+import Carta from '@/components/Carta.astro';
+import Cursos from '@/components/Cursos.astro';
+import Viajes from '@/components/Viajes.astro';
+import Fauna from '@/components/Fauna.astro';
+import Contacto from '@/components/Contacto.astro';
+import Pie from '@/components/Pie.astro';
+import OrdenadorBuceo from '@/components/OrdenadorBuceo.astro';
+import { SITE } from '@/config';
+import { organizacion, pelayo, theSunset, viaje, webSite } from '@/lib/jsonld';
+import { proximos } from '@/lib/viajes';
+import '@/styles/home.css';
+
+const puntos = (await getCollection('puntos')).sort((a, b) => a.data.orden - b.data.orden);
+const viajes = proximos(await getCollection('viajes'), new Date());
+const jsonLd = [
+  webSite(),
+  organizacion(),
+  pelayo(),
+  theSunset(),
+  ...viajes.map((v) => viaje({ ...v.data, url: `${SITE.url}/viajes/${v.id}`, completo: v.data.estado === 'completo' })),
+];
+---
+<Base titulo={SITE.nombre} jsonLd={jsonLd}>
+  <main>
+    <Hero />
+    <Bases />
+    <section class="sec puntos" id="puntos" data-depth="8" data-depth-end="12">
+      <div class="wrap">
+        <div class="depth-tag"><b>−10 m</b> Reserva Marina de Cabo de Palos · Islas Hormigas</div>
+        <h2>Carta de <span class="serif">los</span> puntos de inmersión</h2>
+        <p class="lede">Elige tu titulación y la carta te muestra a qué puntos puedes bajar. Cada punto tiene su ficha con profundidad, nivel, corriente y fauna.</p>
+        <Carta puntos={puntos} />
+      </div>
+    </section>
+    <Cursos />
+    <Viajes />
+    <Fauna />
+    <Contacto />
+  </main>
+  <Pie />
+  <OrdenadorBuceo />
+</Base>

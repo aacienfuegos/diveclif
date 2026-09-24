@@ -1,0 +1,19 @@
+---
+import Marca from './Marca.astro';
+
+interface Props {
+  readonly oscura?: boolean;
+}
+const { oscura = false } = Astro.props;
+---
+<nav class:list={['nav', { oscura }]} aria-label="Principal">
+  <Marca />
+  <div class="nav-links">
+    <a href="/#viajes">Viajes</a>
+    <a href="/puntos-de-inmersion">Puntos de inmersión</a>
+    <a href="/#cursos">Cursos</a>
+    <a href="/#bases">Bases</a>
+    <a href="/#fauna">Cuaderno</a>
+  </div>
+  <a class="btn btn-ink" href="/#contacto">Reserva<span class="nav-extra"> tu plaza</span></a>
+</nav>

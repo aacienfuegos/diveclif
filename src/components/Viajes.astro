@@ -1,0 +1,22 @@
+---
+import { getCollection } from 'astro:content';
+import ViajeDestacado from './ViajeDestacado.astro';
+import PuedoIr from './PuedoIr.astro';
+import ComunidadWhatsApp from './ComunidadWhatsApp.astro';
+import Bitacora from './Bitacora.astro';
+import { proximos } from '@/lib/viajes';
+import '@/styles/viajes.css';
+
+const viajes = proximos(await getCollection('viajes'), new Date());
+const destacado = viajes.find((v) => v.data.destacado) ?? viajes[0];
+---
+<section class="sec viajes" id="viajes" data-depth="40" data-depth-end="30">
+  <div class="wrap">
+    <div class="depth-tag"><b>Azul</b> Viajes nacionales e internacionales</div>
+    <h2>Donde el mar <span class="serif">te</span> lleve</h2>
+    {destacado && <ViajeDestacado viaje={destacado} />}
+    <PuedoIr viajes={viajes} />
+    <ComunidadWhatsApp />
+    <Bitacora />
+  </div>
+</section>

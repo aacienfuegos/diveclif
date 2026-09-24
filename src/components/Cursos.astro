@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+
+const cursos = (await getCollection('cursos')).sort((a, b) => a.data.orden - b.data.orden);
+const recreativos = cursos.filter((c) => c.data.linea === 'recreativa');
+const profesionales = cursos.filter((c) => c.data.linea === 'profesional');
+---
+<section class="sec cursos" id="cursos" data-depth="12" data-depth-end="40">
+  <div class="wrap">
+    <div class="depth-tag"><b>−12 → −40 m</b> Cada curso, en su profundidad</div>
+    <h2>¿Hasta dónde <span class="serif">quieres</span> bajar?</h2>
+    <p class="lede">Los cursos se ordenan por la profundidad máxima que certifican. Al bajar la página, el ordenador de buceo de la esquina te dice dónde estás.</p>
+    <div class="scale">
+      {recreativos.map((c) => (
+        <>
+          <div class="course-depth">{c.data.profundidadMax} m<small>máx.</small></div>
+          <article class="course" id={`curso-${c.id}`}>
+            <h3>{c.data.nombre.split(' ')[0]}<br />{c.data.nombre.split(' ').slice(1).join(' ')}</h3>
+            <p>{c.data.resumen}</p>
+            <div class="agency">{c.data.agencias.map((a) => <span class="chip c-tail">{a}</span>)}</div>
+          </article>
+        </>
+      ))}
+    </div>
+    <div class="pro">
+      {profesionales.map((c) => (
+        <div id={`curso-${c.id}`}><span class="mono c-tail">Línea profesional</span><h4>{c.data.nombre}</h4><p>{c.data.resumen}</p></div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,44 @@
+.puntos { background: linear-gradient(to bottom, var(--d10), var(--d18)) }
+.chart-head { display: flex; justify-content: space-between; align-items: end; gap: 18px; flex-wrap: wrap; margin-top: 40px }
+.chart-head .mono { color: var(--foam-2) }
+.chart-head .lbl { display: block; margin-bottom: 8px }
+.chart-wrap { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; align-items: start }
+.chart { position: relative; border-radius: 4px; overflow: hidden; background: #0a3550; box-shadow: inset 0 0 0 1px rgba(143, 216, 234, .25) }
+.chart svg { display: block; width: 100%; height: auto }
+.chart .site { cursor: pointer; transition: opacity .3s }
+.chart .site:focus { outline: none }
+.chart .site:focus-visible .ring, .chart .site.sel .ring { stroke: #fff; stroke-width: 2.5 }
+.chart .site.dim { opacity: .28 }
+.chart-note { position: absolute; left: 12px; bottom: 10px; font-family: var(--f-mono); font-size: .56rem; letter-spacing: .08em; text-transform: uppercase; color: rgba(239, 250, 251, .55) }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 12px; font-family: var(--f-mono); font-size: .6rem; letter-spacing: .08em; text-transform: uppercase; color: var(--foam-2) }
+.legend span { display: inline-flex; align-items: center; gap: 6px }
+.legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block }
+.bg-lv-0 { background: var(--lv-0) } .bg-lv-1 { background: var(--lv-1) } .bg-lv-2 { background: var(--lv-2) }
+.bg-lv-3 { background: var(--lv-3) } .bg-lv-4 { background: var(--lv-4) }
+.site-panel { display: grid; gap: 14px }
+.site-card { background: rgba(2, 12, 24, .5); border-radius: 4px; padding: 22px; box-shadow: inset 0 0 0 1px rgba(143, 216, 234, .2) }
+.site-card .coords { font-family: var(--f-mono); font-size: .62rem; letter-spacing: .06em; color: var(--foam-3) }
+.site-card h3 { font-family: var(--f-display); font-weight: 900; text-transform: uppercase; font-size: 2.4rem; line-height: .9; margin: 8px 0 12px }
+.site-card h3 a { text-decoration: none }
+.site-card h3 a:hover { color: var(--tail) }
+.site-card dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0 0 12px; font-size: .92rem }
+.site-card dt { font-family: var(--f-mono); font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: var(--tail); padding-top: 4px }
+.site-card dd { margin: 0; color: var(--foam-2) }
+.site-card p { margin: 0 }
+.verdict { margin-top: 14px; padding: 10px 12px; border-radius: 4px; font-size: .9rem; background: rgba(31, 194, 140, .14); color: #9ff0cf }
+.verdict.no { background: rgba(255, 106, 61, .15); color: #ffc2ad }
+.site-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; border-radius: 4px; overflow: hidden }
+.site-list button { width: 100%; display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: center; text-align: left; border: 0; cursor: pointer; background: rgba(2, 12, 24, .3); color: var(--foam); padding: 10px 12px; font: inherit; font-size: .9rem; transition: background .2s, opacity .2s }
+.site-list button:hover, .site-list button[aria-current="true"] { background: rgba(2, 12, 24, .6) }
+.site-list button.dim { opacity: .45 }
+.site-list .num { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-family: var(--f-mono); font-size: .62rem; color: var(--ink); font-weight: 500 }
+.site-list .d { font-family: var(--f-mono); font-size: .62rem; color: var(--foam-3); white-space: nowrap }
+
+@media (max-width: 980px) {
+  .chart-wrap { grid-template-columns: minmax(0, 1fr) }
+}
+@media (max-width: 620px) {
+  .chart-head > div { width: 100% }
+  .chart-note { position: static; display: block; padding: 8px 12px; background: #072a40 }
+  .site-card h3 { font-size: 2rem }
+}
