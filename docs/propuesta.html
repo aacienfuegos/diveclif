@@ -1,0 +1,1309 @@
+<title>Dive Clif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Martian+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --ink:#04131d; --foam:#effafb; --foam-2:rgba(239,250,251,.72); --foam-3:rgba(239,250,251,.45);
+  --tail:#8fd8ea; --coral:#ff6a3d; --sand:#f3dcb8;
+  --sky-1:#ffe2b8; --sky-2:#f9ae86;
+  --d0:#1e9db0; --d5:#0d7390; --d10:#0b6584; --d18:#0a5474; --d30:#073a57; --d40:#04213a; --abyss:#020c18; --asc:#08425f;
+  --viaje:#e8399f; --fauna:#1fc28c; --daytrip:#f0364e; --pecio:#3d6bff;
+  --paper:#efe7d6; --paper-2:#e4d9c2; --pen:#1d3fc4; --stamp:#c8392a; --pinkish:#1a2430; --rule:rgba(26,36,48,.14);
+  --f-display:"Big Shoulders Display", "Oswald", Impact, sans-serif;
+  --f-body:"Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --f-serif:"Instrument Serif", Georgia, serif;
+  --f-mono:"Martian Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --gut:clamp(16px, 4vw, 56px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--abyss);color:var(--foam);font-family:var(--f-body);font-size:16px;line-height:1.55;overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--coral);outline-offset:3px}
+.wrap{padding-inline:var(--gut);max-width:1320px;margin-inline:auto}
+.mono{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+
+/* ribbon */
+.ribbon{background:var(--ink);color:var(--foam-2);font-family:var(--f-mono);font-size:.68rem;letter-spacing:.06em;padding:8px var(--gut);display:flex;gap:12px 24px;flex-wrap:wrap;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.08)}
+.ribbon b{color:var(--coral);font-weight:500}
+.ribbon a{color:var(--tail)}
+
+/* nav */
+.nav{position:absolute;inset:0 0 auto 0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px var(--gut)}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink)}
+.brand-mark{width:46px;height:46px;border-radius:50%;background:#050607;display:grid;place-items:center;box-shadow:0 0 0 2px rgba(4,19,29,.15)}
+.brand-name{font-family:var(--f-display);font-weight:800;font-size:1.35rem;letter-spacing:.14em;white-space:nowrap}
+.nav-links{display:flex;gap:28px;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.nav-links a{text-decoration:none;position:relative}
+.nav-links a::after{content:"";position:absolute;left:0;right:100%;bottom:-6px;height:2px;background:var(--ink);transition:right .3s}
+.nav-links a:hover::after{right:0}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 20px;border-radius:999px;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;border:0;cursor:pointer;transition:transform .2s, background .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn-ink{background:var(--ink);color:var(--foam)}
+.btn-coral{background:var(--coral);color:var(--ink)}
+.btn-ghost{background:transparent;color:var(--foam);box-shadow:inset 0 0 0 1.5px var(--foam-3)}
+.btn-ghost:hover{box-shadow:inset 0 0 0 1.5px var(--foam)}
+
+/* hero */
+.hero{position:relative;overflow:hidden;--wly:62%;
+  background:linear-gradient(to bottom,var(--sky-1) 0,var(--sky-2) var(--wly),var(--d0) var(--wly),var(--d5) 100%);
+  padding-top:130px;padding-bottom:110px}
+.sky-clip{position:absolute;inset:0 0 calc(100% - var(--wly)) 0;overflow:hidden;pointer-events:none}
+.sun{position:absolute;width:min(46vw,520px);aspect-ratio:1;border-radius:50%;right:6%;bottom:calc(-1 * min(23vw,260px));background:radial-gradient(circle,#fff4d8 0,#ffc98f 45%,rgba(255,150,100,0) 70%);opacity:.9;pointer-events:none}
+.sun-reflect{position:absolute;right:calc(6% + min(13vw,150px));top:var(--wly);width:min(20vw,220px);height:40%;background:repeating-linear-gradient(to bottom,rgba(255,226,184,.55) 0 3px,transparent 3px 14px);mask-image:linear-gradient(to bottom,#000,transparent);opacity:.6;pointer-events:none}
+.rays{position:absolute;left:0;right:0;top:var(--wly);bottom:0;pointer-events:none;background:repeating-linear-gradient(100deg,rgba(255,255,255,.07) 0 40px,transparent 40px 130px);mask-image:linear-gradient(to bottom,#000 0,transparent 85%);animation:sway 9s ease-in-out infinite alternate}
+@keyframes sway{from{transform:translateX(-30px) skewX(-4deg)}to{transform:translateX(30px) skewX(4deg)}}
+.wave{position:absolute;left:0;width:200%;height:26px;top:calc(var(--wly) - 13px);pointer-events:none;animation:drift 14s linear infinite}
+@keyframes drift{to{transform:translateX(-50%)}}
+.hero-eyebrow{position:relative;z-index:2;color:var(--ink);display:flex;gap:10px 22px;flex-wrap:wrap}
+.hero-eyebrow span{display:inline-flex;align-items:center;gap:8px}
+.hero-eyebrow span::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--coral)}
+.wl{position:relative;z-index:2;margin-top:18px;--wl:71%}
+.wl h1,.wl .wl-under{font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:clamp(4.4rem,19vw,17rem);line-height:.8;letter-spacing:-.01em;margin:0}
+.wl h1{color:var(--ink);clip-path:inset(0 0 calc(100% - var(--wl)) 0)}
+.wl .wl-under{position:absolute;inset:0;color:rgba(239,250,251,.92);clip-path:inset(var(--wl) 0 0 0);filter:url(#water);transform:translate(3px,3px) skewX(-2deg)}
+.wl h1 em,.wl .wl-under em{font-style:normal;color:transparent;-webkit-text-stroke:3px currentColor}
+.wl h1 em{-webkit-text-stroke-color:var(--ink)}
+.wl .wl-under em{-webkit-text-stroke-color:rgba(239,250,251,.92)}
+.hero-under{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:32px 56px;margin-top:56px;align-items:end}
+.hero-under p{font-size:clamp(1.05rem,1.6vw,1.3rem);max-width:34ch;margin:0;color:var(--foam)}
+.hero-under p strong{font-weight:600;color:#fff}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.bubbles{position:absolute;inset:var(--wly) 0 0 0;pointer-events:none;overflow:hidden}
+.bubbles i{position:absolute;bottom:-20px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.55),rgba(255,255,255,.04) 60%);animation:rise linear infinite}
+@keyframes rise{to{transform:translate(var(--dx),calc(-1 * var(--h, 700px)));opacity:0}}
+
+.depth-tag{display:flex;align-items:baseline;gap:14px;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tail)}
+.depth-tag b{white-space:nowrap;font-family:var(--f-display);font-weight:800;font-size:3.2rem;letter-spacing:0;line-height:1;color:var(--foam)}
+.sec{position:relative;padding-block:clamp(56px,7vw,100px)}
+.sec h2{font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:clamp(2.8rem,8vw,6.4rem);line-height:.86;margin:14px 0 0;text-wrap:balance}
+.sec h2 .serif{font-family:var(--f-serif);font-weight:400;text-transform:none;font-style:italic;letter-spacing:-.01em}
+.lede{color:var(--foam-2);max-width:56ch;font-size:1.08rem;margin-top:20px}
+
+/* bases */
+.bases{background:linear-gradient(to bottom,var(--d5),var(--d10))}
+.bases-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;margin-top:56px}
+.base{position:relative;border-radius:4px;overflow:hidden;min-height:440px;display:flex;flex-direction:column;justify-content:flex-end;padding:28px;isolation:isolate}
+.base::before{content:"";position:absolute;inset:0;z-index:-1}
+.base-cdp::before{background:radial-gradient(120% 80% at 70% 10%,rgba(255,196,140,.45),transparent 55%),linear-gradient(160deg,#2fb3c0 0,#0d6f8c 55%,#083a55 100%)}
+.base-mad::before{background:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 2px,transparent 2px 64px),repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 2px,transparent 2px 64px),linear-gradient(180deg,#1b8fb3 0,#0a4c78 60%,#062a47 100%)}
+.base h3{font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:clamp(2.4rem,5vw,4rem);line-height:.9;margin:0}
+.base ul{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:8px;color:var(--foam-2)}
+.base li{display:flex;gap:10px}
+.base li::before{content:"→";color:var(--tail);font-family:var(--f-mono)}
+.base .coord{position:absolute;top:24px;left:28px;right:28px;display:flex;justify-content:space-between;gap:12px;color:var(--foam-2)}
+.base-art{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.sunset-card{margin-top:20px;display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;padding:18px 22px;background:var(--sand);color:var(--ink);border-radius:4px}
+.sunset-card .big{font-family:var(--f-display);font-weight:900;font-size:2.2rem;line-height:.9;text-transform:uppercase;color:#e2622f}
+.sunset-card p{margin:0;font-size:.95rem}
+
+/* cursos */
+.cursos{background:linear-gradient(to bottom,var(--d18),var(--d40))}
+.scale{position:relative;margin-top:64px;display:grid;grid-template-columns:120px 1fr;gap:0 28px}
+.scale-rail{position:relative}
+.scale-rail::before{content:"";position:absolute;right:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--tail),rgba(143,216,234,.1))}
+.course{grid-column:2;position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) 170px;gap:16px 36px;align-items:start;padding:30px 0;border-top:1px solid rgba(143,216,234,.18)}
+.course-depth{grid-column:1;justify-self:end;align-self:start;padding-top:30px;text-align:right;font-family:var(--f-display);font-weight:800;font-size:3rem;line-height:1;color:var(--tail)}
+.course-depth small{display:block;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.1em;color:var(--foam-3);font-weight:400;margin-top:6px}
+.course h3{font-family:var(--f-display);font-weight:800;text-transform:uppercase;font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:.95;margin:0}
+.course p{margin:0;color:var(--foam-2);max-width:48ch}
+.course .agency{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;box-shadow:inset 0 0 0 1px currentColor}
+.course:hover h3{color:var(--tail)}
+.pro{margin-top:48px;margin-left:148px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;background:rgba(143,216,234,.18);border-radius:4px;overflow:hidden}
+.pro div{background:var(--d40);padding:22px}
+.pro h4{margin:8px 0 4px;font-family:var(--f-display);font-weight:800;font-size:1.5rem;text-transform:uppercase}
+.pro p{margin:0;color:var(--foam-2);font-size:.92rem}
+
+/* viajes */
+.viajes{background:linear-gradient(to bottom,var(--d40),var(--abyss) 55%,var(--abyss))}
+.feature{position:relative;margin-top:56px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);border-radius:4px;overflow:hidden;background:#061a2e}
+.feature-art{position:relative;min-height:520px;background:radial-gradient(90% 60% at 30% 0%,rgba(80,200,230,.35),transparent 60%),linear-gradient(180deg,#0e5f86,#062038)}
+.feature-art svg{position:absolute;inset:0;width:100%;height:100%}
+.feature-body{padding:clamp(24px,4vw,48px);display:flex;flex-direction:column;gap:22px}
+.feature-dates{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap}
+.feature-dates .d{font-family:var(--f-display);font-weight:900;font-size:clamp(3.2rem,6vw,5rem);line-height:.8;color:var(--viaje)}
+.feature h3{font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:clamp(2.4rem,5vw,4.2rem);line-height:.86;margin:0}
+.quote{font-family:var(--f-serif);font-style:italic;font-size:1.5rem;line-height:1.2;color:var(--tail);margin:0}
+.incl{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;font-size:.92rem;color:var(--foam-2)}
+.incl li{padding-top:10px;border-top:1px solid rgba(255,255,255,.12)}
+.price{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.price b{font-family:var(--f-display);font-size:3rem;font-weight:900;line-height:1}
+.species{position:absolute;left:24px;bottom:24px;right:24px;display:flex;gap:8px;flex-wrap:wrap}
+.species span{background:rgba(2,12,24,.6);backdrop-filter:blur(6px);padding:6px 11px;border-radius:999px;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase}
+
+.logbook{margin-top:72px}
+.logbook-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.14)}
+.logbook-head h3{margin:0;font-family:var(--f-display);font-weight:800;font-size:2rem;text-transform:uppercase}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filters button{background:none;cursor:pointer;color:var(--foam-2);border:0}
+.filters button[aria-pressed="true"]{color:var(--foam);background:rgba(255,255,255,.08)}
+.trip{display:grid;grid-template-columns:90px minmax(0,1.2fr) minmax(0,1.2fr) 130px;gap:12px 28px;align-items:center;padding:22px 0;border-bottom:1px solid rgba(255,255,255,.1);transition:background .25s,padding .25s}
+.trip:hover{background:linear-gradient(90deg,rgba(255,255,255,.05),transparent);padding-left:14px}
+.trip .yr{font-family:var(--f-mono);font-size:.75rem;color:var(--foam-3)}
+.trip h4{margin:0;font-family:var(--f-display);font-weight:800;font-size:clamp(1.6rem,3vw,2.3rem);text-transform:uppercase;line-height:1}
+.trip p{margin:0;color:var(--foam-2);font-size:.92rem}
+.trip .chip{justify-self:end}
+
+/* fauna */
+.fauna{background:linear-gradient(to bottom,var(--abyss),var(--d30))}
+.fauna-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:18px;margin-top:56px}
+.fcard{position:relative;border-radius:4px;overflow:hidden;min-height:300px;padding:22px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;isolation:isolate;background:#082c44}
+.fcard svg.bg{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.fcard h4{margin:0;font-family:var(--f-display);font-weight:800;font-size:1.9rem;text-transform:uppercase;line-height:.95}
+.fcard p{margin:0;color:var(--foam-2);font-size:.9rem;max-width:40ch}
+.fcard .sci{font-family:var(--f-serif);font-style:italic;font-size:1.1rem;color:var(--tail)}
+.f1{grid-column:span 7;min-height:380px}
+.f2{grid-column:span 5}
+.f3{grid-column:span 4}
+.f4{grid-column:span 4}
+.f5{grid-column:span 4;background:var(--coral);color:var(--ink)}
+.f5 p{color:rgba(4,19,29,.8)}
+.f5 h4{font-size:2.3rem}
+
+/* contacto */
+.contacto{background:linear-gradient(to bottom,var(--d30),var(--asc) 40%,var(--d0))}
+.contact-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px 64px;margin-top:48px;align-items:start}
+.channels{display:grid;gap:2px;border-radius:4px;overflow:hidden}
+.channel{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 24px;background:rgba(2,12,24,.35);text-decoration:none;transition:background .2s}
+.channel:hover{background:rgba(2,12,24,.55)}
+.channel b{font-family:var(--f-display);font-weight:800;font-size:1.7rem;text-transform:uppercase;display:block;line-height:1}
+.channel span.mono{color:var(--foam-2)}
+.channel>span.mono:last-child{white-space:nowrap}
+.form{display:grid;gap:14px;background:rgba(2,12,24,.3);padding:28px;border-radius:4px}
+.form label{display:grid;gap:6px;font-family:var(--f-mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--foam-2)}
+.form input,.form select,.form textarea{font:inherit;font-family:var(--f-body);font-size:1rem;text-transform:none;letter-spacing:0;color:var(--foam);background:transparent;border:0;border-bottom:1.5px solid var(--foam-3);padding:8px 0;border-radius:0}
+.form select option{color:var(--ink)}
+.form input:focus,.form select:focus,.form textarea:focus{outline:none;border-bottom-color:var(--coral)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-note{min-height:1.4em;font-family:var(--f-mono);font-size:.66rem;color:var(--sand)}
+
+.ig{margin-top:72px}
+.ig-cta{display:grid;gap:14px;text-decoration:none;padding-block:28px;border-top:1px solid var(--foam-3);border-bottom:1px solid var(--foam-3)}
+.ig-cta .mono{color:var(--sand)}
+.ig-cta b{font-family:var(--f-display);font-weight:900;font-size:clamp(3rem,11vw,9rem);line-height:1;text-transform:uppercase;transition:color .25s,letter-spacing .4s}
+.ig-cta:hover b{color:var(--sand);letter-spacing:.02em}
+.ig-sub{color:var(--foam-2)}
+
+.surface{position:relative;background:var(--d0);padding-block:64px 0;overflow:hidden}
+.surface-foot{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:end;padding-bottom:64px}
+.surface-foot .brand{color:var(--foam)}
+.surface-foot .brand-name{font-size:2.6rem}
+.surface-wave{display:block;width:100%;height:60px;margin-bottom:-1px}
+
+/* HUD */
+.hud{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;width:212px;border-radius:18px;padding:14px 16px 12px;background:rgba(2,10,18,.82);backdrop-filter:blur(10px);box-shadow:0 0 0 1px rgba(143,216,234,.25),0 20px 50px rgba(0,0,0,.35);font-family:var(--f-mono);color:#bff3ff;transition:opacity .2s,transform .2s}
+.hud.off{opacity:0;transform:translateY(20px);pointer-events:none}
+.hud-top{display:flex;justify-content:space-between;gap:8px;white-space:nowrap;font-size:.56rem;letter-spacing:.14em;color:rgba(191,243,255,.55)}
+.hud-depth{display:flex;align-items:baseline;gap:6px;margin:4px 0 8px}
+.hud-depth b{font-size:2.4rem;font-weight:500;line-height:1;font-variant-numeric:tabular-nums;color:#e9fcff}
+.hud-depth span{font-size:.8rem}
+.hud-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;border-top:1px solid rgba(191,243,255,.15);padding-top:8px}
+.hud-grid div{display:grid;gap:2px;font-size:.52rem;letter-spacing:.1em;color:rgba(191,243,255,.55)}
+.hud-grid b{font-size:.82rem;font-weight:500;color:#e9fcff;letter-spacing:0;font-variant-numeric:tabular-nums}
+.hud-alarm{margin-top:8px;font-size:.58rem;letter-spacing:.14em;text-align:center;padding:5px;border-radius:6px;background:var(--daytrip);color:#fff;display:none}
+.hud.alarm .hud-alarm{display:block;animation:blink .5s steps(2) infinite}
+.hud.low #hud-ndl{color:#ffb4a0}
+@keyframes blink{50%{opacity:.35}}
+
+/* ===== bitácora (propuesta técnica) ===== */
+.log{background:var(--paper);color:var(--pinkish);padding-block:clamp(72px,9vw,120px);
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px);background-size:100% 32px}
+.log h2{font-family:var(--f-serif);font-weight:400;font-size:clamp(2.8rem,7vw,5.6rem);line-height:.95;margin:10px 0 0;letter-spacing:-.02em;text-wrap:balance}
+.log h2 i{color:var(--pen)}
+.log .mono{color:#5c6773}
+.log-intro{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px 64px;align-items:end}
+.log-intro p{font-size:1.12rem;max-width:58ch;margin:0}
+.stamp{justify-self:end;transform:rotate(-4deg);border:2.5px solid var(--stamp);color:var(--stamp);padding:14px 20px;border-radius:6px;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.1em;font-size:.7rem;text-align:center;line-height:1.6;background:rgba(239,231,214,.8)}
+.stamp b{display:block;font-family:var(--f-display);font-size:2.6rem;letter-spacing:.02em;line-height:1}
+.entry{margin-top:clamp(56px,7vw,88px);display:grid;grid-template-columns:200px minmax(0,1fr);gap:20px 48px}
+.entry-h{border-top:2px solid var(--pinkish);padding-top:12px}
+.entry-h .n{font-family:var(--f-display);font-weight:800;font-size:2.6rem;line-height:1;color:var(--pen)}
+.entry-h h3{font-family:var(--f-body);font-weight:600;font-size:1.05rem;margin:6px 0 0}
+.entry-b{border-top:1px solid rgba(26,36,48,.3);padding-top:14px;min-width:0}
+.entry-b p{margin:0 0 12px;max-width:68ch}
+.entry-b strong{font-weight:600}
+.stack{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:8px}
+.stack div{background:#f7f2e7;border:1px solid rgba(26,36,48,.18);padding:16px;border-radius:3px}
+.stack b{display:block;font-family:var(--f-display);font-size:1.5rem;font-weight:800;text-transform:uppercase;line-height:1}
+.stack span{display:block;font-size:.9rem;margin-top:6px;color:#3a4652}
+.stack .mono{margin-bottom:8px;display:block;color:var(--pen)}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:14px}
+.who>div{padding:18px;border:1px solid rgba(26,36,48,.25);border-radius:3px;background:#f7f2e7}
+.who>div:nth-child(2){background:#fff7e8;border-color:var(--pen);box-shadow:4px 4px 0 var(--pen)}
+.who b{display:block;font-family:var(--f-display);font-weight:800;font-size:1.6rem;text-transform:uppercase;line-height:1;margin:6px 0 10px}
+.who .mono{color:var(--pen)}
+.who p{margin:0 0 8px;font-size:.93rem}
+.who ul{margin:0;padding-left:18px;font-size:.9rem;display:grid;gap:6px}
+.who em{font-style:normal;font-family:var(--f-mono);font-size:.78rem;color:var(--stamp)}
+.seo-map{list-style:none;margin:14px 0 0;padding:6px 20px;background:#f7f2e7;border:1px solid rgba(26,36,48,.18);border-radius:3px}
+.seo-map li{display:grid;grid-template-columns:minmax(0,15rem) minmax(0,13rem) minmax(0,1fr);gap:4px 18px;padding:9px 0;border-bottom:1px dashed rgba(26,36,48,.15);align-items:baseline}
+.seo-map li:last-child{border-bottom:0}
+.log .seo-map code{font-family:var(--f-mono);font-size:.74rem;background:none;padding:0;overflow-wrap:anywhere}
+.seo-map .sch{font-family:var(--f-mono);font-size:.64rem;letter-spacing:.04em;color:var(--pen)}
+.seo-map em{font-family:var(--f-serif);font-size:1.02rem;color:#3a4652}
+.sitemap{list-style:none;margin:0;padding:10px 20px;background:#f7f2e7;border:1px solid rgba(26,36,48,.18);border-radius:3px}
+.sitemap li{display:grid;grid-template-columns:minmax(0,19rem) minmax(0,1fr);gap:4px 20px;padding:7px 0;border-bottom:1px dashed rgba(26,36,48,.15)}
+.sitemap li:last-child{border-bottom:0}
+.log .sitemap code{font-family:var(--f-mono);font-size:.78rem;background:none;padding:0;overflow-wrap:anywhere}
+.sitemap span{font-size:.88rem;color:#5c6773}
+.diagram{overflow-x:auto;background:#f7f2e7;border:1px solid rgba(26,36,48,.18);border-radius:3px;padding:10px}
+.diagram svg{display:block;min-width:820px;width:100%;height:auto}
+.flow,.flow-sat{display:none}
+.flow{list-style:none;margin:0;padding:0;gap:22px}
+.flow li{position:relative;background:#f7f2e7;border:1.5px solid var(--pinkish);border-radius:3px;padding:10px 14px;display:grid;gap:2px}
+.flow li.hl{background:#ffd9c9}
+.flow li b{font-family:var(--f-mono);font-size:.8rem;font-weight:500}
+.flow li span{font-size:.85rem;color:#5c6773}
+.flow li+li::before{content:"↓";position:absolute;top:-21px;left:18px;color:var(--pen);font-weight:700}
+.flow-sat{margin-top:14px;color:var(--stamp)!important;line-height:1.7}
+table.costs{width:100%;border-collapse:collapse;font-size:.95rem;font-variant-numeric:tabular-nums}
+.tbl{overflow-x:auto}
+table.costs th{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;text-align:left;color:#5c6773;font-weight:400;padding:8px 12px 8px 0;border-bottom:1.5px solid var(--pinkish)}
+table.costs td{padding:11px 12px 11px 0;border-bottom:1px solid rgba(26,36,48,.15);vertical-align:top}
+table.costs td:last-child,table.costs th:last-child{text-align:right;white-space:nowrap}
+table.costs tr.total td{border-bottom:0;border-top:2px solid var(--pinkish);font-weight:600;font-size:1.1rem}
+table.costs tr.total td:last-child{font-family:var(--f-display);font-size:2rem;color:var(--pen)}
+.vs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:22px}
+.vs div{padding:14px 16px;border:1px dashed rgba(26,36,48,.4);border-radius:3px;font-size:.9rem;background:#f3ecdd}
+.vs b{display:block;font-family:var(--f-mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;color:var(--stamp)}
+.checks{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.checks li{position:relative;padding-left:32px;max-width:72ch}
+.checks li::before{content:"";position:absolute;left:0;top:4px;width:14px;height:14px;border:1.5px solid var(--pinkish);border-radius:2px}
+.log code{font-family:var(--f-mono);font-size:.82em;background:rgba(26,36,48,.07);padding:1px 5px;border-radius:2px;overflow-wrap:anywhere}
+.checks li.warn::before{border-color:var(--stamp);background:repeating-linear-gradient(45deg,var(--stamp) 0 2px,transparent 2px 5px)}
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;border:1px solid rgba(26,36,48,.3);border-radius:3px;overflow:hidden}
+.phases div{padding:18px;border-right:1px solid rgba(26,36,48,.2);background:#f7f2e7}
+.phases div:last-child{border-right:0}
+.phases b{font-family:var(--f-display);font-weight:800;font-size:1.6rem;text-transform:uppercase;display:block;line-height:1}
+.phases .mono{color:var(--pen)}
+.phases ul{margin:10px 0 0;padding-left:18px;font-size:.9rem}
+.log-end{margin-top:72px;padding-top:18px;border-top:2px solid var(--pinkish);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+
+/* selector de titulación (compartido) */
+.cert{display:flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:999px;background:rgba(2,12,24,.45);box-shadow:inset 0 0 0 1px rgba(143,216,234,.2);width:fit-content;max-width:100%}
+.cert button{border:0;background:none;color:var(--foam-2);font-family:var(--f-mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;padding:9px 13px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+.cert button[aria-pressed="true"]{background:var(--tail);color:var(--ink)}
+.cert button:hover:not([aria-pressed="true"]){color:var(--foam)}
+
+/* carta náutica */
+.puntos{background:linear-gradient(to bottom,var(--d10),var(--d18))}
+.chart-head{display:flex;justify-content:space-between;align-items:end;gap:18px;flex-wrap:wrap;margin-top:40px}
+.chart-head .mono{color:var(--foam-2)}
+.chart-wrap{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;margin-top:18px;align-items:start}
+.chart{position:relative;border-radius:4px;overflow:hidden;background:#0a3550;box-shadow:inset 0 0 0 1px rgba(143,216,234,.25)}
+.chart svg{display:block;width:100%;height:auto}
+.chart .site{cursor:pointer;transition:opacity .3s}
+.chart .site:focus{outline:none}
+.chart .site:focus-visible .ring,.chart .site.sel .ring{stroke:#fff;stroke-width:2.5}
+.chart .site.dim{opacity:.28}
+.chart-note{position:absolute;left:12px;bottom:10px;font-family:var(--f-mono);font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(239,250,251,.55)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--foam-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.site-panel{display:grid;gap:14px}
+.site-card{background:rgba(2,12,24,.5);border-radius:4px;padding:22px;box-shadow:inset 0 0 0 1px rgba(143,216,234,.2)}
+.site-card .coords{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.06em;color:var(--foam-3)}
+.site-card h3{font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:2.4rem;line-height:.9;margin:8px 0 12px}
+.site-card dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0 0 12px;font-size:.92rem}
+.site-card dt{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tail);padding-top:4px}
+.site-card dd{margin:0;color:var(--foam-2)}
+.site-card p{margin:0;color:var(--foam)}
+.site-card .verdict{margin-top:14px;padding:10px 12px;border-radius:4px;font-size:.9rem;background:rgba(31,194,140,.14);color:#9ff0cf}
+.site-card .verdict.no{background:rgba(255,106,61,.15);color:#ffc2ad}
+.site-list{list-style:none;margin:0;padding:0;display:grid;gap:2px;border-radius:4px;overflow:hidden}
+.site-list button{width:100%;display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;text-align:left;border:0;cursor:pointer;background:rgba(2,12,24,.3);color:var(--foam);padding:10px 12px;font:inherit;font-size:.9rem;transition:background .2s,opacity .2s}
+.site-list button:hover,.site-list button[aria-current="true"]{background:rgba(2,12,24,.6)}
+.site-list button.dim{opacity:.45}
+.site-list .num{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-mono);font-size:.62rem;color:var(--ink);font-weight:500}
+.site-list .d{font-family:var(--f-mono);font-size:.62rem;color:var(--foam-3);white-space:nowrap}
+
+/* ¿puedo ir? */
+.puedo{margin-top:72px}
+.puedo-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 40px;align-items:end}
+.puedo-head h3{margin:0;font-family:var(--f-display);font-weight:900;font-size:clamp(2.2rem,5vw,3.6rem);line-height:.9;text-transform:uppercase}
+.puedo-head h3 .serif{font-family:var(--f-serif);font-weight:400;font-style:italic;text-transform:none}
+.ficha{margin-top:24px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px 32px;align-items:center;padding:20px 22px;border-radius:4px;background:rgba(143,216,234,.07);box-shadow:inset 0 0 0 1px rgba(143,216,234,.22)}
+.ficha label{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tail);display:block;margin-bottom:8px}
+.dives{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center}
+.dives output{font-family:var(--f-display);font-weight:800;font-size:2.6rem;line-height:1;min-width:3ch;font-variant-numeric:tabular-nums}
+.dives input[type=range]{width:100%;accent-color:var(--coral)}
+.demo-note{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.06em;color:var(--foam-3);margin-top:10px}
+.trips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}
+.tcard{display:flex;flex-direction:column;gap:12px;padding:20px;border-radius:4px;background:#07192b;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);transition:opacity .3s}
+.tcard.no .tbody{opacity:.55}
+.ttop{display:flex;justify-content:space-between;gap:10px;align-items:start}
+.tdate{font-family:var(--f-mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--foam-2)}
+.tcard h4{margin:0;font-family:var(--f-display);font-weight:800;font-size:1.9rem;line-height:.95;text-transform:uppercase}
+.tmeta{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;font-size:.84rem;color:var(--foam-2)}
+.tmeta b{display:block;font-family:var(--f-mono);font-size:.56rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--foam-3)}
+.tprice{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-top:1px solid rgba(255,255,255,.1);padding-top:12px;margin-top:auto}
+.tprice b{font-family:var(--f-display);font-weight:900;font-size:1.8rem}
+.tprice span{font-family:var(--f-mono);font-size:.58rem;letter-spacing:.06em;color:var(--foam-3);text-align:right}
+.pill{flex-shrink:0;font-family:var(--f-mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:rgba(31,194,140,.18);color:#8ff0c8}
+.pill.no{background:rgba(255,106,61,.18);color:#ffb59d}
+.tgap{font-size:.86rem;color:#ffc9b6;margin:0}
+.tgap a{color:var(--sand)}
+.wa-banner{margin-top:28px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px 22px;align-items:center;padding:18px 22px;border-radius:4px;background:#0f3b2e;box-shadow:inset 0 0 0 1px rgba(37,211,102,.35)}
+.wa-banner p{margin:0;color:var(--foam-2)}
+.wa-banner p strong{color:var(--foam);font-weight:600}
+.wa-dot{width:44px;height:44px;border-radius:50%;background:#25d366;display:grid;place-items:center}
+.btn-wa{background:#25d366;color:#062315}
+
+/* responsive */
+@media (max-width:980px){
+  .nav-links{display:none}
+  .hero-under,.bases-grid,.feature,.contact-grid,.log-intro{grid-template-columns:1fr}
+  .hero-ctas{justify-content:flex-start}
+  .course{grid-template-columns:1fr;gap:10px}
+  .course .agency{justify-content:flex-start}
+  .pro{margin-left:0;grid-template-columns:1fr}
+  .fauna-grid>*{grid-column:span 12}
+  .f3,.f4,.f5{grid-column:span 6}
+  .trip{grid-template-columns:70px 1fr;}
+  .trip p,.trip .chip{grid-column:2}
+  .trip .chip{justify-self:start}
+  .entry{grid-template-columns:1fr}
+  .stamp{justify-self:start}
+  .feature-art{min-height:340px}
+  .chart-wrap,.puedo-head,.ficha{grid-template-columns:1fr}
+  .trips{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .wa-banner{grid-template-columns:auto 1fr}
+  .wa-banner .btn{grid-column:1/-1;justify-self:start}
+}
+@media (max-width:620px){
+  .scale{grid-template-columns:64px 1fr;gap:0 14px}
+  .course-depth{font-size:2rem}
+  .f3,.f4,.f5{grid-column:span 12}
+  .incl,.form-row{grid-template-columns:1fr}
+  .sunset-card{grid-template-columns:1fr}
+  .hud{left:12px;right:12px;width:auto;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;padding:10px 14px}
+  .hud-top{display:none}
+  .hud-depth{margin:0}
+  .hud-depth b{font-size:1.8rem}
+  .hud-grid{border:0;padding:0}
+  .hud-alarm{grid-column:1/-1;margin-top:0}
+  .btn{padding:12px 16px}
+  .nav .btn{padding:10px 14px;white-space:nowrap}
+  .nav-extra{display:none}
+  .cert{display:grid;grid-template-columns:1fr 1fr;width:100%;border-radius:14px}
+  .chart-head>div{width:100%}
+  .cert button{padding:9px 8px;font-size:.6rem;border-radius:10px}
+  .chart-note{position:static;display:block;padding:8px 12px;background:#072a40}
+  .site-card h3{font-size:2rem}
+  .trips{grid-template-columns:1fr}
+  .depth-tag{flex-wrap:wrap;gap:4px 12px}
+  .depth-tag b{font-size:2.4rem}
+  .wl h1 em{-webkit-text-stroke-width:2px}
+  .wl .wl-under em{-webkit-text-stroke-width:2px}
+  .surface-wave{height:28px}
+  .hud.hero-on{opacity:0;transform:translateY(20px);pointer-events:none}
+  .entry-b{border-top:0;padding-top:0}
+  .phases div{border-right:0;border-bottom:1px solid rgba(26,36,48,.2)}
+  .phases div:last-child{border-bottom:0}
+  .sitemap li{grid-template-columns:1fr}
+  .seo-map li{grid-template-columns:1fr}
+  .diagram{display:none}
+  .flow{display:grid}
+  .flow-sat{display:block}
+  table.costs thead{display:none}
+  table.costs tr{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:10px 0;border-bottom:1px solid rgba(26,36,48,.15)}
+  table.costs td{border:0;padding:0}
+  table.costs td:nth-child(2){grid-column:1/-1;grid-row:2;font-size:.85rem;color:#5c6773}
+  table.costs tr.total{border-top:2px solid var(--pinkish);border-bottom:0;margin-top:6px}
+  table.costs tr.total td{border:0}
+  table.costs tr.total td:nth-child(2){font-weight:400}
+  .base{min-height:340px}
+  .wl h1,.wl .wl-under{font-size:clamp(4.4rem,30vw,9rem)}
+  .brand-mark{width:40px;height:40px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="water" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.06" numOctaves="2" seed="4" result="n">
+        <animate attributeName="baseFrequency" dur="7s" values="0.012 0.06;0.016 0.045;0.012 0.06" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="9"/>
+    </filter>
+    <symbol id="tail" viewBox="0 0 200 120">
+      <path d="M100 118 C97 92 96 74 98 58 C82 40 46 30 4 34 C30 14 70 6 100 30 C130 6 170 14 196 34 C154 30 118 40 102 58 C104 74 103 92 100 118Z"/>
+    </symbol>
+    <symbol id="manta" viewBox="0 0 240 150">
+      <path d="M0 62 C40 30 80 18 104 40 C112 34 128 34 136 40 C160 18 200 30 240 62 C198 60 162 72 138 92 L126 104 L122 150 L118 104 L102 92 C78 72 42 60 0 62Z"/>
+    </symbol>
+    <symbol id="fish" viewBox="0 0 60 14">
+      <path d="M0 7 C10 1 38 1 50 7 C38 13 10 13 0 7Z M50 7 L60 1 L57 7 L60 13Z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="ribbon" role="note">
+  <span><b>PROPUESTA v0</b> · Mockup de la home para Dive Clif · las fotos son marcadores, irán las de Instagram en alta</span>
+  <a href="#bitacora">Ir al plan técnico y costes ↓</a>
+</div>
+
+<main>
+<header class="hero" id="superficie" data-depth="0" data-depth-end="3">
+  <div class="sky-clip"><div class="sun"></div></div>
+  <div class="sun-reflect"></div>
+  <div class="rays"></div>
+  <svg class="wave" viewBox="0 0 1200 26" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 13 Q50 0 100 13 T200 13 T300 13 T400 13 T500 13 T600 13 T700 13 T800 13 T900 13 T1000 13 T1100 13 T1200 13 V26 H0Z" fill="#1e9db0"/>
+    <path d="M0 13 Q50 0 100 13 T200 13 T300 13 T400 13 T500 13 T600 13 T700 13 T800 13 T900 13 T1000 13 T1100 13 T1200 13" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/>
+  </svg>
+  <div class="bubbles" id="bubbles"></div>
+
+  <nav class="nav" aria-label="Principal">
+    <a class="brand" href="#superficie">
+      <span class="brand-mark"><svg width="30" height="20" fill="#8fd8ea" aria-hidden="true"><use href="#tail"/></svg></span>
+      <span class="brand-name">DIVE CLIF</span>
+    </a>
+    <div class="nav-links">
+      <a href="#viajes">Viajes</a><a href="#puntos">Puntos de inmersión</a><a href="#cursos">Cursos</a><a href="#bases">Bases</a><a href="#fauna">Cuaderno</a>
+    </div>
+    <a class="btn btn-ink" href="#contacto">Reserva<span class="nav-extra"> tu plaza</span></a>
+  </nav>
+
+  <div class="wrap">
+    <div class="hero-eyebrow mono">
+      <span>Pelayo · IDC Staff Instructor PADI</span><span>Divemaster Instructor SSI</span><span>Cabo de Palos ⇄ Madrid</span>
+    </div>
+    <div class="wl" id="wl">
+      <h1>Dive<br><em>Clif</em></h1>
+      <div class="wl-under" aria-hidden="true">Dive<br><em>Clif</em></div>
+    </div>
+    <div class="hero-under">
+      <p><strong>Cursos de buceo de todos los niveles y viajes a los mejores fondos del planeta.</strong> Con Pelayo, del Mediterráneo de Cabo de Palos al azul de Farasan Banks, siempre en grupo pequeño.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-coral" href="#viajes">Próximos viajes</a>
+        <a class="btn btn-ghost" href="#cursos">Hazte buceador</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="sec bases" id="bases" data-depth="3" data-depth-end="8">
+  <div class="wrap">
+    <div class="depth-tag"><b>−5 m</b> Parada de seguridad · dos bases</div>
+    <h2>Mediterráneo <span class="serif">y</span> piscina de 20 m</h2>
+    <p class="lede">Pelayo reparte el año entre la costa de Murcia y Madrid. En la web cada base tiene su página con lo que se puede hacer allí, calendario y cómo llegar.</p>
+    <div class="bases-grid">
+      <article class="base base-cdp">
+        <svg class="base-art" viewBox="0 0 600 440" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <g fill="rgba(4,19,29,.35)" id="school"></g>
+          <path d="M0 400 Q120 360 240 390 T480 380 T600 395 V440 H0Z" fill="rgba(243,220,184,.25)"/>
+        </svg>
+        <div class="coord mono"><span>37°38′N 0°41′W</span><span>Reserva Marina Islas Hormigas</span></div>
+        <h3>Cabo de<br>Palos</h3>
+        <ul>
+          <li>Bajo de Dentro, Hormigas y los pecios de la zona</li>
+          <li>Bancos de barracudas, espetones y meros</li>
+          <li>Day trips y fines de semana de club</li>
+        </ul>
+      </article>
+      <article class="base base-mad">
+        <div class="coord mono"><span>40°25′N 3°42′W</span><span>Piscina de 20 m</span></div>
+        <h3>Madrid</h3>
+        <ul>
+          <li>Bautismos para probar sin compromiso</li>
+          <li>Parte teórica y confinadas de los cursos</li>
+          <li>Entrenamientos y talleres entre viajes</li>
+        </ul>
+      </article>
+    </div>
+    <div class="sunset-card">
+      <span class="big">The Sunset</span>
+      <p><strong>Todos los viernes al atardecer en Cabo de Palos</strong>, con Naranjito Buceo. Inmersión por los arenales para buceadores certificados.</p>
+      <a class="btn btn-ink" href="#contacto">Apúntate</a>
+    </div>
+  </div>
+</section>
+
+<section class="sec puntos" id="puntos" data-depth="8" data-depth-end="12">
+  <div class="wrap">
+    <div class="depth-tag"><b>−10 m</b> Reserva Marina de Cabo de Palos · Islas Hormigas</div>
+    <h2>Carta de <span class="serif">los</span> puntos de inmersión</h2>
+    <p class="lede">Cada punto tiene su página, con profundidad, nivel, corriente y fauna. Elige tu titulación y la carta te muestra a qué puntos puedes bajar.</p>
+    <div class="chart-head">
+      <div><span class="mono">Tu titulación</span>
+        <div class="cert" role="group" aria-label="Tu titulación">
+          <button type="button" data-cert="0" aria-pressed="false">Sin titulación</button>
+          <button type="button" data-cert="1" aria-pressed="false">Open Water</button>
+          <button type="button" data-cert="2" aria-pressed="true">Advanced</button>
+          <button type="button" data-cert="3" aria-pressed="false">Deep · 40 m</button>
+        </div>
+      </div>
+      <span class="mono">9 puntos · 4 pecios</span>
+    </div>
+    <div class="chart-wrap">
+      <div>
+        <div class="chart">
+          <svg id="chart" viewBox="0 0 800 676" role="img" aria-label="Carta náutica de Cabo de Palos con los puntos de inmersión de la reserva marina">
+            <defs>
+              <pattern id="landtex" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#d8c29b"/><circle cx="1.5" cy="1.5" r=".7" fill="#c4ab7f"/></pattern>
+              <radialGradient id="shoal" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#1b6f8f"/><stop offset="1" stop-color="#0a3550" stop-opacity="0"/></radialGradient>
+            </defs>
+            <rect width="800" height="676" fill="#0a3550"/>
+            <path d="M0 0 L268 0 L372 468 L330 455 L250 420 L0 380 Z" fill="#14607f"/>
+            <ellipse cx="612" cy="335" rx="140" ry="80" transform="rotate(-32 612 335)" fill="url(#shoal)"/>
+            <g fill="none" stroke="rgba(191,243,255,.28)" stroke-width="1">
+              <path d="M300 0 C330 150 380 330 432 470 C446 510 420 540 370 560 C300 590 230 630 170 676"/>
+              <path d="M430 0 C470 120 560 200 700 230 C790 250 790 430 690 520 C620 580 480 620 400 676"/>
+              <path d="M640 0 C700 60 760 110 800 130"/>
+              <ellipse cx="612" cy="335" rx="98" ry="44" transform="rotate(-32 612 335)"/>
+              <ellipse cx="612" cy="335" rx="58" ry="22" transform="rotate(-32 612 335)" stroke-dasharray="3 4"/>
+            </g>
+            <g font-family="Martian Mono, monospace" font-size="9" fill="rgba(191,243,255,.55)">
+              <text x="438" y="505">20</text><text x="742" y="360">50</text><text x="765" y="112">100</text><text x="688" y="286">10</text>
+            </g>
+            <g stroke="rgba(191,243,255,.12)" stroke-width="1">
+              <path d="M0 113 H800 M0 300 H800 M0 488 H800 M59 0 V676 M207 0 V676 M356 0 V676 M504 0 V676 M652 0 V676"/>
+            </g>
+            <g font-family="Martian Mono, monospace" font-size="9" fill="rgba(239,250,251,.5)">
+              <text x="6" y="109">37°42′N</text><text x="6" y="296">37°40′N</text><text x="6" y="484">37°38′N</text>
+              <text x="210" y="668">0°44′W</text><text x="507" y="668">0°40′W</text><text x="655" y="668">0°38′W</text>
+            </g>
+            <path d="M455 232 L772 190 L792 424 L470 522 Z" fill="none" stroke="#ff6a3d" stroke-width="1.4" stroke-dasharray="7 5" opacity=".75"/>
+            <text x="468" y="222" font-family="Martian Mono, monospace" font-size="9.5" letter-spacing="1.5" fill="#ff9a7a" transform="rotate(-7.5 468 222)">RESERVA MARINA · ISLAS HORMIGAS</text>
+            <path d="M0 380 L250 420 L330 455 L372 468 L397 480 L392 492 L360 505 L318 532 L278 560 L228 592 L150 640 L100 676 L0 676 Z" fill="url(#landtex)" stroke="#8a7350" stroke-width="1"/>
+            <path d="M268 0 L292 0 L400 476 L372 468 Z" fill="url(#landtex)" stroke="#8a7350" stroke-width="1"/>
+            <ellipse cx="552" cy="382" rx="9" ry="5" fill="url(#landtex)" stroke="#8a7350"/>
+            <ellipse cx="569" cy="372" rx="3.5" ry="2.5" fill="url(#landtex)" stroke="#8a7350"/>
+            <g transform="translate(397 482)"><circle r="4" fill="#ffe2b8"/><path d="M0 -12 V-7 M0 7 V12 M-12 0 H-7 M7 0 H12 M-8 -8 L-5 -5 M5 5 L8 8 M-8 8 L-5 5 M5 -5 L8 -8" stroke="#ffe2b8" stroke-width="1.3"/></g>
+            <g font-family="Instrument Serif, Georgia, serif" font-style="italic" fill="rgba(239,250,251,.7)">
+              <text x="70" y="200" font-size="26">Mar Menor</text>
+              <text x="560" y="600" font-size="30">Mediterráneo</text>
+            </g>
+            <g font-family="Martian Mono, monospace" font-size="9.5" letter-spacing="1.5" fill="#5e4a2c">
+              <text x="120" y="560">CARTAGENA ↙</text>
+              <text x="262" y="522">CABO DE PALOS</text>
+              <text transform="translate(300 250) rotate(77.5)">LA MANGA</text>
+            </g>
+                        <g transform="translate(722 76)" fill="none" stroke="rgba(239,250,251,.6)">
+              <circle r="30"/><circle r="22" stroke-dasharray="2 3"/>
+              <path d="M0 -38 L6 0 L0 38 L-6 0 Z" fill="rgba(239,250,251,.15)"/>
+              <path d="M0 -38 L6 0 L-6 0 Z" fill="#ff6a3d" stroke="none"/>
+              <text y="-44" text-anchor="middle" font-family="Martian Mono, monospace" font-size="10" fill="rgba(239,250,251,.8)" stroke="none">N</text>
+            </g>
+            <g transform="translate(40 620)" font-family="Martian Mono, monospace" font-size="9" fill="rgba(239,250,251,.6)">
+              <path d="M0 0 H101 M0 -4 V4 M50.5 -3 V3 M101 -4 V4" stroke="rgba(239,250,251,.6)"/>
+              <text x="0" y="-9">0</text><text x="96" y="-9">2 km</text>
+            </g>
+            <g id="sites"></g>
+          </svg>
+          <span class="chart-note">Fichas de ejemplo · posiciones y profundidades orientativas</span>
+        </div>
+        <div class="legend" aria-hidden="true">
+          <span><i style="background:#8fd8ea"></i>Sin titulación / Open Water</span>
+          <span><i style="background:#5aa9ff"></i>Advanced</span>
+          <span><i style="background:#f7b955"></i>Deep</span>
+          <span><i style="background:#ff6a3d"></i>Técnico</span>
+          <span>◆ Pecio</span>
+        </div>
+      </div>
+      <div class="site-panel">
+        <article class="site-card" id="site-card" aria-live="polite"></article>
+        <ol class="site-list" id="site-list"></ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec cursos" id="cursos" data-depth="12" data-depth-end="40">
+  <div class="wrap">
+    <div class="depth-tag"><b>−12 → −40 m</b> Cada curso, en su profundidad</div>
+    <h2>¿Hasta dónde <span class="serif">quieres</span> bajar?</h2>
+    <p class="lede">Los cursos se ordenan por la profundidad máxima que certifican. Al bajar la página, el ordenador de buceo de la esquina te dice dónde estás.</p>
+    <div class="scale">
+      <div class="course-depth">12 m<small>máx.</small></div>
+      <article class="course">
+        <h3>Bautismo<br>de buceo</h3>
+        <p>Primera respiración bajo el agua. En la piscina de 20 m en Madrid o en el mar en Cabo de Palos. Sin experiencia previa.</p>
+        <div class="agency"><span class="chip" style="color:var(--tail)">PADI DSD</span><span class="chip" style="color:var(--tail)">SSI Try Scuba</span></div>
+      </article>
+      <div class="course-depth">18 m<small>máx.</small></div>
+      <article class="course">
+        <h3>Open Water<br>Diver</h3>
+        <p>Tu licencia para bucear en cualquier parte del mundo. Teoría online, confinadas en piscina y cuatro inmersiones en mar abierto.</p>
+        <div class="agency"><span class="chip" style="color:var(--tail)">PADI</span><span class="chip" style="color:var(--tail)">SSI</span></div>
+      </article>
+      <div class="course-depth">30 m<small>máx.</small></div>
+      <article class="course">
+        <h3>Advanced<br>Open Water</h3>
+        <p>Cinco inmersiones de aventura: profunda, navegación con brújula, pecio, nocturna. El curso que abre la puerta a los viajes.</p>
+        <div class="agency"><span class="chip" style="color:var(--tail)">PADI</span><span class="chip" style="color:var(--pecio)">Pecios</span></div>
+      </article>
+      <div class="course-depth">40 m<small>máx.</small></div>
+      <article class="course">
+        <h3>Deep<br>Diver</h3>
+        <p>Planificación, narcosis y gestión de gas para llegar al límite recreativo con seguridad.</p>
+        <div class="agency"><span class="chip" style="color:var(--tail)">Especialidad</span></div>
+      </article>
+    </div>
+    <div class="pro">
+      <div><span class="mono" style="color:var(--tail)">Línea profesional</span><h4>Rescue Diver</h4><p>Prevención y gestión de incidentes. El curso que más cambia cómo buceas.</p></div>
+      <div><span class="mono" style="color:var(--tail)">Línea profesional</span><h4>Divemaster</h4><p>Primer nivel profesional, con Pelayo como Divemaster Instructor SSI.</p></div>
+      <div><span class="mono" style="color:var(--tail)">Línea profesional</span><h4>IDC Staff</h4><p>Acompañamiento en el camino a instructor PADI.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec viajes" id="viajes" data-depth="40" data-depth-end="30">
+  <div class="wrap">
+    <div class="depth-tag"><b>Azul</b> Viajes nacionales e internacionales</div>
+    <h2>Donde México <span class="serif">empieza</span></h2>
+    <article class="feature">
+      <div class="feature-art">
+        <svg viewBox="0 0 600 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <g fill="rgba(2,12,24,.55)"><use href="#manta" x="150" y="120" width="330" height="206"/></g>
+          <g fill="rgba(2,12,24,.3)"><use href="#manta" x="40" y="330" width="140" height="88"/><use href="#manta" x="430" y="60" width="110" height="69"/></g>
+          <g id="school2" fill="rgba(143,216,234,.28)"></g>
+        </svg>
+        <div class="species"><span>Lobos marinos</span><span>Mobulas</span><span>Marlin</span><span>Ballena jorobada</span></div>
+      </div>
+      <div class="feature-body">
+        <div class="feature-dates"><span class="d">05—14</span><span class="mono">Diciembre · 10 días</span></div>
+        <h3>Baja<br>California</h3>
+        <p class="quote">“Un viaje que no se cuenta… se vive.”</p>
+        <ul class="incl">
+          <li>Inmersiones desde barco</li><li>Salidas de avistamiento</li>
+          <li>Botellas de 12 l y plomos</li><li>Alojamiento en régimen AD</li>
+        </ul>
+        <div class="price"><span class="mono">Desde</span><b>2.250 €</b><span class="mono" style="color:var(--foam-3)">Organiza Te Moana Expeditions</span></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-coral" href="#contacto">Reservar plaza</a><a class="btn btn-ghost" href="#viajes">Ver itinerario</a></div>
+      </div>
+    </article>
+
+    <div class="puedo" id="puedo-ir">
+      <div class="puedo-head">
+        <h3>¿Puedo ir <span class="serif">a este</span> viaje?</h3>
+        <span class="mono" style="color:var(--foam-2)">Próximas salidas</span>
+      </div>
+      <div class="ficha">
+        <div><label>Tu titulación</label>
+          <div class="cert" role="group" aria-label="Tu titulación">
+          <button type="button" data-cert="0" aria-pressed="false">Sin titulación</button>
+          <button type="button" data-cert="1" aria-pressed="false">Open Water</button>
+          <button type="button" data-cert="2" aria-pressed="true">Advanced</button>
+          <button type="button" data-cert="3" aria-pressed="false">Deep · 40 m</button>
+        </div>
+        </div>
+        <div><label for="dives">Inmersiones registradas</label>
+          <div class="dives"><output id="dives-out" for="dives">25</output><input type="range" id="dives" min="0" max="150" step="5" value="25"></div>
+        </div>
+      </div>
+      <p class="demo-note">Viajes, fechas y requisitos de ejemplo para la demo · los viajes internacionales los organiza Te Moana Expeditions</p>
+      <div class="trips" id="trips"></div>
+      <div class="wa-banner">
+        <span class="wa-dot" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="#062315"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3Z"/></svg></span>
+        <p><strong>Los viajes nuevos salen primero en Dive Clif Adventures,</strong> la comunidad de WhatsApp. Plazas, fechas y fotos de cada salida.</p>
+        <a class="btn btn-wa" href="https://chat.whatsapp.com/BEQJLLbdGcC67MPE7YKq0f" target="_blank" rel="noopener">Unirme en WhatsApp →</a>
+      </div>
+    </div>
+
+    <div class="logbook">
+      <div class="logbook-head">
+        <h3>Bitácora de viajes</h3>
+        <div class="filters" role="group" aria-label="Filtrar viajes">
+          <button class="chip" style="color:var(--foam)" aria-pressed="true" data-f="all">Todos</button>
+          <button class="chip" style="color:var(--viaje)" aria-pressed="false" data-f="viaje">Internacional</button>
+          <button class="chip" style="color:var(--daytrip)" aria-pressed="false" data-f="daytrip">Day trip</button>
+          <button class="chip" style="color:var(--pecio)" aria-pressed="false" data-f="pecio">Pecios</button>
+        </div>
+      </div>
+      <div class="trip" data-t="viaje"><span class="yr">2026</span><h4>Farasan Banks</h4><p>Arabia Saudí · tiburones en el azul y seis delfines en una sola inmersión</p><span class="chip" style="color:var(--viaje)">Internacional</span></div>
+      <div class="trip" data-t="viaje"><span class="yr">—</span><h4>Maldivas</h4><p>Vida a bordo entre atolones, mantas y tiburones de arrecife</p><span class="chip" style="color:var(--viaje)">Internacional</span></div>
+      <div class="trip" data-t="viaje"><span class="yr">2025</span><h4>Gran Canaria</h4><p>Nacional · Atlántico, rayas y fondos volcánicos</p><span class="chip" style="color:var(--viaje)">Nacional</span></div>
+      <div class="trip" data-t="viaje"><span class="yr">2024</span><h4>Tenerife</h4><p>Nacional · tortugas y paredes de lava</p><span class="chip" style="color:var(--viaje)">Nacional</span></div>
+      <div class="trip" data-t="daytrip"><span class="yr">Todo el año</span><h4>Day trips</h4><p>Salidas de un día a Cabo de Palos desde Madrid</p><span class="chip" style="color:var(--daytrip)">Day trip</span></div>
+      <div class="trip" data-t="pecio"><span class="yr">Todo el año</span><h4>Ruta de pecios</h4><p>Pecios del Mediterráneo, casi ocultos entre gorgonias</p><span class="chip" style="color:var(--pecio)">Pecios</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec fauna" id="fauna" data-depth="30" data-depth-end="15">
+  <div class="wrap">
+    <div class="depth-tag"><b>−25 m</b> Ascenso lento · cuaderno de fauna</div>
+    <h2>¿Sabías <span class="serif">que</span>…?</h2>
+    <p class="lede">Los posts divulgativos de Instagram se convierten en artículos del blog. Posicionan en Google y dan a la web un motivo para volver.</p>
+    <div class="fauna-grid">
+      <article class="fcard f1">
+        <svg class="bg" viewBox="0 0 700 380" preserveAspectRatio="xMidYMid slice" aria-hidden="true" id="jelly"></svg>
+        <span class="mono" style="color:var(--fauna)">Fauna · Mediterráneo</span>
+        <h4>Medusas: más antiguas que los dinosaurios</h4>
+        <p class="sci">Pelagia noctiluca · Cotylorhiza tuberculata</p>
+      </article>
+      <article class="fcard f2" style="background:linear-gradient(160deg,#0f6d8c,#06283f)">
+        <svg class="bg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g id="school3" fill="rgba(191,243,255,.35)"></g></svg>
+        <span class="mono" style="color:var(--fauna)">Fauna · Cabo de Palos</span>
+        <h4>El banco de espetones</h4>
+        <p class="sci">Sphyraena sphyraena</p>
+      </article>
+      <article class="fcard f3" style="background:linear-gradient(200deg,#155e75,#0a2a3e)">
+        <span class="mono" style="color:var(--fauna)">Fauna</span>
+        <h4>Pez ballesta</h4>
+        <p>No pide permiso: impone respeto. Colores que hipnotizan y un carácter que sorprende.</p>
+      </article>
+      <article class="fcard f4" style="background:linear-gradient(200deg,#8a6b45,#2b2a2a)">
+        <span class="mono" style="color:var(--sand)">Fauna · arenales</span>
+        <h4>Raya pastinaca</h4>
+        <p>Se desliza por el fondo arenoso en busca de comida. Mírala, pero sin agobiarla.</p>
+      </article>
+      <article class="fcard f5">
+        <span class="mono">Taller · 3.ª edición en marcha</span>
+        <h4>Biología marina</h4>
+        <p>Corales y nudibranquios. Fin de semana en La Herradura (Granada) con buceo y charlas.</p>
+        <a class="btn btn-ink" href="#contacto" style="justify-self:start;margin-top:8px;width:fit-content">Avísame</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sec contacto" id="contacto" data-depth="15" data-depth-end="3">
+  <div class="wrap">
+    <div class="depth-tag"><b>−5 m</b> Parada de seguridad · 3 minutos</div>
+    <h2>¿Te vienes <span class="serif">con</span> nosotros?</h2>
+    <div class="contact-grid">
+      <div class="channels">
+        <a class="channel" href="#contacto"><span><b>WhatsApp</b><span class="mono">Respuesta en el día</span></span><span class="mono">Abrir chat →</span></a>
+        <a class="channel" href="https://chat.whatsapp.com/BEQJLLbdGcC67MPE7YKq0f" target="_blank" rel="noopener"><span><b>Comunidad</b><span class="mono">Dive Clif Adventures</span></span><span class="mono">Unirme →</span></a>
+        <a class="channel" href="https://www.instagram.com/dive_clif/" target="_blank" rel="noopener"><span><b>Instagram</b><span class="mono">@dive_clif</span></span><span class="mono">Seguir →</span></a>
+        <div class="channel"><span><b>Email</b><span class="mono">hola@diveclif.es</span></span><span class="mono">propuesto</span></div>
+      </div>
+      <form class="form" id="form">
+        <div class="form-row">
+          <label for="f-name">Nombre<input id="f-name" name="name" autocomplete="name" value="Lucía"></label>
+          <label for="f-mail">Email<input id="f-mail" name="email" type="email" autocomplete="email" value="lucia@ejemplo.com"></label>
+        </div>
+        <label for="f-what">Me interesa
+          <select id="f-what" name="what"><option>Viaje a Baja California</option><option>Bautismo</option><option>Open Water</option><option>Advanced</option><option>The Sunset</option><option>Taller de biología marina</option></select>
+        </label>
+        <label for="f-level">Titulación actual
+          <select id="f-level" name="level"><option>Ninguna todavía</option><option>Open Water</option><option>Advanced</option><option>Rescue o superior</option></select>
+        </label>
+        <label for="f-msg">Mensaje<textarea id="f-msg" name="msg" rows="3">¿Quedan plazas para diciembre? Somos dos.</textarea></label>
+        <button class="btn btn-coral" type="submit" style="justify-self:start">Enviar consulta</button>
+        <div class="form-note" id="form-note" aria-live="polite"></div>
+      </form>
+    </div>
+
+    <div class="ig">
+      <a class="ig-cta" href="https://www.instagram.com/dive_clif/" target="_blank" rel="noopener">
+        <span class="mono">Visita nuestro Instagram</span>
+        <b>@dive_clif</b>
+        <span class="ig-sub">Fauna, viajes, ejercicios y el día a día en el agua →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer class="surface" data-depth="3" data-depth-end="0">
+  <div class="wrap surface-foot">
+    <a class="brand" href="#superficie"><span class="brand-mark"><svg width="30" height="20" fill="#8fd8ea" aria-hidden="true"><use href="#tail"/></svg></span><span class="brand-name">DIVE CLIF</span></a>
+    <span class="mono" style="color:var(--foam-2)">En superficie · aviso legal · privacidad · sin cookies de seguimiento</span>
+  </div>
+  <svg class="surface-wave" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 30 Q75 0 150 30 T300 30 T450 30 T600 30 T750 30 T900 30 T1050 30 T1200 30 V60 H0Z" fill="#efe7d6"/></svg>
+</footer>
+</main>
+
+<!-- ===================== PLAN TÉCNICO ===================== -->
+<section class="log" id="bitacora">
+  <div class="wrap">
+    <div class="log-intro">
+      <div>
+        <span class="mono">Cuaderno de bitácora · plan técnico</span>
+        <h2>Web estática, <i>coste casi cero</i> y sin nada que parchear.</h2>
+      </div>
+      <div class="stamp">Coste fijo<b>≈ 1 €/mes</b>solo el dominio</div>
+    </div>
+    <p style="margin-top:28px;font-size:1.12rem;max-width:68ch">La web no necesita servidor ni base de datos: son páginas de viajes, cursos y un blog que cambian unas pocas veces al mes. Se genera como HTML estático y se sirve desde una CDN gratuita. La única parte dinámica es el formulario de contacto, que va con una función serverless. Reserva y pago de los viajes los gestiona Te Moana Expeditions.</p>
+
+    <div class="entry">
+      <div class="entry-h"><span class="n">01</span><h3>Stack</h3></div>
+      <div class="entry-b">
+        <div class="stack">
+          <div><span class="mono">Framework</span><b>Astro 5</b><span>HTML estático, cero JS por defecto. Content collections con esquema Zod para viajes, cursos y posts en Markdown.</span></div>
+          <div><span class="mono">Hosting + CDN</span><b>Cloudflare Pages</b><span>Gratis con uso comercial, SSL, preview por rama y deploy en cada push a <code>main</code>.</span></div>
+          <div><span class="mono">Edición</span><b>Git + Decap CMS</b><span>En v1 editas tú en el repo. En fase 2, panel en <code>/admin</code> con formularios cerrados para Pelayo.</span></div>
+          <div><span class="mono">Formulario</span><b>Pages Function</b><span>Turnstile contra bots y envío por Resend al Gmail de Pelayo. WhatsApp como canal principal.</span></div>
+          <div><span class="mono">Reservas</span><b>Te Moana</b><span>La web capta la consulta. Reserva, contrato y pago del viaje van por la agencia, así que no tocamos datos de pago.</span></div>
+          <div><span class="mono">Medios</span><b>Astro Image + R2</b><span>Fotos a AVIF/WebP en build. Vídeos de reels en R2, sin coste de tráfico de salida.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-h"><span class="n">02</span><h3>Quién edita qué</h3></div>
+      <div class="entry-b">
+        <p>Cada viaje, curso y evento es un fichero con campos fijos (fechas, precio, plazas, estado, fotos) validado con Zod. Si un dato está mal, el build falla y la web publicada sigue como estaba.</p>
+        <div class="who">
+          <div>
+            <span class="mono">v1 · lanzamiento</span><b>Todo lo haces tú</b>
+            <p>Pelayo te pide el cambio por WhatsApp y tú editas el fichero y haces push. Con los datos separados del diseño, cambiar una fecha o un precio es tocar una línea.</p>
+          </div>
+          <div>
+            <span class="mono">Fase 2 · panel /admin</span><b>Pelayo toca lo previsto</b>
+            <p>Formularios cerrados en Decap CMS, solo con lo que cambia a menudo:</p>
+            <ul>
+              <li>Viajes: fechas, precio, plazas y estado <em>abierto · últimas plazas · completo</em>. Un viaje nuevo se crea duplicando otro.</li>
+              <li>Aviso de portada: una línea que se enciende y apaga. Por ejemplo, <em>“Sunset de este viernes cancelado por mar de fondo”</em>.</li>
+              <li>Eventos: fechas de The Sunset y de los talleres.</li>
+              <li>Fotos de galería, que se optimizan solas al publicar.</li>
+            </ul>
+          </div>
+          <div>
+            <span class="mono">Siempre tuyo</span><b>Estructura y diseño</b>
+            <p>Páginas nuevas, maquetación, cursos, textos legales, dominio, formulario e integraciones. En el panel no aparecen, así que no se pueden romper desde ahí.</p>
+          </div>
+        </div>
+        <p style="margin-top:18px">Cada guardado del panel es un commit, así que cualquier error se deshace con un revert. Si prefieres revisar antes de publicar, el modo borrador de Decap convierte sus cambios en un PR que apruebas tú. <strong>WordPress no compensa:</strong> un panel abierto donde se puede romper la maquetación, más PHP y plugins que tendrías que parchear tú.</p>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-h"><span class="n">03</span><h3>Mapa del sitio</h3></div>
+      <div class="entry-b">
+<ul class="sitemap">
+          <li><code>/</code><span>home: la inmersión de arriba</span></li>
+          <li><code>/viajes</code><span>próximos + “¿puedo ir?” + bitácora filtrable</span></li>
+          <li><code>/viajes/baja-california</code><span>itinerario, incluye/no incluye, fauna, precio, reservar</span></li>
+          <li><code>/cursos</code><span>escala de profundidad + línea profesional</span></li>
+          <li><code>/cursos/open-water</code></li>
+          <li><code>/puntos-de-inmersion</code><span>carta de la reserva filtrada por titulación</span></li>
+          <li><code>/puntos-de-inmersion/bajo-de-fuera</code><span>una ficha por punto: profundidad, nivel, corriente, fauna, fotos</span></li>
+          <li><code>/cabo-de-palos</code><span>The Sunset, day trips, puntos de inmersión</span></li>
+          <li><code>/madrid</code><span>bautismos y piscina de 20 m</span></li>
+          <li><code>/cuaderno</code><span>blog de fauna y consejos (SEO)</span></li>
+          <li><code>/cuaderno/medusas-mediterraneo</code></li>
+          <li><code>/sobre-pelayo</code><span>quién está detrás de Dive Clif, titulaciones, club GEME Las Rozas</span></li>
+          <li><code>/contacto</code></li>
+          <li><code>/legal/aviso-legal · /legal/privacidad · /legal/condiciones-viaje</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-h"><span class="n">04</span><h3>SEO</h3></div>
+      <div class="entry-b">
+        <p>Compite en búsquedas locales ("bucear en Cabo de Palos", "bautismo de buceo Madrid") y de destino ("viaje de buceo Baja California"). Cada tipo de página tiene su intención de búsqueda, sus datos estructurados y enlaces internos hacia el paso siguiente: punto → curso que lo desbloquea → viaje.</p>
+        <ul class="seo-map">
+          <li><code>/</code><span class="sch">WebSite · SportsActivityLocation</span><em>buceo Cabo de Palos · Dive Clif</em></li>
+          <li><code>/puntos-de-inmersion/[punto]</code><span class="sch">TouristAttraction + geo</span><em>Bajo de Fuera · pecio Naranjito · bucear Islas Hormigas</em></li>
+          <li><code>/cursos/[curso]</code><span class="sch">Course · CourseInstance</span><em>curso Open Water Madrid · Advanced Cabo de Palos</em></li>
+          <li><code>/madrid</code><span class="sch">LocalBusiness</span><em>bautismo de buceo Madrid · piscina 20 m</em></li>
+          <li><code>/cabo-de-palos</code><span class="sch">Event con eventSchedule</span><em>inmersión atardecer Cabo de Palos · The Sunset</em></li>
+          <li><code>/viajes/[viaje]</code><span class="sch">TouristTrip · Offer · TravelAgency</span><em>viaje de buceo Baja California · Maldivas vida a bordo</em></li>
+          <li><code>/cuaderno/[post]</code><span class="sch">BlogPosting · BreadcrumbList</span><em>medusas Mediterráneo · qué es el Sirio de Cabo de Palos</em></li>
+          <li><code>/sobre-pelayo</code><span class="sch">ProfilePage · Person</span><em>instructor de buceo PADI Madrid</em></li>
+        </ul>
+        <ul class="checks" style="margin-top:18px">
+          <li><strong>Google Business Profile</strong> para Cabo de Palos y, si se puede, para Madrid. En búsquedas locales pesa más que la propia web. Mismo nombre, teléfono y web en todas partes, y pedir reseña al acabar cada curso.</li>
+          <li><strong>Técnico.</strong> HTML estático con <code>lang="es"</code>, canonical, <code>@astrojs/sitemap</code>, <code>robots.txt</code>, URLs en español y breadcrumbs. Imagen Open Graph por viaje y por punto generada en build, para que el enlace se vea bien en WhatsApp e Instagram.</li>
+          <li><strong>Core Web Vitals.</strong> Hero en AVIF con <code>fetchpriority="high"</code>, fuentes autoalojadas en subset y cero JS salvo el selector y la carta (islas de Astro). Objetivo: LCP &lt; 2 s en 4G.</li>
+          <li><strong>Datos estructurados validados en build.</strong> El JSON-LD sale de los mismos ficheros de contenido y se comprueba con el Rich Results Test en CI. La demo ya lleva el grafo de la home, un viaje, un curso, The Sunset y un punto.</li>
+          <li><strong>Medición.</strong> Search Console y Bing Webmaster Tools. Crawler Hints de Cloudflare avisa a Bing y Yandex por IndexNow en cada deploy.</li>
+          <li><strong>Instagram como fuente de tráfico.</strong> Enlace en bio con UTM a la página del próximo viaje, y cada post divulgativo enlazado a su artículo del cuaderno.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-h"><span class="n">05</span><h3>Arquitectura</h3></div>
+      <div class="entry-b">
+        <div class="diagram">
+          <svg viewBox="0 0 960 340" role="img" aria-label="Andrés, y en fase 2 Pelayo desde el panel, edita el contenido, que guarda en GitHub; Cloudflare Pages compila con Astro y publica en su CDN. El formulario pasa por una Pages Function con Turnstile y Resend hasta el Gmail de Pelayo.">
+            <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#1d3fc4"/></marker></defs>
+            <g font-family="Martian Mono, monospace" font-size="11" fill="#1a2430">
+              <g stroke="#1a2430" stroke-width="1.5" fill="#f7f2e7">
+                <rect x="20" y="30" width="160" height="60" rx="3"/><rect x="210" y="30" width="160" height="60" rx="3"/><rect x="400" y="30" width="160" height="60" rx="3"/><rect x="590" y="30" width="160" height="60" rx="3"/><rect x="780" y="30" width="160" height="60" rx="3" fill="#ffd9c9"/>
+                <rect x="780" y="150" width="160" height="60" rx="3"/><rect x="590" y="150" width="160" height="60" rx="3"/><rect x="400" y="150" width="160" height="60" rx="3"/>
+              </g>
+              <g stroke="#1a2430" stroke-width="1.2" stroke-dasharray="4 4" fill="none">
+                <rect x="20" y="262" width="210" height="52" rx="3"/><rect x="250" y="262" width="210" height="52" rx="3"/><rect x="480" y="262" width="210" height="52" rx="3"/><rect x="710" y="262" width="230" height="52" rx="3"/>
+              </g>
+              <g stroke="#1d3fc4" stroke-width="1.8" fill="none" marker-end="url(#ar)">
+                <path d="M180 60 H206"/><path d="M370 60 H396"/><path d="M560 60 H586"/><path d="M750 60 H776"/>
+                <path d="M860 90 V146"/><path d="M780 180 H754"/><path d="M590 180 H564"/>
+              </g>
+              <g font-weight="500">
+                <text x="100" y="56" text-anchor="middle">Andrés · Pelayo</text><text x="100" y="74" text-anchor="middle" fill="#5c6773">repo · /admin</text>
+                <text x="290" y="56" text-anchor="middle">GitHub</text><text x="290" y="74" text-anchor="middle" fill="#5c6773">Markdown + fotos</text>
+                <text x="480" y="56" text-anchor="middle">Pages build</text><text x="480" y="74" text-anchor="middle" fill="#5c6773">astro build</text>
+                <text x="670" y="56" text-anchor="middle">CDN Cloudflare</text><text x="670" y="74" text-anchor="middle" fill="#5c6773">HTML estático</text>
+                <text x="860" y="56" text-anchor="middle">Visitante</text><text x="860" y="74" text-anchor="middle" fill="#5c6773">móvil, desde IG</text>
+                <text x="860" y="176" text-anchor="middle">Pages Function</text><text x="860" y="194" text-anchor="middle" fill="#5c6773">+ Turnstile</text>
+                <text x="670" y="176" text-anchor="middle">Resend</text><text x="670" y="194" text-anchor="middle" fill="#5c6773">email transaccional</text>
+                <text x="480" y="176" text-anchor="middle">Gmail de Pelayo</text><text x="480" y="194" text-anchor="middle" fill="#5c6773">consulta recibida</text>
+                <text x="125" y="284" text-anchor="middle">Te Moana Expeditions</text><text x="125" y="302" text-anchor="middle" fill="#5c6773">reserva y pago</text>
+                <text x="355" y="284" text-anchor="middle">Cloudflare R2</text><text x="355" y="302" text-anchor="middle" fill="#5c6773">vídeos de reels</text>
+                <text x="585" y="284" text-anchor="middle">Email Routing</text><text x="585" y="302" text-anchor="middle" fill="#5c6773">hola@ → Gmail</text>
+                <text x="825" y="284" text-anchor="middle">Worker OAuth</text><text x="825" y="302" text-anchor="middle" fill="#5c6773">login del panel · fase 2</text>
+              </g>
+              <text x="20" y="248" fill="#c8392a" font-size="10" letter-spacing="1.2">SERVICIOS SATÉLITE · SIN SERVIDOR PROPIO</text>
+              <text x="590" y="126" fill="#1d3fc4" font-size="10">POST /api/contacto</text>
+              <text x="210" y="126" fill="#1d3fc4" font-size="10">push → deploy automático</text>
+            </g>
+          </svg>
+        </div>
+        <ol class="flow">
+          <li><b>Andrés · Pelayo</b><span>editan en el repo o en /admin</span></li>
+          <li><b>GitHub</b><span>Markdown + fotos · push → deploy automático</span></li>
+          <li><b>Cloudflare Pages</b><span>astro build</span></li>
+          <li><b>CDN Cloudflare</b><span>HTML estático</span></li>
+          <li class="hl"><b>Visitante</b><span>móvil, llega desde Instagram</span></li>
+          <li><b>Pages Function + Turnstile</b><span>POST /api/contacto</span></li>
+          <li><b>Resend → Gmail de Pelayo</b><span>consulta recibida</span></li>
+        </ol>
+        <p class="flow-sat mono">Satélites: Te Moana (reserva y pago) · R2 (vídeos) · Email Routing · Worker OAuth del panel</p>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-h"><span class="n">06</span><h3>Costes</h3></div>
+      <div class="entry-b">
+        <div class="tbl">
+        <table class="costs">
+          <thead><tr><th>Concepto</th><th>Servicio</th><th>Coste</th></tr></thead>
+          <tbody>
+            <tr><td>Dominio (diveclif.es o .com)</td><td>DonDominio / Cloudflare Registrar</td><td>10–15 €/año</td></tr>
+            <tr><td>Hosting, CDN y SSL</td><td>Cloudflare Pages</td><td>0 €</td></tr>
+            <tr><td>Correo hola@</td><td>Cloudflare Email Routing → Gmail</td><td>0 €</td></tr>
+            <tr><td>Panel de edición (fase 2)</td><td>Decap CMS + Worker OAuth en Cloudflare</td><td>0 €</td></tr>
+            <tr><td>Formulario y antispam</td><td>Pages Functions + Turnstile + Resend (3.000 emails/mes)</td><td>0 €</td></tr>
+            <tr><td>Vídeo</td><td>Cloudflare R2 (10 GB gratis, sin coste de salida)</td><td>0 €</td></tr>
+            <tr><td>Analítica sin cookies</td><td>Cloudflare Web Analytics</td><td>0 €</td></tr>
+            <tr class="total"><td>Total fijo</td><td>Todo lo demás cabe en capas gratuitas</td><td>≈ 1 €/mes</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="vs">
+          <div><b>Wix / Squarespace</b>17–25 €/mes, plantillas genéricas y la web no es suya.</div>
+          <div><b>WordPress</b>8–15 €/mes de hosting, más plugins que parchear. Es la superficie de ataque más explotada.</div>
+          <div><b>Vercel</b>El plan Hobby no permite uso comercial. Pro cuesta 20 $/mes.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-h"><span class="n">07</span><h3>Seguridad y legal</h3></div>
+      <div class="entry-b">
+        <ul class="checks">
+          <li>Sin servidor ni base de datos: la superficie de ataque se reduce a una función de formulario, con validación Zod, Turnstile y rate limiting de Cloudflare.</li>
+          <li>Cabeceras en <code>_headers</code>: CSP estricta, HSTS con preload, <code>X-Content-Type-Options</code>, <code>Referrer-Policy</code> y <code>Permissions-Policy</code>.</li>
+          <li>La clave de Resend y el secreto OAuth del panel van como secretos de Cloudflare, nunca en el repo. 2FA en GitHub y Cloudflare, y rama <code>main</code> protegida.</li>
+          <li>La carta de puntos es un SVG propio: sin teselas de mapas de terceros, sin peticiones externas y sin cookies. La titulación elegida se guarda solo en el navegador del visitante.</li>
+          <li>Analítica sin cookies, así que no hace falta banner de consentimiento. Aviso legal (LSSI) y política de privacidad (RGPD) para el formulario.</li>
+          <li><strong>Viajes combinados.</strong> Los organiza Te Moana Expeditions. Cada ficha de viaje y <code>/legal/condiciones-viaje</code> la nombran como organizadora, con su número de título-licencia, y Dive Clif figura como instructor y guía del grupo (RDL 1/2007, libro IV).</li>
+          <li><strong>Instagram.</strong> En v1, un enlace grande al perfil. El feed incrustado se valora en fase 2: la Basic Display API cerró en diciembre de 2024 y ahora hace falta app de Meta y renovar un token cada 60 días.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-h"><span class="n">08</span><h3>Fases</h3></div>
+      <div class="entry-b">
+        <div class="phases">
+          <div><span class="mono">Fase 0 · 1 semana</span><b>Cimientos</b><ul><li>Dominio y DNS en Cloudflare</li><li>Repo, Astro y deploy en Pages</li><li>Email Routing hola@</li><li>Alta en Google Business Profile (la verificación tarda)</li></ul></div>
+          <div><span class="mono">Fase 1 · 2–3 semanas</span><b>Lanzamiento</b><ul><li>Home, viajes, cursos, bases</li><li>Selector “¿Puedo ir?” y carta de puntos</li><li>Contacto, Instagram y comunidad de WhatsApp</li><li>SEO técnico y datos estructurados</li><li>Textos legales</li><li>Tú haces todos los cambios</li></ul></div>
+          <div><span class="mono">Fase 2</span><b>Autonomía</b><ul><li>Panel para que Pelayo toque viajes y avisos</li><li>Cuaderno de fauna (blog)</li><li>Valorar feed de Instagram</li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-h"><span class="n">09</span><h3>Preguntas para Pelayo</h3></div>
+      <div class="entry-b">
+        <ul class="checks">
+          <li>¿Puede pasar las fotos y vídeos originales en alta? Las de Instagram llegan comprimidas.</li>
+          <li>¿Qué dominio prefiere? Hay que comprobar si están libres diveclif.es y diveclif.com.</li>
+          <li>Número de título-licencia de Te Moana Expeditions, y si la reserva se hace en su web o pasa primero por Pelayo.</li>
+          <li>Precios y duración de cada curso, y en qué base se imparte cada uno.</li>
+          <li>Requisitos reales de cada viaje (titulación e inmersiones mínimas) y validar las fichas de los puntos de inmersión: profundidades, niveles y qué punto usa en cada curso.</li>
+          <li>¿Hace falta versión en inglés para los viajes internacionales?</li>
+          <li>El logo en vectorial (SVG o AI), para no depender del avatar de Instagram.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="log-end mono"><span>Dive Clif · propuesta v0</span><span>Septiembre 2026</span></div>
+  </div>
+</section>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {"@type": "WebSite", "@id": "https://diveclif.es/#web", "url": "https://diveclif.es/", "name": "Dive Clif", "inLanguage": "es-ES", "publisher": {"@id": "https://diveclif.es/#org"}},
+    {"@type": ["SportsActivityLocation", "LocalBusiness"], "@id": "https://diveclif.es/#org", "name": "Dive Clif", "url": "https://diveclif.es/",
+     "description": "Cursos de buceo PADI y SSI de todos los niveles y viajes de buceo con Pelayo, IDC Staff Instructor PADI. Cabo de Palos y Madrid.",
+     "founder": {"@id": "https://diveclif.es/sobre-pelayo#pelayo"}, "sameAs": ["https://www.instagram.com/dive_clif/"],
+     "address": {"@type": "PostalAddress", "addressLocality": "Cabo de Palos", "addressRegion": "Murcia", "addressCountry": "ES"},
+     "geo": {"@type": "GeoCoordinates", "latitude": 37.6346, "longitude": -0.6906},
+     "areaServed": ["Cabo de Palos", "La Manga", "Cartagena", "Madrid"], "knowsAbout": ["buceo", "PADI", "SSI", "Reserva Marina de Cabo de Palos"]},
+    {"@type": "Person", "@id": "https://diveclif.es/sobre-pelayo#pelayo", "name": "Pelayo", "jobTitle": "IDC Staff Instructor PADI · Divemaster Instructor SSI", "worksFor": {"@id": "https://diveclif.es/#org"}},
+    {"@type": "Event", "name": "The Sunset · inmersión al atardecer en Cabo de Palos", "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+     "eventSchedule": {"@type": "Schedule", "repeatFrequency": "P1W", "byDay": "https://schema.org/Friday", "startTime": "19:30", "scheduleTimezone": "Europe/Madrid"},
+     "location": {"@type": "Place", "name": "Arenales del Cabo, Cabo de Palos", "geo": {"@type": "GeoCoordinates", "latitude": 37.6296, "longitude": -0.6743}},
+     "organizer": {"@id": "https://diveclif.es/#org"}},
+    {"@type": "TouristTrip", "name": "Viaje de buceo a Baja California Sur", "touristType": "Buceadores con Advanced Open Water",
+     "itinerary": {"@type": "ItemList", "itemListElement": [{"@type": "Place", "name": "Cabo Pulmo"}, {"@type": "Place", "name": "La Paz"}]},
+     "offers": {"@type": "Offer", "price": "2250", "priceCurrency": "EUR", "validFrom": "2026-01-11", "availability": "https://schema.org/InStock",
+       "offeredBy": {"@type": "TravelAgency", "name": "Te Moana Expeditions", "address": {"@type": "PostalAddress", "addressLocality": "Barcelona", "addressCountry": "ES"}}},
+     "subjectOf": {"@type": "Event", "name": "Baja California Sur con Dive Clif", "startDate": "2026-12-05", "endDate": "2026-12-14", "location": {"@type": "Place", "name": "Baja California Sur, México"}}},
+    {"@type": "Course", "name": "Curso PADI Open Water Diver", "description": "Titulación para bucear hasta 18 m en cualquier parte del mundo. Teoría online, piscina en Madrid y cuatro inmersiones en Cabo de Palos.",
+     "provider": {"@id": "https://diveclif.es/#org"}, "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "Blended", "location": "Madrid y Cabo de Palos"}},
+    {"@type": "TouristAttraction", "name": "Bajo de Fuera", "description": "Bajo de la Reserva Marina de Cabo de Palos · Islas Hormigas, de 3 a 45 m.", "geo": {"@type": "GeoCoordinates", "latitude": 37.668, "longitude": -0.631}}
+  ]
+}
+</script>
+
+<aside class="hud" id="hud" aria-label="Ordenador de buceo decorativo">
+  <div class="hud-top"><span>DIVE CLIF</span><span id="hud-mode">BUCEO</span></div>
+  <div class="hud-depth"><b id="hud-d">0.0</b><span>m</span></div>
+  <div class="hud-grid">
+    <div>MÁX<b id="hud-max">0.0</b></div>
+    <div>TEMP<b id="hud-t">24°</b></div>
+    <div>NDL<b id="hud-ndl">--</b></div>
+  </div>
+  <div class="hud-alarm">SUBE DESPACIO</div>
+</aside>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hero = document.querySelector('.hero');
+  const wl = document.getElementById('wl');
+
+  const placeWaterline = () => {
+    const h1 = wl.querySelector('h1');
+    const y = wl.offsetTop + h1.offsetHeight * 0.71;
+    hero.style.setProperty('--wly', `${(y / hero.offsetHeight) * 100}%`);
+  };
+  placeWaterline();
+  addEventListener('resize', placeWaterline);
+  document.fonts?.ready.then(placeWaterline);
+
+  const bubbles = document.getElementById('bubbles');
+  for (let i = 0; i < 18; i++) {
+    const b = document.createElement('i');
+    const s = 4 + Math.random() * 14;
+    b.style.cssText = `left:${Math.random() * 100}%;width:${s}px;height:${s}px;--dx:${(Math.random() - .5) * 60}px;animation-duration:${6 + Math.random() * 8}s;animation-delay:${-Math.random() * 10}s`;
+    bubbles.appendChild(b);
+  }
+
+  const ns = 'http://www.w3.org/2000/svg';
+  const school = (id, n, cx, cy, rx, ry, w, dir = 1) => {
+    const g = document.getElementById(id);
+    if (!g) return;
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random());
+      const u = document.createElementNS(ns, 'use');
+      const x = cx + Math.cos(a) * rx * r, y = cy + Math.sin(a) * ry * r;
+      const s = w * (0.7 + Math.random() * 0.5);
+      u.setAttribute('href', '#fish');
+      u.setAttribute('width', s); u.setAttribute('height', s * 14 / 60);
+      u.setAttribute('transform', `translate(${x} ${y}) scale(${dir} 1) rotate(${(Math.random() - .5) * 8})`);
+      g.appendChild(u);
+    }
+  };
+  school('school', 70, 330, 170, 230, 90, 46, -1);
+  school('school2', 40, 460, 420, 150, 60, 28);
+  school('school3', 45, 220, 95, 170, 60, 34, -1);
+
+  const jelly = document.getElementById('jelly');
+  jelly.innerHTML = `<defs><radialGradient id="jg" cx="50%" cy="40%"><stop offset="0" stop-color="#ffb8d9" stop-opacity=".7"/><stop offset="1" stop-color="#a24a8a" stop-opacity=".15"/></radialGradient></defs>
+    <rect width="700" height="380" fill="#051b2c"/>` +
+    [[470, 90, 1], [600, 210, .6], [330, 40, .45]].map(([x, y, s]) =>
+      `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-80 0 C-80 -70 80 -70 80 0 C60 10 40 -2 20 8 C0 -2 -20 10 -40 2 C-60 10 -70 4 -80 0Z" fill="url(#jg)"/>` +
+      Array.from({length: 7}, (_, i) => `<path d="M${-60 + i * 20} 6 q12 40 -4 80 t4 90" stroke="rgba(255,190,220,.4)" stroke-width="2" fill="none"/>`).join('') + '</g>'
+    ).join('');
+
+
+  document.querySelectorAll('.filters button').forEach(btn => btn.addEventListener('click', () => {
+    document.querySelectorAll('.filters button').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    document.querySelectorAll('.trip').forEach(t => { t.hidden = btn.dataset.f !== 'all' && t.dataset.t !== btn.dataset.f; });
+  }));
+
+  document.getElementById('form').addEventListener('submit', e => {
+    e.preventDefault();
+    document.getElementById('form-note').textContent = 'Mockup: en la web real esto llega al email de Pelayo por Resend.';
+  });
+
+
+  const LEVELS = ['Sin titulación', 'Open Water', 'Advanced', 'Deep'];
+  const COURSES = ['', 'Open Water', 'Advanced Open Water', 'Deep Diver'];
+  const TRIPS = [
+    {n: 'Day trip Cabo de Palos', d: '18 oct 2026 · 1 día', fmt: 'Barco · 2 inmersiones', rank: 1, dives: 0, water: '21 °C · 7 mm', nd: 2, price: '85 €', org: 'Dive Clif'},
+    {n: 'Baja California Sur', d: '05–14 dic 2026 · 10 días', fmt: 'Desde tierra', rank: 2, dives: 30, water: '23–25 °C · 5 mm', nd: 12, price: '2.250 €', org: 'Te Moana Expeditions'},
+    {n: 'Maldivas', d: '08–18 mar 2027 · 11 días', fmt: 'Vida a bordo', rank: 2, dives: 50, water: '28 °C · 3 mm', nd: 18, price: '2.950 €', org: 'Te Moana Expeditions'},
+    {n: 'Mar Rojo Norte y Tiran', d: '17–24 abr 2027 · 8 días', fmt: 'Vida a bordo', rank: 1, dives: 20, water: '22–24 °C · 5 mm', nd: 16, price: '1.490 €', org: 'Te Moana Expeditions'},
+    {n: 'Gran Canaria', d: '30 abr–03 may 2027 · 4 días', fmt: 'Desde tierra', rank: 1, dives: 0, water: '19 °C · 7 mm', nd: 6, price: '590 €', org: 'Te Moana Expeditions'},
+    {n: 'Farasan Banks', d: 'Oct 2027 · 9 días', fmt: 'Vida a bordo', rank: 2, dives: 40, water: '29 °C · 3 mm', nd: 20, price: '3.200 €', org: 'Te Moana Expeditions'},
+  ];
+  const SITES = [
+    {n: 'Cala Fría', x: 410, y: 496, type: 'costa', depth: '3–12 m', rank: 0, cur: 'Nula', fauna: 'Pulpos, castañuelas, pradera de posidonia', note: 'Entrada desde costa junto al faro. Aquí hacemos los bautismos y las prácticas del Open Water.'},
+    {n: 'Arenales del Cabo', x: 470, y: 544, type: 'arenal', depth: '10–18 m', rank: 1, cur: 'Baja', fauna: 'Rayas pastinaca, peces guitarra, sepias', note: 'El fondo de The Sunset, todos los viernes al atardecer.'},
+    {n: 'Isla Hormiga', x: 556, y: 380, type: 'isla', depth: '5–25 m', rank: 1, cur: 'Baja', fauna: 'Meros, sargos, corvinas, nudibranquios', note: 'Resguardada del levante. La opción cuando el mar no deja salir más lejos.'},
+    {n: 'Bajo de Dentro', x: 598, y: 350, type: 'bajo', depth: '4–30 m', rank: 1, cur: 'Media', fauna: 'Barracudas, meros, dentones, salpas', note: 'Cima a 4 m. Con Open Water nos quedamos por encima de 18 m; las paredes profundas, con Advanced.'},
+    {n: 'Bajo de Fuera', x: 668, y: 292, type: 'bajo', depth: '3–45 m', rank: 2, cur: 'Fuerte', fauna: 'Espetones, barracudas, meros, águilas marinas', note: 'El punto estrella de la reserva. Corriente frecuente: se bucea con Advanced y buena flotabilidad.'},
+    {n: 'Naranjito', x: 704, y: 334, type: 'pecio', depth: '~30–42 m', rank: 3, cur: 'Media', fauna: 'Congrios, meros, gorgonias rojas', note: 'Mercante hundido cerca del Bajo de Fuera. Casco casi entero sobre arena.'},
+    {n: 'Carbonero', x: 626, y: 432, type: 'pecio', depth: '~35–45 m', rank: 3, cur: 'Media', fauna: 'Anthias, langostas, meros', note: 'Carguero de carbón. Inmersión profunda planificada sin descompresión.'},
+    {n: 'Sirio', x: 624, y: 262, type: 'pecio', depth: '~40–70 m', rank: 4, cur: 'Fuerte', fauna: 'Gorgonias, congrios, restos dispersos', note: 'Trasatlántico italiano hundido en 1906 contra el Bajo de Fuera. Solo buceo técnico.'},
+    {n: 'Stanfield', x: 505, y: 470, type: 'pecio', depth: '~55–62 m', rank: 4, cur: 'Media', fauna: 'Gorgonias, bancos de castañuelas', note: 'Vapor británico. Solo buceo técnico.'},
+  ];
+  const LVL_COLOR = ['#8fd8ea', '#8fd8ea', '#5aa9ff', '#f7b955', '#ff6a3d'];
+  const LVL_NAME = ['Bautismo', 'Open Water', 'Advanced', 'Deep', 'Técnico'];
+
+  let st = {cert: 2, dives: 25, site: 4};
+  try { Object.assign(st, JSON.parse(localStorage.getItem('diveclif-ficha') || '{}')); } catch {}
+  const save = () => { try { localStorage.setItem('diveclif-ficha', JSON.stringify({cert: st.cert, dives: st.dives})); } catch {} };
+
+  const coords = (x, y) => {
+    const lat = 37.72 - y / 676 * 0.12, lon = 0.78 - x / 800 * 0.18;
+    const dm = v => `${Math.floor(v)}°${((v % 1) * 60).toFixed(1).padStart(4, '0')}′`;
+    return `${dm(lat)}N · ${dm(lon)}W`;
+  };
+
+  const tripGap = t => {
+    const gaps = [];
+    if (st.cert < t.rank) {
+      const need = COURSES.slice(Math.max(st.cert + 1, 1), t.rank + 1).join(' + ');
+      gaps.push(st.cert === 0 ? `Empieza por el <a href="#cursos">${need}</a>.` : `Te falta el <a href="#cursos">${need}</a>.`);
+    }
+    if (st.dives < t.dives) gaps.push(`Te faltan ${t.dives - st.dives} inmersiones: súmalas en los <a href="#puntos">day trips a Cabo de Palos</a>.`);
+    return gaps;
+  };
+
+  const tripsEl = document.getElementById('trips');
+  const renderTrips = () => {
+    tripsEl.innerHTML = TRIPS.map(t => {
+      const g = tripGap(t), ok = g.length === 0;
+      const pill = ok ? '<span class="pill ok">Puedes ir</span>' : `<span class="pill no">${st.cert < t.rank ? 'Te falta un curso' : `Faltan ${t.dives - st.dives} inm.`}</span>`;
+      const req = `${LEVELS[t.rank]}${t.dives ? ` · ${t.dives} inm.` : ''}`;
+      return `<article class="tcard ${ok ? 'ok' : 'no'}">
+        <div class="ttop"><span class="tdate">${t.d}</span>${pill}</div>
+        <div class="tbody"><h4>${t.n}</h4></div>
+        <div class="tmeta tbody"><div><b>Formato</b>${t.fmt}</div><div><b>Requisito</b>${req}</div><div><b>Agua</b>${t.water}</div><div><b>Inmersiones</b>${t.nd}</div></div>
+        ${ok ? '' : `<p class="tgap">${g.join(' ')}</p>`}
+        <div class="tprice"><b>${t.price}</b><span>Organiza<br>${t.org}</span></div>
+      </article>`;
+    }).join('');
+  };
+
+  const sitesG = document.getElementById('sites');
+  const listEl = document.getElementById('site-list');
+  const cardEl = document.getElementById('site-card');
+  sitesG.innerHTML = SITES.map((p, i) => {
+    const c = LVL_COLOR[p.rank];
+    const shape = p.type === 'pecio'
+      ? `<rect class="ring" x="-10" y="-10" width="20" height="20" rx="2" transform="rotate(45)" fill="${c}" stroke="#04131d" stroke-width="1.5"/>`
+      : `<circle class="ring" r="11" fill="${c}" stroke="#04131d" stroke-width="1.5"/>`;
+    return `<g class="site" data-i="${i}" tabindex="0" role="button" aria-label="${p.n}, ${p.depth}, ${LVL_NAME[p.rank]}" transform="translate(${p.x} ${p.y})">
+      ${shape}<text y="3.5" text-anchor="middle" font-family="Martian Mono, monospace" font-size="10" font-weight="500" fill="#04131d">${i + 1}</text>
+      <text x="16" y="4" font-family="Martian Mono, monospace" font-size="9.5" fill="rgba(239,250,251,.92)" paint-order="stroke" stroke="#0a3550" stroke-width="3">${p.n}</text></g>`;
+  }).join('');
+  listEl.innerHTML = SITES.map((p, i) => `<li><button type="button" data-i="${i}"><span class="num" style="background:${LVL_COLOR[p.rank]}">${i + 1}</span><span>${p.n}</span><span class="d">${p.depth}</span></button></li>`).join('');
+
+  const verdict = p => {
+    if (p.rank === 4) return ['no', 'Buceo técnico: fuera de la oferta recreativa de Dive Clif.'];
+    if (st.cert >= p.rank) return ['', st.cert === 0 ? 'Perfecto para tu bautismo con Pelayo.' : `Con tu ${LEVELS[st.cert]} puedes bajar aquí.`];
+    return ['no', `Necesitas ${COURSES[p.rank]}. Lo haces con Pelayo entre Madrid y Cabo de Palos.`];
+  };
+  const renderSites = () => {
+    SITES.forEach((p, i) => {
+      const reach = p.rank <= st.cert;
+      sitesG.children[i].classList.toggle('dim', !reach);
+      sitesG.children[i].classList.toggle('sel', i === st.site);
+      const b = listEl.children[i].firstElementChild;
+      b.classList.toggle('dim', !reach);
+      b.setAttribute('aria-current', String(i === st.site));
+    });
+    const p = SITES[st.site], [cls, txt] = verdict(p);
+    cardEl.innerHTML = `<span class="coords">${String(st.site + 1).padStart(2, '0')} · ${coords(p.x, p.y)}</span>
+      <h3>${p.n}</h3>
+      <dl><dt>Profundidad</dt><dd>${p.depth}</dd><dt>Nivel</dt><dd>${LVL_NAME[p.rank]}${p.type === 'pecio' ? ' · pecio' : ''}</dd><dt>Corriente</dt><dd>${p.cur}</dd><dt>Fauna</dt><dd>${p.fauna}</dd></dl>
+      <p>${p.note}</p><div class="verdict ${cls}">${txt}</div>`;
+  };
+  const pick = i => { st.site = i; renderSites(); };
+  sitesG.addEventListener('click', e => { const g = e.target.closest('.site'); if (g) pick(+g.dataset.i); });
+  sitesG.addEventListener('keydown', e => { const g = e.target.closest('.site'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pick(+g.dataset.i); } });
+  listEl.addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(+b.dataset.i); });
+
+  const chartSvg = document.getElementById('chart');
+  const fitChart = () => chartSvg.setAttribute('viewBox', chartSvg.clientWidth < 560 ? '388 232 412 336' : '0 0 800 676');
+  fitChart();
+  addEventListener('resize', fitChart);
+
+  const dives = document.getElementById('dives'), divesOut = document.getElementById('dives-out');
+  const renderAll = () => {
+    document.querySelectorAll('.cert button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.cert === st.cert)));
+    dives.value = st.dives; divesOut.textContent = st.dives;
+    renderTrips(); renderSites();
+  };
+  document.querySelectorAll('.cert').forEach(g => g.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    st.cert = +b.dataset.cert; save(); renderAll();
+  }));
+  dives.addEventListener('input', () => { st.dives = +dives.value; save(); renderAll(); });
+  renderAll();
+
+  const hud = document.getElementById('hud');
+  const $ = id => document.getElementById(id);
+  const zones = [...document.querySelectorAll('[data-depth]')];
+  const ndlTable = [[10, 219], [12, 147], [14, 98], [16, 72], [18, 56], [20, 45], [22, 37], [25, 29], [30, 20], [35, 14], [40, 9]];
+  const ndl = d => {
+    if (d < 10) return null;
+    for (let i = 1; i < ndlTable.length; i++) {
+      const [d0, n0] = ndlTable[i - 1], [d1, n1] = ndlTable[i];
+      if (d <= d1) return Math.round(n0 + (n1 - n0) * (d - d0) / (d1 - d0));
+    }
+    return 9;
+  };
+  const log = $('bitacora');
+  let max = 0, last = 0, lastT = performance.now(), alarmUntil = 0;
+
+  const tick = () => {
+    const mid = scrollY + innerHeight * 0.5;
+    let depth = 0;
+    for (const z of zones) {
+      const top = z.offsetTop, h = z.offsetHeight;
+      if (mid >= top && mid < top + h) {
+        const p = (mid - top) / h;
+        depth = +z.dataset.depth + (+z.dataset.depthEnd - +z.dataset.depth) * p;
+      }
+    }
+    const atSurface = log.getBoundingClientRect().top < innerHeight * 0.6;
+    hud.classList.toggle('off', atSurface);
+    hud.classList.toggle('hero-on', hero.getBoundingClientRect().bottom > innerHeight * 0.9);
+    max = Math.max(max, depth);
+    $('hud-d').textContent = depth.toFixed(1);
+    $('hud-max').textContent = max.toFixed(1);
+    $('hud-t').textContent = `${Math.round(24 - depth * 0.22)}°`;
+    const n = ndl(depth);
+    $('hud-ndl').textContent = n === null ? '--' : n;
+    hud.classList.toggle('low', n !== null && n < 15);
+
+    const now = performance.now(), dt = (now - lastT) / 1000;
+    if (dt > 0.05) {
+      if ((last - depth) / dt > 25 && !reduce) alarmUntil = now + 1400;
+      last = depth; lastT = now;
+    }
+    hud.classList.toggle('alarm', now < alarmUntil);
+    $('hud-mode').textContent = now < alarmUntil ? 'ASCENSO' : 'BUCEO';
+  };
+  let raf = 0;
+  addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(tick); }, {passive: true});
+  setInterval(tick, 400);
+  tick();
+})();
+</script>
