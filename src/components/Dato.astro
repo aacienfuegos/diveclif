@@ -1,0 +1,8 @@
+---
+interface Props {
+  readonly valor: string | null;
+  readonly falta: string;
+}
+const { valor, falta } = Astro.props;
+---
+{valor ?? <mark class="hueco">[{falta}]</mark>}

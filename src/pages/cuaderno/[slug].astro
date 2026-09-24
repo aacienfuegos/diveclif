@@ -1,0 +1,40 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '@/layouts/Base.astro';
+import Nav from '@/components/Nav.astro';
+import Pie from '@/components/Pie.astro';
+import { SITE } from '@/config';
+import { articulo, migas } from '@/lib/jsonld';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('cuaderno');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+interface Props {
+  readonly post: CollectionEntry<'cuaderno'>;
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const url = `${SITE.url}/cuaderno/${post.id}`;
+const jsonLd = [
+  articulo({ ...post.data, url }),
+  migas([{ nombre: 'Inicio', url: `${SITE.url}/` }, { nombre: 'Cuaderno', url: `${SITE.url}/#fauna` }, { nombre: post.data.titulo, url }]),
+];
+---
+<Base titulo={post.data.titulo} descripcion={post.data.resumen} jsonLd={jsonLd} og={`cuaderno/${post.id}`}>
+  <Nav oscura />
+  <main class="page">
+    <article class="wrap">
+      <header class="page-head">
+        <nav class="crumbs mono" aria-label="Migas"><a href="/">Inicio</a><span>/</span><a href="/#fauna">Cuaderno</a></nav>
+        <span class="mono c-fauna">{post.data.etiqueta}</span>
+        <h1>{post.data.titulo}</h1>
+        {post.data.especie && <p class="quote">{post.data.especie}</p>}
+      </header>
+      <div class="prose"><Content /></div>
+      <div class="cta-row"><a class="btn btn-ghost" href="/#fauna">Más del cuaderno</a></div>
+    </article>
+  </main>
+  <Pie />
+</Base>

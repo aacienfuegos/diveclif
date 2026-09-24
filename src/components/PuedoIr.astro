@@ -1,0 +1,97 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import SelectorTitulacion from './SelectorTitulacion.astro';
+import { FICHA_INICIAL, NOMBRE_NIVEL, etiquetaEvaluacion, evaluarViaje } from '@/lib/buceo';
+import { FORMATO, precio } from '@/lib/viajes';
+import { duracionDias, rangoFechas } from '@/lib/fechas';
+
+interface Props {
+  readonly viajes: readonly CollectionEntry<'viajes'>[];
+}
+const { viajes } = Astro.props;
+---
+<div class="puedo" id="puedo-ir">
+  <div class="puedo-head">
+    <h3>¿Puedo ir <span class="serif">a este</span> viaje?</h3>
+    <span class="mono">Próximas salidas</span>
+  </div>
+  <div class="ficha">
+    <div><span class="lbl">Tu titulación</span><SelectorTitulacion /></div>
+    <div>
+      <label class="lbl" for="inmersiones">Inmersiones registradas</label>
+      <div class="dives">
+        <output for="inmersiones" data-inmersiones-out>{FICHA_INICIAL.inmersiones}</output>
+        <input type="range" id="inmersiones" min="0" max="150" step="5" value={FICHA_INICIAL.inmersiones} data-inmersiones />
+      </div>
+    </div>
+  </div>
+  <p class="demo-note">Los viajes internacionales y nacionales los organiza Te Moana Expeditions</p>
+  <div class="trips">
+    {viajes.map((viaje) => {
+      const v = viaje.data;
+      const e = evaluarViaje(FICHA_INICIAL, v.nivel, v.inmersionesMinimas);
+      const dias = duracionDias(v.inicio, v.fin);
+      return (
+        <article class:list={['tcard', e.ok ? 'ok' : 'no']} data-nivel={v.nivel} data-minimas={v.inmersionesMinimas}>
+          <div class="ttop">
+            <span class="tdate">{rangoFechas(v.inicio, v.fin)} · {dias} {dias === 1 ? 'día' : 'días'}</span>
+            <span class:list={['pill', e.ok ? 'ok' : 'no']} data-pill>{v.estado === 'completo' ? 'Completo' : etiquetaEvaluacion(e)}</span>
+          </div>
+          <div class="tbody"><h4><a href={`/viajes/${viaje.id}`}>{v.titulo}</a></h4></div>
+          <dl class="tmeta tbody">
+            <div><dt>Formato</dt><dd>{FORMATO[v.formato]}</dd></div>
+            <div><dt>Requisito</dt><dd>{NOMBRE_NIVEL[v.nivel]}{v.inmersionesMinimas > 0 && ` · ${v.inmersionesMinimas} inm.`}</dd></div>
+            <div><dt>Agua</dt><dd>{v.agua.temperatura} · {v.agua.traje}</dd></div>
+            <div><dt>Inmersiones</dt><dd>{v.inmersiones}</dd></div>
+          </dl>
+          <p class="tgap" data-hueco hidden></p>
+          <div class="tprice"><b>{precio(v.precioDesde)}</b><span>Organiza<br />{v.organiza}</span></div>
+        </article>
+      );
+    })}
+  </div>
+</div>
+
+<script>
+  import { NIVELES, etiquetaEvaluacion, evaluarViaje, type EvaluacionViaje, type Nivel } from '@/lib/buceo';
+  import { actualizarFicha, alCambiarFicha } from '@/lib/ficha';
+
+  const esNivel = (v: string | undefined): v is Nivel => (NIVELES as readonly string[]).includes(v ?? '');
+  const rango = document.querySelector<HTMLInputElement>('[data-inmersiones]');
+  const salida = document.querySelector<HTMLOutputElement>('[data-inmersiones-out]');
+
+  const enlace = (texto: string, href: string) => Object.assign(document.createElement('a'), { textContent: texto, href });
+
+  const pintarHueco = (p: HTMLElement, e: EvaluacionViaje, sinTitulacion: boolean) => {
+    p.replaceChildren();
+    if (e.cursos.length > 0) {
+      p.append(sinTitulacion ? 'Empieza por el ' : 'Te falta el ', enlace(e.cursos.join(' + '), '/#cursos'), '. ');
+    }
+    if (e.faltanInmersiones > 0) {
+      p.append(`Te faltan ${e.faltanInmersiones} inmersiones: súmalas en los `, enlace('day trips a Cabo de Palos', '/puntos-de-inmersion'), '.');
+    }
+    p.hidden = e.ok;
+  };
+
+  rango?.addEventListener('input', () => actualizarFicha({ inmersiones: Number(rango.value) }));
+
+  alCambiarFicha((ficha) => {
+    if (rango) rango.value = String(ficha.inmersiones);
+    if (salida) salida.textContent = String(ficha.inmersiones);
+    for (const card of document.querySelectorAll<HTMLElement>('.tcard')) {
+      const nivel = card.dataset.nivel;
+      if (!esNivel(nivel)) continue;
+      const e = evaluarViaje(ficha, nivel, Number(card.dataset.minimas));
+      card.classList.toggle('ok', e.ok);
+      card.classList.toggle('no', !e.ok);
+      const pill = card.querySelector<HTMLElement>('[data-pill]');
+      if (pill && pill.textContent !== 'Completo') {
+        pill.textContent = etiquetaEvaluacion(e);
+        pill.classList.toggle('ok', e.ok);
+        pill.classList.toggle('no', !e.ok);
+      }
+      const hueco = card.querySelector<HTMLElement>('[data-hueco]');
+      if (hueco) pintarHueco(hueco, e, ficha.rango === 0);
+    }
+  });
+</script>

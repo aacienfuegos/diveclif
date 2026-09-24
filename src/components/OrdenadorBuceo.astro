@@ -1,0 +1,77 @@
+---
+---
+<aside class="hud" data-hud aria-hidden="true">
+  <div class="hud-top"><span>DIVE CLIF</span><span data-hud-modo>BUCEO</span></div>
+  <div class="hud-depth"><b data-hud-prof>0.0</b><span>m</span></div>
+  <div class="hud-grid">
+    <div>MÁX<b data-hud-max>0.0</b></div>
+    <div>TEMP<b data-hud-temp>24°</b></div>
+    <div>NDL<b class="hud-ndl" data-hud-ndl>--</b></div>
+  </div>
+  <div class="hud-alarm">SUBE DESPACIO</div>
+</aside>
+
+<script>
+  // Tabla PADI RDP (m → minutos sin descompresión)
+  const TABLA_NDL: ReadonlyArray<readonly [number, number]> = [
+    [10, 219], [12, 147], [14, 98], [16, 72], [18, 56], [20, 45], [22, 37], [25, 29], [30, 20], [35, 14], [40, 9],
+  ];
+
+  const ndl = (d: number): number | null => {
+    if (d < 10) return null;
+    for (let i = 1; i < TABLA_NDL.length; i++) {
+      const a = TABLA_NDL[i - 1], b = TABLA_NDL[i];
+      if (!a || !b) break;
+      const [d0, n0] = a, [d1, n1] = b;
+      if (d <= d1) return Math.round(n0 + ((n1 - n0) * (d - d0)) / (d1 - d0));
+    }
+    return 9;
+  };
+
+  const hud = document.querySelector<HTMLElement>('[data-hud]');
+  const hero = document.querySelector<HTMLElement>('.hero');
+  const campo = (n: string) => hud?.querySelector<HTMLElement>(`[data-hud-${n}]`) ?? null;
+  const prof = campo('prof'), max = campo('max'), temp = campo('temp'), ndlEl = campo('ndl'), modo = campo('modo');
+  const zonas = [...document.querySelectorAll<HTMLElement>('[data-depth]')];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let maxima = 0, anterior = 0, tAnterior = performance.now(), alarmaHasta = 0;
+
+  const tick = () => {
+    if (!hud || !prof || !max || !temp || !ndlEl || !modo) return;
+    const centro = scrollY + innerHeight * 0.5;
+    let d = 0;
+    for (const z of zonas) {
+      if (centro >= z.offsetTop && centro < z.offsetTop + z.offsetHeight) {
+        const p = (centro - z.offsetTop) / z.offsetHeight;
+        const a = Number(z.dataset.depth), b = Number(z.dataset.depthEnd);
+        d = a + (b - a) * p;
+      }
+    }
+    maxima = Math.max(maxima, d);
+    prof.textContent = d.toFixed(1);
+    max.textContent = maxima.toFixed(1);
+    temp.textContent = `${Math.round(24 - d * 0.22)}°`;
+    const n = ndl(d);
+    ndlEl.textContent = n === null ? '--' : String(n);
+    hud.classList.toggle('low', n !== null && n < 15);
+    hud.classList.toggle('hero-on', (hero?.getBoundingClientRect().bottom ?? 0) > innerHeight * 0.9);
+    const fin = document.querySelector('footer')?.getBoundingClientRect().top ?? Infinity;
+    hud.classList.toggle('off', fin < innerHeight * 0.7);
+
+    const ahora = performance.now(), dt = (ahora - tAnterior) / 1000;
+    if (dt > 0.05) {
+      if ((anterior - d) / dt > 25 && !reduce) alarmaHasta = ahora + 1400;
+      anterior = d;
+      tAnterior = ahora;
+    }
+    const alarma = ahora < alarmaHasta;
+    hud.classList.toggle('alarm', alarma);
+    modo.textContent = alarma ? 'ASCENSO' : 'BUCEO';
+  };
+
+  let raf = 0;
+  addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(tick); }, { passive: true });
+  setInterval(tick, 400);
+  tick();
+</script>

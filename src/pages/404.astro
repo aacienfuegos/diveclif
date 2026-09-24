@@ -1,0 +1,19 @@
+---
+import Base from '@/layouts/Base.astro';
+import Nav from '@/components/Nav.astro';
+import Pie from '@/components/Pie.astro';
+---
+<Base titulo="Página no encontrada">
+  <Nav oscura />
+  <main class="page">
+    <div class="wrap">
+      <header class="page-head">
+        <span class="mono c-tail">Error 404 · profundidad desconocida</span>
+        <h1>Aquí no hay fondo</h1>
+        <p class="lede">La página que buscas no existe o ha cambiado de sitio.</p>
+      </header>
+      <div class="cta-row"><a class="btn btn-coral" href="/">Volver a superficie</a></div>
+    </div>
+  </main>
+  <Pie />
+</Base>

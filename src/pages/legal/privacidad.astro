@@ -1,0 +1,45 @@
+---
+import Legal from '@/layouts/Legal.astro';
+import Dato from '@/components/Dato.astro';
+import { LEGAL } from '@/config';
+---
+<Legal titulo="Política de privacidad" descripcion="Qué datos recoge la web de Dive Clif, para qué se usan y cómo ejercer tus derechos.">
+  <h2>Responsable del tratamiento</h2>
+  <p><Dato valor={LEGAL.titular} falta="nombre y apellidos" /> (Dive Clif), NIF <Dato valor={LEGAL.nif} falta="NIF" />, con domicilio en <Dato valor={LEGAL.domicilio} falta="domicilio fiscal" />. Contacto para cualquier asunto de privacidad: <a href={`mailto:${LEGAL.emailContacto}`}>{LEGAL.emailContacto}</a>.</p>
+
+  <h2>Qué datos recogemos</h2>
+  <ul>
+    <li><strong>Formulario de contacto:</strong> nombre, email, qué te interesa, tu titulación de buceo y el mensaje que escribas.</li>
+    <li><strong>Protección contra spam:</strong> el formulario usa Cloudflare Turnstile, que analiza datos técnicos de la conexión (como la dirección IP) para distinguir personas de bots.</li>
+    <li><strong>Estadísticas de visitas:</strong> Cloudflare Web Analytics cuenta visitas de forma agregada, sin cookies y sin identificarte.</li>
+  </ul>
+  <p>No pedimos datos de salud ni de pago en esta web.</p>
+
+  <h2>Para qué y con qué base legal</h2>
+  <ul>
+    <li>Responder a tu consulta sobre cursos, salidas o viajes. Base legal: aplicar medidas precontractuales a petición tuya (art. 6.1.b RGPD).</li>
+    <li>Proteger la web frente a abusos y envíos automáticos. Base legal: interés legítimo en la seguridad del servicio (art. 6.1.f RGPD).</li>
+  </ul>
+  <p>No enviamos publicidad ni tomamos decisiones automatizadas con tus datos.</p>
+
+  <h2>Cuánto tiempo los guardamos</h2>
+  <p>Mientras dure la conversación y hasta un año después si no llegas a contratar nada. Si contratas un curso, los datos necesarios se conservan durante los plazos que exige la normativa fiscal y contable.</p>
+
+  <h2>Quién más los trata</h2>
+  <ul>
+    <li><strong>Cloudflare, Inc.:</strong> alojamiento de la web, protección antispam y estadísticas.</li>
+    <li><strong>Resend:</strong> envío del email con tu consulta al buzón de Dive Clif.</li>
+    <li><strong>El proveedor de correo</strong> donde Dive Clif recibe y responde los mensajes.</li>
+    <li><strong>Te Moana Expeditions</strong>, solo si te interesa un viaje y nos pides que te pongamos en contacto para reservarlo.</li>
+  </ul>
+  <p>Algunos de estos proveedores están en Estados Unidos. Las transferencias se amparan en el Marco de Privacidad de Datos UE-EE. UU. o en cláusulas contractuales tipo aprobadas por la Comisión Europea.</p>
+
+  <h2>Tus derechos</h2>
+  <p>Puedes pedir acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad de tus datos escribiendo a <a href={`mailto:${LEGAL.emailContacto}`}>{LEGAL.emailContacto}</a>. Si crees que no hemos atendido bien tu petición, puedes reclamar ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es" rel="noopener" target="_blank">aepd.es</a>).</p>
+
+  <h2>Menores</h2>
+  <p>Si tienes menos de 14 años, la consulta la tiene que hacer tu padre, madre o tutor.</p>
+
+  <h2>Cookies y almacenamiento en tu navegador</h2>
+  <p>Esta web no usa cookies de seguimiento ni de publicidad. El selector "Tu titulación" guarda tu elección solo en tu navegador para recordarla en la siguiente visita; no se envía a ningún servidor y puedes borrarla limpiando los datos del sitio.</p>
+</Legal>

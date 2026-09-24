@@ -1,0 +1,111 @@
+---
+import { getCollection } from 'astro:content';
+import { PUBLIC_TURNSTILE_SITE_KEY } from 'astro:env/client';
+import { SITE } from '@/config';
+import { TITULACIONES } from '@/lib/buceo';
+import { proximos } from '@/lib/viajes';
+
+const viajes = proximos(await getCollection('viajes'), new Date());
+const cursos = (await getCollection('cursos')).sort((a, b) => a.data.orden - b.data.orden);
+const intereses = [
+  ...viajes.map((v) => `Viaje: ${v.data.titulo}`),
+  ...cursos.map((c) => `Curso: ${c.data.nombre}`),
+  'The Sunset',
+  'Taller de biología marina',
+  'Otra cosa',
+];
+---
+<section class="sec contacto" id="contacto" data-depth="15" data-depth-end="3">
+  <div class="wrap">
+    <div class="depth-tag"><b>−5 m</b> Parada de seguridad · 3 minutos</div>
+    <h2>¿Te vienes <span class="serif">con</span> nosotros?</h2>
+    <div class="contact-grid">
+      <div class="channels">
+        {SITE.whatsappNumero && (
+          <a class="channel" href={`https://wa.me/${SITE.whatsappNumero}`} target="_blank" rel="noopener"><span><b>WhatsApp</b><span class="mono">Respuesta en el día</span></span><span class="mono">Abrir chat →</span></a>
+        )}
+        <a class="channel" href={SITE.comunidadWhatsApp} target="_blank" rel="noopener"><span><b>Comunidad</b><span class="mono">Dive Clif Adventures</span></span><span class="mono">Unirme →</span></a>
+        <a class="channel" href={SITE.instagram} target="_blank" rel="noopener"><span><b>Instagram</b><span class="mono">@dive_clif</span></span><span class="mono">Seguir →</span></a>
+        <a class="channel" href={`mailto:${SITE.email}`}><span><b>Email</b><span class="mono">{SITE.email}</span></span><span class="mono">Escribir →</span></a>
+      </div>
+      <form class="form" data-contacto action="/api/contacto" method="post">
+        <div class="form-row">
+          <label for="f-nombre">Nombre<input id="f-nombre" name="nombre" autocomplete="name" required maxlength="80" /></label>
+          <label for="f-email">Email<input id="f-email" name="email" type="email" autocomplete="email" required maxlength="254" /></label>
+        </div>
+        <label for="f-interes">Me interesa
+          <select id="f-interes" name="interes" required>{intereses.map((i) => <option>{i}</option>)}</select>
+        </label>
+        <label for="f-titulacion">Titulación actual
+          <select id="f-titulacion" name="titulacion">{TITULACIONES.map((t) => <option>{t.etiqueta}</option>)}<option>Rescue o superior</option></select>
+        </label>
+        <label for="f-mensaje">Mensaje<textarea id="f-mensaje" name="mensaje" rows="3" required maxlength="2000"></textarea></label>
+        <label class="trampa" aria-hidden="true">No rellenar<input name="web" tabindex="-1" autocomplete="off" /></label>
+        <div class="turnstile" data-turnstile data-sitekey={PUBLIC_TURNSTILE_SITE_KEY}></div>
+        <button class="btn btn-coral" type="submit">Enviar consulta</button>
+        <p class="form-legal">Usamos tus datos solo para responderte. Detalles en la <a href="/legal/privacidad">política de privacidad</a>.</p>
+        <p class="form-note" data-aviso aria-live="polite"></p>
+      </form>
+    </div>
+    <div class="ig">
+      <a class="ig-cta" href={SITE.instagram} target="_blank" rel="noopener">
+        <span class="mono">Visita nuestro Instagram</span>
+        <b>@dive_clif</b>
+        <span class="ig-sub">Fauna, viajes, ejercicios y el día a día en el agua →</span>
+      </a>
+    </div>
+  </div>
+</section>
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+
+<script>
+  interface Turnstile {
+    render: (el: HTMLElement, opciones: Record<string, string>) => string;
+    reset: () => void;
+  }
+  const turnstile = () => (window as unknown as { turnstile?: Turnstile }).turnstile;
+
+  const hueco = document.querySelector<HTMLElement>('[data-turnstile]');
+  const pintarTurnstile = () => {
+    const t = turnstile();
+    if (!t || !hueco?.dataset.sitekey) return false;
+    t.render(hueco, { sitekey: hueco.dataset.sitekey, theme: 'dark', language: 'es', size: hueco.clientWidth < 300 ? 'compact' : 'flexible' });
+    return true;
+  };
+  if (!pintarTurnstile()) {
+    const espera = setInterval(() => { if (pintarTurnstile()) clearInterval(espera); }, 200);
+    setTimeout(() => clearInterval(espera), 15_000);
+  }
+
+  const form = document.querySelector<HTMLFormElement>('[data-contacto]');
+  const aviso = form?.querySelector<HTMLElement>('[data-aviso]');
+  const boton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+
+  const avisar = (texto: string, error: boolean) => {
+    if (!aviso) return;
+    aviso.textContent = texto;
+    aviso.classList.toggle('error', error);
+  };
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (boton) boton.disabled = true;
+    avisar('Enviando…', false);
+    try {
+      const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+      if (res.ok) {
+        form.reset();
+        avisar('Recibido. Pelayo te contesta en uno o dos días.', false);
+      } else if (res.status === 400) {
+        avisar('Revisa los campos: falta algo o el email no es válido.', true);
+      } else {
+        avisar('No se ha podido enviar. Escríbenos por WhatsApp o Instagram.', true);
+      }
+    } catch {
+      avisar('Sin conexión. Vuelve a intentarlo en un momento.', true);
+    } finally {
+      if (boton) boton.disabled = false;
+      turnstile()?.reset();
+    }
+  });
+</script>
