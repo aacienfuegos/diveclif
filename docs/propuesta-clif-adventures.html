@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Clif Adventures · propuesta</title>
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Martian+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --negro:#050607;
+  --turquesa:#1fc8c8;
+  --sup:color-mix(in srgb,var(--turquesa) 6%,var(--negro));
+  --sup-2:color-mix(in srgb,var(--turquesa) 12%,var(--negro));
+  --linea:color-mix(in srgb,var(--turquesa) 26%,transparent);
+  --tq-suave:color-mix(in srgb,var(--turquesa) 16%,transparent);
+  --txt:#fff; --txt-2:rgba(255,255,255,.76); --txt-3:rgba(255,255,255,.6);
+  --f-display:"Big Shoulders Display","Oswald",Impact,sans-serif;
+  --f-body:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+  --f-serif:"Instrument Serif",Georgia,serif;
+  --f-mono:"Martian Mono",ui-monospace,Menlo,monospace;
+  --gut:clamp(16px,3vw,48px);
+  --head:68px;
+  --bar:0px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--negro);color:var(--txt)}
+body{font-family:var(--f-body);font-size:16px;line-height:1.5;min-height:100dvh;display:flex;flex-direction:column;padding-bottom:var(--bar)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--turquesa);outline-offset:3px}
+button{font:inherit;color:inherit}
+h2,h3,h4,p{margin:0}
+.mono{font-family:var(--f-mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase}
+.marca{white-space:nowrap}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.defs{position:absolute;width:0;height:0}
+.logo-fondo{fill:var(--negro)}
+.logo-aro{fill:none;stroke:var(--turquesa)}
+.logo-txt{fill:var(--turquesa);font-family:var(--f-mono);font-weight:500}
+
+/* cabecera y pestañas */
+.top{height:var(--head);flex:none;display:flex;align-items:center;gap:28px;padding:0 var(--gut);border-bottom:1px solid var(--linea)}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.brand svg{width:44px;height:44px;flex:none}
+.brand-name{font-family:var(--f-display);font-weight:800;font-size:1.45rem;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+.tabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--sup);box-shadow:inset 0 0 0 1px var(--linea)}
+.tabs a{display:block;padding:10px 18px;border-radius:999px;text-decoration:none;white-space:nowrap;color:var(--txt-2);font-family:var(--f-mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;transition:background .2s,color .2s}
+.tabs a:hover{color:var(--txt)}
+.tabs a[aria-selected="true"],
+html:not(.js) body:not(:has(.panel:target)) .tabs a[href="#formacion"],
+html:not(.js) body:has(#formacion:target) .tabs a[href="#formacion"],
+html:not(.js) body:has(#aventuras:target) .tabs a[href="#aventuras"],
+html:not(.js) body:has(#causa:target) .tabs a[href="#causa"]{background:var(--turquesa);color:var(--negro)}
+.top-note{margin-left:auto;color:var(--txt-3);white-space:nowrap}
+
+/* paneles */
+.panels{flex:1;min-height:0;display:flex}
+.panel{display:none;flex:1;min-width:0;padding:28px var(--gut) 32px;gap:24px 48px;align-content:start;scroll-margin-top:var(--head)}
+html:not(.js) .panel:target,
+html:not(.js) .panels:not(:has(.panel:target))>#formacion,
+.js .panel:not([hidden]){display:grid}
+.eyebrow{color:var(--turquesa)}
+.panel h2{font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:clamp(2.3rem,4.4vw,4.2rem);line-height:.88;margin-top:10px;text-wrap:balance}
+.panel h2 em{font-family:var(--f-serif);font-weight:400;font-style:italic;text-transform:none;color:var(--turquesa)}
+.lede{color:var(--txt-2);margin-top:14px;max-width:46ch}
+.aviso{display:inline-block;margin-top:14px;padding:6px 11px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--linea);color:var(--txt-2)}
+
+/* tarjetas y carruseles */
+.rail{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:var(--card,280px);gap:14px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:2px 2px 10px;scrollbar-width:thin;scrollbar-color:var(--linea) transparent}
+.rail>*{scroll-snap-align:start}
+.card{position:relative;display:flex;flex-direction:column;gap:12px;padding:20px;border-radius:6px;background:var(--sup);box-shadow:inset 0 0 0 1px var(--linea);transition:box-shadow .2s,opacity .2s}
+.card h3{font-family:var(--f-display);font-weight:800;text-transform:uppercase;font-size:1.85rem;line-height:.95}
+.card p{color:var(--txt-2);font-size:.92rem}
+.chips{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.chips li{padding:4px 9px;border-radius:999px;font-family:var(--f-mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;box-shadow:inset 0 0 0 1px var(--linea);color:var(--turquesa)}
+.open{margin-top:auto;align-self:flex-start;display:none;border:0;cursor:pointer;padding:9px 14px;border-radius:999px;background:var(--tq-suave);color:var(--txt);font-family:var(--f-mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.js .open{display:inline-block}
+.open:hover{background:var(--turquesa);color:var(--negro)}
+.more{display:none;flex-direction:column;gap:10px}
+html:not(.js) .more,.in-sheet .more{display:flex}
+.rail-nav{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+html:not(.js) .rail-nav{display:none}
+.rail-nav button{width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;background:var(--sup-2);box-shadow:inset 0 0 0 1px var(--linea);font-size:1.1rem}
+.rail-nav button:hover{background:var(--turquesa);color:var(--negro)}
+
+/* controles tipo botón */
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{padding:0;margin-bottom:8px;color:var(--turquesa)}
+.seg{display:flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:14px;background:var(--sup);box-shadow:inset 0 0 0 1px var(--linea);width:fit-content;max-width:100%}
+.seg input,.gauge input{position:absolute;opacity:0;pointer-events:none}
+.seg label{cursor:pointer;padding:9px 13px;border-radius:10px;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;color:var(--txt-2);transition:background .2s,color .2s}
+.seg label:hover{color:var(--txt)}
+.seg input:checked+label{background:var(--turquesa);color:var(--negro)}
+.seg input:focus-visible+label,.gauge input:focus-visible+label{outline:2px solid var(--turquesa);outline-offset:2px}
+
+/* formación */
+#formacion{grid-template-columns:minmax(300px,380px) minmax(0,1fr);grid-template-rows:auto 1fr}
+.f-intro{grid-column:1}
+.f-ctrl{grid-column:1;display:grid;gap:22px;align-content:start}
+.f-rails{grid-column:2;grid-row:1/span 2;align-self:center;min-width:0}
+.gauge{position:relative;height:300px;margin:8px 0 0 10px;border-left:2px solid var(--turquesa)}
+.gauge::before{content:"0 m · superficie";position:absolute;top:-8px;left:14px;font-family:var(--f-mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-3)}
+.stop{position:absolute;left:-9px;top:var(--pos);transform:translateY(-50%)}
+.s12{--pos:30%}.s18{--pos:45%}.s30{--pos:75%}.s40{--pos:100%}
+.stop label{display:flex;align-items:center;gap:12px;cursor:pointer;white-space:nowrap}
+.stop label::before{content:"";width:16px;height:16px;border-radius:50%;background:var(--negro);box-shadow:inset 0 0 0 2px var(--turquesa);transition:background .2s}
+.stop b{font-family:var(--f-display);font-weight:800;font-size:1.9rem;line-height:1;min-width:2.6ch}
+.stop span{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-3)}
+.stop input:checked+label::before{background:var(--turquesa)}
+.stop input:checked+label b{color:var(--turquesa)}
+.stop input:checked+label span{color:var(--txt)}
+.pro-note{display:none;color:var(--txt-2);max-width:40ch}
+.rail-pro{display:none}
+#formacion:has(#l-pro:checked) .gauge,#formacion:has(#l-pro:checked) .rail-rec{display:none}
+#formacion:has(#l-pro:checked) .rail-pro{display:grid}
+#formacion:has(#l-pro:checked) .pro-note{display:block}
+.f-rails .rail{--card:calc((100% - 42px)/4)}
+.f-rails .rail-pro{--card:calc((100% - 28px)/3)}
+.curso{min-height:400px}
+.depth{display:flex;align-items:baseline;gap:8px}
+.depth b{font-family:var(--f-display);font-weight:900;font-size:3.6rem;line-height:.9;color:var(--turquesa)}
+.depth span{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-3)}
+.depth.pro b{font-size:2.4rem}
+.tag-sel{display:none;position:absolute;top:20px;right:20px;padding:4px 9px;border-radius:999px;background:var(--turquesa);color:var(--negro);font-family:var(--f-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase}
+#formacion:has(#p12:checked) .curso[data-p="12"],
+#formacion:has(#p18:checked) .curso[data-p="18"],
+#formacion:has(#p30:checked) .curso[data-p="30"],
+#formacion:has(#p40:checked) .curso[data-p="40"]{box-shadow:inset 0 0 0 2px var(--turquesa);background:var(--sup-2)}
+#formacion:has(#p12:checked) .curso[data-p="12"] .tag-sel,
+#formacion:has(#p18:checked) .curso[data-p="18"] .tag-sel,
+#formacion:has(#p30:checked) .curso[data-p="30"] .tag-sel,
+#formacion:has(#p40:checked) .curso[data-p="40"] .tag-sel{display:block}
+
+/* aventuras */
+#aventuras{grid-template-columns:minmax(0,1fr) auto;align-items:end}
+.ficha{display:grid;gap:14px;padding:18px 20px;border-radius:6px;background:var(--sup);box-shadow:inset 0 0 0 1px var(--linea)}
+html:not(.js) .ficha{display:none}
+.dives{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center}
+.dives output{font-family:var(--f-display);font-weight:800;font-size:2.2rem;line-height:1;min-width:3ch;font-variant-numeric:tabular-nums}
+.dives input{width:100%;accent-color:var(--turquesa)}
+.a-rail{grid-column:1/-1;min-width:0}
+.a-rail .rail{--card:calc((100% - 56px)/4.3)}
+.viaje{min-height:430px}
+.v-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 10px}
+.fecha{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-2);white-space:nowrap}
+.pill{flex:none;padding:4px 9px;border-radius:999px;font-family:var(--f-mono);font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.pill.ok{background:var(--turquesa);color:var(--negro)}
+.pill.no{box-shadow:inset 0 0 0 1px rgba(255,255,255,.55);color:var(--txt)}
+.destino{margin-top:-6px}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin:0;font-size:.84rem;color:var(--txt-2)}
+.meta dt{font-family:var(--f-mono);font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-3)}
+.meta dd{margin:0}
+.viaje.no h3,.viaje.no .meta,.viaje.no .resumen{opacity:.6}
+.gap{font-size:.86rem;color:var(--txt)!important;padding-left:10px;border-left:2px solid rgba(255,255,255,.55)}
+.precio{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding-top:12px;margin-top:auto;border-top:1px solid var(--linea)}
+.precio b{font-family:var(--f-display);font-weight:900;font-size:1.7rem;white-space:nowrap}
+.precio span{font-family:var(--f-mono);font-size:.56rem;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-2);text-align:right}
+
+/* causa social */
+#causa{grid-template-columns:minmax(0,1fr) 400px}
+.c-intro{grid-column:1}
+.c-cifras{grid-column:2;grid-row:1;align-self:end}
+.c-prot{grid-column:1;grid-row:2;min-width:0}
+.c-donar{grid-column:2;grid-row:2/span 2}
+.c-ideas{grid-column:1;grid-row:3;min-width:0}
+.cifras{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;border-radius:6px;overflow:hidden;margin-top:8px}
+.cifras div{background:var(--sup);padding:14px 12px}
+.cifras b{display:block;font-family:var(--f-display);font-weight:900;font-size:2rem;line-height:1;color:var(--turquesa);font-variant-numeric:tabular-nums;white-space:nowrap}
+.cifras span{font-size:.78rem;color:var(--txt-2)}
+.c-prot .rail{--card:calc((100% - 28px)/3)}
+.prot{min-height:190px}
+.prot h3{font-size:1.5rem}
+.prot .chips li{color:var(--txt)}
+h3.sub{font-family:var(--f-mono);font-weight:400;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--turquesa);margin-bottom:10px}
+.ideas{list-style:none;margin:0;padding:0}
+.ideas.rail{--card:calc((100% - 42px)/4)}
+.ideas li{padding:14px 16px;border-radius:6px;background:var(--sup);box-shadow:inset 0 0 0 1px var(--linea)}
+.ideas b{display:block;font-family:var(--f-display);font-weight:800;font-size:1.25rem;text-transform:uppercase;line-height:1;margin-bottom:6px}
+.ideas span{font-size:.85rem;color:var(--txt-2)}
+.donar{display:grid;gap:18px;padding:22px;border-radius:6px;background:var(--sup-2);box-shadow:inset 0 0 0 1px var(--linea)}
+.donar h3{font-family:var(--f-display);font-weight:900;font-size:2rem;text-transform:uppercase;line-height:.95}
+.donar .seg{width:100%}
+.donar details summary{list-style:none;cursor:pointer;display:inline-block;padding:13px 20px;border-radius:999px;background:var(--turquesa);color:var(--negro);font-family:var(--f-mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.donar details summary::-webkit-details-marker{display:none}
+.sim{margin-top:14px;padding:12px 14px;border-radius:6px;background:var(--negro);box-shadow:inset 0 0 0 1px var(--turquesa);font-size:.9rem}
+.sim strong{color:var(--turquesa);font-weight:600}
+.sim span{display:block;margin-top:4px;color:var(--txt-2)}
+
+/* ficha de detalle */
+.sheet-wrap{position:fixed;inset:0;z-index:50;display:flex;justify-content:flex-end}
+.sheet-wrap[hidden]{display:none}
+.backdrop{position:absolute;inset:0;background:rgba(0,0,0,.65)}
+.sheet{position:relative;width:min(460px,100%);height:100%;overflow:auto;overscroll-behavior:contain;padding:24px;background:var(--sup);border-left:1px solid var(--linea);animation:in-r .25s ease-out}
+.sheet:focus{outline:none}
+.close{position:sticky;top:0;float:right;z-index:1;width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;background:var(--sup-2);box-shadow:inset 0 0 0 1px var(--linea);font-size:1.2rem}
+.in-sheet{padding:0;background:none;box-shadow:none!important;min-height:0}
+.in-sheet h3{font-size:2.6rem;padding-right:48px}
+.in-sheet .tag-sel{display:none!important}
+.extra{display:grid;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--linea)}
+.extra ul{margin:0;padding-left:18px;color:var(--txt-2);font-size:.92rem;display:grid;gap:4px}
+.extra p{color:var(--txt-2);font-size:.92rem}
+.go{justify-self:start;border:0;cursor:pointer;padding:12px 18px;border-radius:999px;background:var(--turquesa);color:var(--negro);font-family:var(--f-mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+@keyframes in-r{from{transform:translateX(40px);opacity:0}}
+@keyframes in-b{from{transform:translateY(60px);opacity:0}}
+
+/* móvil */
+@media (max-width:760px){
+  :root{--head:58px;--bar:calc(62px + env(safe-area-inset-bottom,0px))}
+  .top{gap:12px}
+  .brand svg{width:38px;height:38px}
+  .brand-name{font-size:1.25rem;letter-spacing:.1em}
+  .top-note{display:none}
+  .tabs{position:fixed;z-index:40;left:0;right:0;bottom:0;height:var(--bar);padding:0 0 env(safe-area-inset-bottom,0px);border-radius:0;gap:0;background:var(--negro);box-shadow:0 -1px 0 var(--linea)}
+  .tabs a{flex:1;display:grid;place-items:center;border-radius:0;padding:0 4px;font-size:.62rem;position:relative}
+  .tabs a[aria-selected="true"],
+  html:not(.js) body:not(:has(.panel:target)) .tabs a[href="#formacion"],
+  html:not(.js) body:has(#formacion:target) .tabs a[href="#formacion"],
+  html:not(.js) body:has(#aventuras:target) .tabs a[href="#aventuras"],
+  html:not(.js) body:has(#causa:target) .tabs a[href="#causa"]{background:none;color:var(--turquesa)}
+  .tabs a[aria-selected="true"]::before,
+  html:not(.js) body:not(:has(.panel:target)) .tabs a[href="#formacion"]::before,
+  html:not(.js) body:has(#formacion:target) .tabs a[href="#formacion"]::before,
+  html:not(.js) body:has(#aventuras:target) .tabs a[href="#aventuras"]::before,
+  html:not(.js) body:has(#causa:target) .tabs a[href="#causa"]::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:var(--turquesa)}
+  .panel{padding:20px var(--gut) 24px;gap:18px}
+  .panel h2{font-size:2.3rem}
+  .lede{font-size:.95rem;margin-top:10px}
+  #formacion,#aventuras,#causa{grid-template-columns:minmax(0,1fr);grid-template-rows:none}
+  .f-intro,.f-ctrl,.f-rails,.c-intro,.c-cifras,.c-prot,.c-donar,.c-ideas{grid-column:1;grid-row:auto}
+  .f-ctrl{gap:14px}
+  .gauge{height:auto;margin:0;border:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:4px;border-radius:14px;background:var(--sup);box-shadow:inset 0 0 0 1px var(--linea)}
+  .gauge::before{display:none}
+  .stop{position:static;transform:none}
+  .stop label{flex-direction:column;gap:2px;padding:8px 2px;border-radius:10px}
+  .stop label::before{display:none}
+  .stop b{font-size:1.45rem;min-width:0}
+  .stop span{font-size:.5rem;letter-spacing:.04em}
+  .stop input:checked+label{background:var(--turquesa)}
+  .stop input:checked+label b,.stop input:checked+label span{color:var(--negro)}
+  .f-rails .rail,.f-rails .rail-pro,.a-rail .rail,.c-prot .rail,.ideas.rail{--card:calc(100% - 44px)}
+  .curso{min-height:0}
+  .depth b{font-size:3rem}
+  .viaje{min-height:0}
+  .rail-nav{display:none}
+  .ficha{padding:14px}
+  .ficha .seg{display:grid;grid-template-columns:1fr 1fr;width:100%}
+  .ficha .seg label{text-align:center}
+  .c-cifras{order:1}
+  .c-prot{order:2}
+  .c-donar{order:3}
+  .c-ideas{order:4}
+  #causa{gap:14px;padding-bottom:16px}
+  .cifras div{padding:10px}
+  .cifras b{font-size:1.5rem}
+  .cifras span{font-size:.72rem}
+  .donar{gap:14px;padding:18px}
+  .donar h3{font-size:1.6rem}
+  .prot{min-height:0}
+  .sheet-wrap{align-items:flex-end}
+  .sheet{width:100%;height:auto;max-height:86dvh;border-left:0;border-top:1px solid var(--linea);border-radius:18px 18px 0 0;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));animation-name:in-b}
+  .in-sheet h3{font-size:2.2rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<svg class="defs" aria-hidden="true">
+  <!-- Logo provisional: se sustituye por el logo del perro de Clif Adventures cuando llegue. Todas las apariciones usan este símbolo. -->
+  <symbol id="logo" viewBox="0 0 100 100">
+    <circle class="logo-fondo" cx="50" cy="50" r="48"/>
+    <circle class="logo-aro" cx="50" cy="50" r="44" stroke-width="4"/>
+    <text class="logo-txt" x="50" y="56" text-anchor="middle" font-size="17">LOGO</text>
+  </symbol>
+</svg>
+
+<div class="app" id="app">
+<header class="top">
+  <a class="brand" href="#formacion"><svg aria-hidden="true"><use href="#logo"/></svg><span class="brand-name">Clif Adventures</span></a>
+  <span class="top-note mono">Propuesta para Pelayo · datos de ejemplo</span>
+  <nav class="tabs" aria-label="Secciones">
+    <a href="#formacion">Formación</a>
+    <a href="#aventuras">Aventuras</a>
+    <a href="#causa">Causa social</a>
+  </nav>
+</header>
+
+<main class="panels">
+
+<section class="panel" id="formacion" aria-label="Formación">
+  <div class="f-intro">
+    <p class="eyebrow mono">Formación · con Pelayo</p>
+    <h2>¿Hasta dónde <em>quieres</em> bajar?</h2>
+    <p class="lede">Los cursos se ordenan por la profundidad máxima que certifican. Elige una profundidad y te enseñamos el curso que la abre.</p>
+  </div>
+  <div class="f-ctrl">
+    <fieldset>
+      <legend class="mono">Línea</legend>
+      <div class="seg">
+        <input type="radio" name="linea" id="l-rec" checked><label for="l-rec">Recreativa</label>
+        <input type="radio" name="linea" id="l-pro"><label for="l-pro">Profesional</label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend class="mono">Profundidad máxima</legend>
+      <div class="gauge">
+        <div class="stop s12"><input type="radio" name="prof" id="p12" value="12"><label for="p12"><b>12 m</b><span>Bautismo</span></label></div>
+        <div class="stop s18"><input type="radio" name="prof" id="p18" value="18" checked><label for="p18"><b>18 m</b><span>Open Water</span></label></div>
+        <div class="stop s30"><input type="radio" name="prof" id="p30" value="30"><label for="p30"><b>30 m</b><span>Advanced</span></label></div>
+        <div class="stop s40"><input type="radio" name="prof" id="p40" value="40"><label for="p40"><b>40 m</b><span>Deep</span></label></div>
+      </div>
+      <p class="pro-note">La línea profesional no va por profundidad: es el camino para guiar grupos y llegar a instructor.</p>
+    </fieldset>
+  </div>
+  <div class="f-rails">
+    <div class="rail rail-rec" id="rail-rec">
+      <article class="card curso" data-p="12" data-rango="0">
+        <p class="depth"><b>12 m</b><span>máx.</span></p>
+        <h3>Bautismo de buceo</h3>
+        <ul class="chips"><li>PADI DSD</li><li>SSI Try Scuba</li></ul>
+        <p>Primera respiración bajo el agua. En la piscina de 20 m en Madrid o en el mar en Cabo de Palos. Sin experiencia previa.</p>
+        <span class="tag-sel">Tu curso</span>
+        <button class="open" type="button">Ver ficha</button>
+      </article>
+      <article class="card curso" data-p="18" data-rango="1">
+        <p class="depth"><b>18 m</b><span>máx.</span></p>
+        <h3>Open Water Diver</h3>
+        <ul class="chips"><li>PADI</li><li>SSI</li></ul>
+        <p>Tu licencia para bucear en cualquier parte del mundo. Teoría online, confinadas en piscina y cuatro inmersiones en mar abierto.</p>
+        <span class="tag-sel">Tu curso</span>
+        <button class="open" type="button">Ver ficha</button>
+      </article>
+      <article class="card curso" data-p="30" data-rango="2">
+        <p class="depth"><b>30 m</b><span>máx.</span></p>
+        <h3>Advanced Open Water</h3>
+        <ul class="chips"><li>PADI</li></ul>
+        <p>Cinco inmersiones de aventura: profunda, navegación con brújula, pecio, nocturna. El curso que abre la puerta a los viajes.</p>
+        <span class="tag-sel">Tu curso</span>
+        <button class="open" type="button">Ver ficha</button>
+      </article>
+      <article class="card curso" data-p="40" data-rango="3">
+        <p class="depth"><b>40 m</b><span>máx.</span></p>
+        <h3>Deep Diver</h3>
+        <ul class="chips"><li>Especialidad</li></ul>
+        <p>Planificación, narcosis y gestión de gas para llegar al límite recreativo con seguridad.</p>
+        <span class="tag-sel">Tu curso</span>
+        <button class="open" type="button">Ver ficha</button>
+      </article>
+    </div>
+    <div class="rail rail-pro" id="rail-pro">
+      <article class="card curso">
+        <p class="depth pro"><b>Pro</b><span>Línea profesional</span></p>
+        <h3>Rescue Diver</h3>
+        <p>Prevención y gestión de incidentes. El curso que más cambia cómo buceas.</p>
+        <button class="open" type="button">Ver ficha</button>
+      </article>
+      <article class="card curso">
+        <p class="depth pro"><b>Pro</b><span>Línea profesional</span></p>
+        <h3>Divemaster</h3>
+        <p>Primer nivel profesional, con Pelayo como Divemaster Instructor SSI.</p>
+        <button class="open" type="button">Ver ficha</button>
+      </article>
+      <article class="card curso">
+        <p class="depth pro"><b>Pro</b><span>Línea profesional</span></p>
+        <h3>IDC Staff</h3>
+        <p>Acompañamiento en el camino a instructor PADI.</p>
+        <button class="open" type="button">Ver ficha</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="aventuras" aria-label="Aventuras">
+  <div>
+    <p class="eyebrow mono">Aventuras · próximas salidas</p>
+    <h2>¿Puedo ir <em>a este</em> viaje?</h2>
+    <p class="lede">Marca tu titulación y tus inmersiones registradas: cada ficha te dice si puedes ir o qué te falta.</p>
+    <p class="aviso mono">Viajes, fechas y precios de ejemplo</p>
+  </div>
+  <div class="ficha">
+    <fieldset>
+      <legend class="mono">Tu titulación</legend>
+      <div class="seg">
+        <input type="radio" name="cert" id="cert0" value="0"><label for="cert0">Sin titulación</label>
+        <input type="radio" name="cert" id="cert1" value="1"><label for="cert1">Open Water</label>
+        <input type="radio" name="cert" id="cert2" value="2" checked><label for="cert2">Advanced</label>
+        <input type="radio" name="cert" id="cert3" value="3"><label for="cert3">Deep · 40 m</label>
+      </div>
+    </fieldset>
+    <div>
+      <label class="mono eyebrow" for="inm">Inmersiones registradas</label>
+      <div class="dives"><output id="inm-out" for="inm">25</output><input type="range" id="inm" min="0" max="150" step="5" value="25"></div>
+    </div>
+  </div>
+  <div class="a-rail">
+    <div class="rail" id="rail-viajes">
+      <article class="card viaje" data-rango="1" data-inm="0">
+        <div class="v-top"><span class="fecha">18 oct 2026 · 1 día</span><span class="pill" hidden></span></div>
+        <h3>Day trip Cabo de Palos</h3>
+        <p class="destino">Cabo de Palos, Murcia</p>
+        <dl class="meta"><div><dt>Formato</dt><dd>Barco</dd></div><div><dt>Requisito</dt><dd>Open Water</dd></div><div><dt>Agua</dt><dd>21 °C · 7 mm</dd></div><div><dt>Inmersiones</dt><dd>2</dd></div></dl>
+        <p class="resumen">Salida de un día a la Reserva Marina de Islas Hormigas: dos inmersiones y vuelta a casa.</p>
+        <p class="gap" hidden></p>
+        <div class="more"><ul class="chips"><li>Barracudas</li><li>Meros</li><li>Espetones</li></ul></div>
+        <div class="precio"><b>Desde 85 €</b><span>Organiza <span class="marca">Clif Adventures</span></span></div>
+        <button class="open" type="button">Ver ficha</button>
+      </article>
+      <article class="card viaje" data-rango="2" data-inm="30">
+        <div class="v-top"><span class="fecha">05–14 dic 2026 · 10 días</span><span class="pill" hidden></span></div>
+        <h3>Baja California Sur</h3>
+        <p class="destino">Cabo Pulmo y La Paz, México</p>
+        <dl class="meta"><div><dt>Formato</dt><dd>Desde tierra</dd></div><div><dt>Requisito</dt><dd>Advanced · 30 inm.</dd></div><div><dt>Agua</dt><dd>23–25 °C · 5 mm</dd></div><div><dt>Inmersiones</dt><dd>12</dd></div></dl>
+        <p class="resumen">Diez días entre Cabo Pulmo y La Paz, el acuario del mundo: lobos marinos, mobulas y grandes pelágicos.</p>
+        <p class="gap" hidden></p>
+        <div class="more"><ul class="chips"><li>Lobos marinos</li><li>Mobulas</li><li>Marlin</li><li>Ballena jorobada</li></ul></div>
+        <div class="precio"><b>Desde 2.250 €</b><span>Organiza Te Moana Expeditions</span></div>
+        <button class="open" type="button">Ver ficha</button>
+      </article>
+      <article class="card viaje" data-rango="2" data-inm="50">
+        <div class="v-top"><span class="fecha">08–18 mar 2027 · 11 días</span><span class="pill" hidden></span></div>
+        <h3>Maldivas</h3>
+        <p class="destino">Atolones centrales, Maldivas</p>
+        <dl class="meta"><div><dt>Formato</dt><dd>Vida a bordo</dd></div><div><dt>Requisito</dt><dd>Advanced · 50 inm.</dd></div><div><dt>Agua</dt><dd>28 °C · 3 mm</dd></div><div><dt>Inmersiones</dt><dd>18</dd></div></dl>
+        <p class="resumen">Vida a bordo por los atolones centrales: canales con corriente, mantas y tiburones.</p>
+        <p class="gap" hidden></p>
+        <div class="more"><ul class="chips"><li>Mantas</li><li>Tiburones grises</li><li>Tiburón ballena</li></ul></div>
+        <div class="precio"><b>Desde 2.950 €</b><span>Organiza Te Moana Expeditions</span></div>
+        <button class="open" type="button">Ver ficha</button>
+      </article>
+      <article class="card viaje" data-rango="1" data-inm="20">
+        <div class="v-top"><span class="fecha">17–24 abr 2027 · 8 días</span><span class="pill" hidden></span></div>
+        <h3>Mar Rojo Norte y Tiran</h3>
+        <p class="destino">Hurghada, Egipto</p>
+        <dl class="meta"><div><dt>Formato</dt><dd>Vida a bordo</dd></div><div><dt>Requisito</dt><dd>Open Water · 20 inm.</dd></div><div><dt>Agua</dt><dd>22–24 °C · 5 mm</dd></div><div><dt>Inmersiones</dt><dd>16</dd></div></dl>
+        <p class="resumen">Pecios del norte, arrecifes de Tiran y el Thistlegorm en una semana de vida a bordo.</p>
+        <p class="gap" hidden></p>
+        <div class="more"><ul class="chips"><li>Pecios</li><li>Corales</li><li>Delfines</li></ul></div>
+        <div class="precio"><b>Desde 1.490 €</b><span>Organiza Te Moana Expeditions</span></div>
+        <button class="open" type="button">Ver ficha</button>
+      </article>
+      <article class="card viaje" data-rango="1" data-inm="0">
+        <div class="v-top"><span class="fecha">30 abr–03 may 2027 · 4 días</span><span class="pill" hidden></span></div>
+        <h3>Gran Canaria</h3>
+        <p class="destino">Gran Canaria</p>
+        <dl class="meta"><div><dt>Formato</dt><dd>Desde tierra</dd></div><div><dt>Requisito</dt><dd>Open Water</dd></div><div><dt>Agua</dt><dd>19 °C · 7 mm</dd></div><div><dt>Inmersiones</dt><dd>6</dd></div></dl>
+        <p class="resumen">Puente de mayo en el Atlántico: rayas, angelotes y fondos volcánicos.</p>
+        <p class="gap" hidden></p>
+        <div class="more"><ul class="chips"><li>Angelotes</li><li>Rayas</li><li>Tortugas</li></ul></div>
+        <div class="precio"><b>Desde 590 €</b><span>Organiza Te Moana Expeditions</span></div>
+        <button class="open" type="button">Ver ficha</button>
+      </article>
+      <article class="card viaje" data-rango="2" data-inm="40">
+        <div class="v-top"><span class="fecha">09–17 oct 2027 · 9 días</span><span class="pill" hidden></span></div>
+        <h3>Farasan Banks</h3>
+        <p class="destino">Mar Rojo, Arabia Saudí</p>
+        <dl class="meta"><div><dt>Formato</dt><dd>Vida a bordo</dd></div><div><dt>Requisito</dt><dd>Advanced · 40 inm.</dd></div><div><dt>Agua</dt><dd>29 °C · 3 mm</dd></div><div><dt>Inmersiones</dt><dd>20</dd></div></dl>
+        <p class="resumen">Volvemos al azul de Farasan Banks: tiburones, delfines y arrecifes casi sin buceadores.</p>
+        <p class="gap" hidden></p>
+        <div class="more"><ul class="chips"><li>Tiburones</li><li>Delfines</li><li>Bancos de barracudas</li></ul></div>
+        <div class="precio"><b>Desde 3.200 €</b><span>Organiza Te Moana Expeditions</span></div>
+        <button class="open" type="button">Ver ficha</button>
+      </article>
+    </div>
+    <div class="rail-nav"><button type="button" data-rail="rail-viajes" data-dir="-1" aria-label="Viajes anteriores">←</button><button type="button" data-rail="rail-viajes" data-dir="1" aria-label="Viajes siguientes">→</button></div>
+  </div>
+</section>
+
+<section class="panel" id="causa" aria-label="Causa social">
+  <div class="c-intro">
+    <p class="eyebrow mono">Causa social · propuesta</p>
+    <h2>Cada inmersión <em>ayuda</em></h2>
+    <p class="lede">Una parte de cada aventura puede ir a protectoras de animales. Estas tres son de ejemplo; las reales se eligen con Pelayo.</p>
+  </div>
+  <div class="c-cifras">
+    <p class="mono eyebrow">Cifras de ejemplo</p>
+    <div class="cifras">
+      <div><b data-n="1240" data-suf=" €">1.240 €</b><span>donados</span></div>
+      <div><b data-n="86">86</b><span>inmersiones solidarias</span></div>
+      <div><b data-n="14">14</b><span>adopciones</span></div>
+    </div>
+  </div>
+  <div class="c-prot">
+    <h3 class="sub">Protectoras de ejemplo</h3>
+    <div class="rail">
+      <article class="card prot"><ul class="chips"><li>Ejemplo</li></ul><h3>Protectora de ejemplo · Madrid</h3><p>Cerca de la piscina de Madrid, donde se hacen los bautismos. Nombre real por decidir.</p></article>
+      <article class="card prot"><ul class="chips"><li>Ejemplo</li></ul><h3>Refugio de ejemplo · Cartagena</h3><p>A un paso de Cabo de Palos, para los day trips. Nombre real por decidir.</p></article>
+      <article class="card prot"><ul class="chips"><li>Ejemplo</li></ul><h3>Asociación de ejemplo · Canarias</h3><p>Para colaborar cuando el grupo viaja a las islas. Nombre real por decidir.</p></article>
+    </div>
+  </div>
+  <div class="c-donar">
+    <div class="donar">
+      <h3>Dona a una protectora</h3>
+      <fieldset>
+        <legend class="mono">Protectora</legend>
+        <div class="seg">
+          <input type="radio" name="prot" id="pr1" value="Protectora de ejemplo · Madrid" checked><label for="pr1">Madrid</label>
+          <input type="radio" name="prot" id="pr2" value="Refugio de ejemplo · Cartagena"><label for="pr2">Cartagena</label>
+          <input type="radio" name="prot" id="pr3" value="Asociación de ejemplo · Canarias"><label for="pr3">Canarias</label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend class="mono">Importe</legend>
+        <div class="seg">
+          <input type="radio" name="imp" id="im5" value="5"><label for="im5">5 €</label>
+          <input type="radio" name="imp" id="im10" value="10" checked><label for="im10">10 €</label>
+          <input type="radio" name="imp" id="im25" value="25"><label for="im25">25 €</label>
+        </div>
+      </fieldset>
+      <details id="donar">
+        <summary>Donar (simulación)</summary>
+        <p class="sim" role="status"><strong>Simulación: en esta propuesta no se cobra nada ni se piden datos.</strong><span id="sim-eleccion"></span></p>
+      </details>
+    </div>
+  </div>
+  <div class="c-ideas">
+    <h3 class="sub">Ideas para hablar con Pelayo</h3>
+    <ul class="ideas rail">
+      <li><b>Inmersión solidaria</b><span>Una salida al año en la que lo recaudado va entero a la protectora.</span></li>
+      <li><b>Un euro por inmersión</b><span>Por cada inmersión del grupo, un euro a la protectora del mes.</span></li>
+      <li><b>Voluntariado</b><span>Una mañana con el grupo en la protectora: paseos, limpieza y fotos para adopción.</span></li>
+      <li><b>Bautismo solidario</b><span>Bautismos en la piscina de Madrid con donativo en lugar de precio.</span></li>
+    </ul>
+  </div>
+</section>
+
+</main>
+</div>
+
+<div class="sheet-wrap" id="sheet" hidden>
+  <div class="backdrop" data-close></div>
+  <aside class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-t" tabindex="-1">
+    <button class="close" type="button" data-close aria-label="Cerrar ficha">✕</button>
+    <div id="sheet-body"></div>
+  </aside>
+</div>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text) n.textContent = text;
+    return n;
+  };
+  const behavior = reduce ? 'auto' : 'smooth';
+
+  const nav = $('.tabs'), tabs = $$('a', nav), panels = $$('.panel');
+  nav.setAttribute('role', 'tablist');
+  tabs.forEach(t => {
+    const id = t.hash.slice(1);
+    t.id = `tab-${id}`;
+    t.setAttribute('role', 'tab');
+    t.setAttribute('aria-controls', id);
+  });
+  panels.forEach(p => {
+    p.setAttribute('role', 'tabpanel');
+    p.removeAttribute('aria-label');
+    p.setAttribute('aria-labelledby', `tab-${p.id}`);
+  });
+
+  let counted = false;
+  const fmt = new Intl.NumberFormat('es-ES', {useGrouping: 'always'});
+  const countUp = () => {
+    if (counted || reduce) return;
+    counted = true;
+    $$('[data-n]').forEach(n => {
+      const end = +n.dataset.n, suf = n.dataset.suf ?? '', t0 = performance.now();
+      const step = now => {
+        const p = Math.min(1, (now - t0) / 900);
+        n.textContent = fmt.format(Math.round(end * p)) + suf;
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+  };
+
+  const show = (id, focus = false) => {
+    if (!panels.some(p => p.id === id)) id = 'formacion';
+    tabs.forEach(t => {
+      const on = t.hash === `#${id}`;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      if (on && focus) t.focus();
+    });
+    panels.forEach(p => { p.hidden = p.id !== id; });
+    if (location.hash !== `#${id}`) history.replaceState(null, '', `#${id}`);
+    scrollTo(0, 0);
+    if (id === 'causa') countUp();
+    if (id === 'formacion') toCard($(`.curso[data-p="${$('input[name=prof]:checked').value}"]`), 'auto');
+  };
+  tabs.forEach(t => t.addEventListener('click', e => { e.preventDefault(); show(t.hash.slice(1)); }));
+  nav.addEventListener('keydown', e => {
+    const i = tabs.indexOf(document.activeElement);
+    const n = {ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1}[e.key];
+    if (i < 0 || n === undefined) return;
+    e.preventDefault();
+    show(tabs[(n + tabs.length) % tabs.length].hash.slice(1), true);
+  });
+  $('.brand').addEventListener('click', e => { e.preventDefault(); show('formacion'); });
+  addEventListener('hashchange', () => show(location.hash.slice(1)));
+
+  let x0 = null, y0 = 0;
+  const main = $('.panels');
+  main.addEventListener('touchstart', e => {
+    x0 = e.target.closest('.rail, input, .seg') ? null : e.touches[0].clientX;
+    y0 = e.touches[0].clientY;
+  }, {passive: true});
+  main.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    const next = panels[panels.findIndex(p => !p.hidden) + (dx < 0 ? 1 : -1)];
+    if (next) show(next.id);
+  });
+
+  const toCard = (card, how = behavior) => {
+    const rail = card.parentElement;
+    rail.scrollTo({left: card.offsetLeft - rail.firstElementChild.offsetLeft, behavior: how});
+  };
+  $$('input[name=prof]').forEach(r => r.addEventListener('change', () => toCard($(`.curso[data-p="${r.value}"]`))));
+  $$('.rail-nav button').forEach(b => b.addEventListener('click', () => {
+    const rail = document.getElementById(b.dataset.rail);
+    rail.scrollBy({left: +b.dataset.dir * (rail.firstElementChild.offsetWidth + 14), behavior});
+  }));
+
+  const CURSO = ['', 'Open Water', 'Advanced Open Water', 'Deep Diver'];
+  const inm = $('#inm'), inmOut = $('#inm-out');
+  const viajes = $$('.viaje');
+  const evaluar = () => {
+    const rango = +$('input[name=cert]:checked').value, dives = +inm.value;
+    inmOut.textContent = dives;
+    viajes.forEach(v => {
+      const objetivo = +v.dataset.rango;
+      const cursos = rango < objetivo ? CURSO.slice(Math.max(rango + 1, 1), objetivo + 1) : [];
+      const faltan = Math.max(0, +v.dataset.inm - dives);
+      const ok = cursos.length === 0 && faltan === 0;
+      const pill = $('.pill', v), gap = $('.gap', v);
+      pill.hidden = false;
+      pill.className = `pill ${ok ? 'ok' : 'no'}`;
+      pill.textContent = ok ? 'Puedes ir' : cursos.length ? 'Te falta un curso' : `Faltan ${faltan} inm.`;
+      const textos = [];
+      if (cursos.length) textos.push(`${rango === 0 ? 'Empieza por el' : 'Te falta el'} ${cursos.join(' + ')}.`);
+      if (faltan) textos.push(`Te faltan ${faltan} inmersiones: súmalas en el day trip a Cabo de Palos.`);
+      gap.textContent = textos.join(' ');
+      gap.hidden = ok;
+      v.classList.toggle('no', !ok);
+    });
+  };
+  $$('input[name=cert]').forEach(r => r.addEventListener('change', evaluar));
+  inm.addEventListener('input', evaluar);
+  evaluar();
+
+  const app = $('#app'), wrap = $('#sheet'), sheet = $('.sheet', wrap), body = $('#sheet-body');
+  let opener = null;
+  const closeSheet = () => {
+    wrap.hidden = true;
+    app.inert = false;
+    opener?.focus();
+  };
+  const openSheet = (card, extra) => {
+    opener = document.activeElement;
+    const c = card.cloneNode(true);
+    c.classList.add('in-sheet');
+    $('.open', c).remove();
+    $('h3', c).id = 'sheet-t';
+    body.replaceChildren(c, ...(extra ? [extra] : []));
+    wrap.hidden = false;
+    app.inert = true;
+    sheet.scrollTop = 0;
+    sheet.focus();
+  };
+  wrap.addEventListener('click', e => { if (e.target.closest('[data-close]')) closeSheet(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !wrap.hidden) closeSheet(); });
+
+  const cursoExtra = card => {
+    if (card.dataset.rango === undefined) return null;
+    const rango = +card.dataset.rango, box = el('div', 'extra');
+    if (rango === 0) {
+      box.append(el('p', '', 'El bautismo no es una titulación: para viajar, el siguiente paso es el Open Water.'));
+      return box;
+    }
+    box.append(el('h4', 'mono eyebrow', 'Viajes a tu alcance con esta titulación'));
+    const ul = el('ul');
+    viajes.filter(v => +v.dataset.rango <= rango).forEach(v => {
+      const min = +v.dataset.inm;
+      ul.append(el('li', '', `${$('h3', v).textContent}${min ? ` · pide ${min} inmersiones registradas` : ''}`));
+    });
+    const go = el('button', 'go', 'Ver estos viajes');
+    go.type = 'button';
+    go.addEventListener('click', () => {
+      $(`#cert${rango}`).checked = true;
+      evaluar();
+      closeSheet();
+      show('aventuras');
+    });
+    box.append(ul, go);
+    return box;
+  };
+  $$('.curso .open').forEach(b => b.addEventListener('click', () => openSheet(b.closest('.curso'), cursoExtra(b.closest('.curso')))));
+  $$('.viaje .open').forEach(b => b.addEventListener('click', () => openSheet(b.closest('.viaje'))));
+
+  const donar = $('#donar');
+  const eleccion = () => {
+    if (!donar.open) return;
+    const p = $('input[name=prot]:checked').value, i = $('input[name=imp]:checked').value;
+    $('#sim-eleccion').textContent = `Has elegido ${i} € para ${p}.`;
+  };
+  donar.addEventListener('toggle', eleccion);
+  $$('input[name=prot], input[name=imp]').forEach(r => r.addEventListener('change', eleccion));
+
+  show(location.hash.slice(1));
+})();
+</script>
+</body>
+</html>
