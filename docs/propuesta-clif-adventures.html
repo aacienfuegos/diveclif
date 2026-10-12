@@ -161,8 +161,9 @@ legend{padding:0;margin-bottom:8px;font-weight:600}
 .agenda{min-width:0;display:grid;align-content:start}
 .fila{display:grid;grid-template-columns:84px minmax(0,1.25fr) minmax(0,1fr) 104px 200px 104px;gap:0 18px;align-items:start;padding:12px 0;border-top:1px solid var(--linea-2)}
 .fecha{display:grid;line-height:1.15}
-.fecha b{font-weight:750;font-stretch:72%;font-size:1.45rem}
-.fecha span{font-size:.8rem;color:var(--txt-3);white-space:nowrap}
+.fecha b{font-weight:750;font-stretch:72%;font-size:1.45rem;white-space:nowrap}
+.fecha b.largo .fin{display:block}
+.fecha>span{font-size:.8rem;color:var(--txt-3);white-space:nowrap}
 .v-tit h3{font-size:1.08rem;font-weight:650;line-height:1.25}
 .v-tit p,.v-meta,.semanal p{font-size:.86rem;color:var(--txt-2)}
 .org{color:var(--txt)!important}
@@ -238,6 +239,7 @@ h3.sub{font-size:.85rem;font-weight:600;color:var(--txt-3);margin-bottom:10px}
 .in-sheet .b-cab{padding-right:56px}
 .in-sheet .opcion{padding:8px 0 8px 14px}
 .in-sheet .fecha{display:flex;gap:8px;align-items:baseline}
+.in-sheet .fecha b .fin{display:inline}
 .in-sheet.viaje.no h3,.in-sheet.viaje.no .v-meta,.in-sheet.viaje.no .precio b{opacity:1}
 .in-sheet .precio b{display:inline;margin-right:6px}
 .in-sheet .v-dato{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
@@ -297,9 +299,9 @@ h3.sub{font-size:.85rem;font-weight:600;color:var(--txt-3);margin-bottom:10px}
   .b-cab p{grid-column:1/-1}
   .bautismo{position:relative;padding-right:24px}
   .bautismo .mas{grid-column:1/-1;grid-row:auto}
-  .js .bautismo .mas{position:static}
-  .js .bautismo .mas>summary{position:absolute;inset:0;z-index:1;min-height:0;padding:0;border:0;border-radius:0;color:transparent;background:none!important;overflow:hidden}
-  .js .bautismo .mas>summary::after{content:"";position:absolute;right:6px;top:50%;width:9px;height:9px;border:solid var(--turquesa);border-width:2px 2px 0 0;transform:translateY(-50%) rotate(45deg)}
+  .bautismo .mas{position:static}
+  .bautismo .mas:not([open])>summary{position:absolute;inset:0;z-index:1;min-height:0;padding:0;border:0;border-radius:0;color:transparent;background:none!important;overflow:hidden}
+  .bautismo .mas:not([open])>summary::after{content:"";position:absolute;right:6px;top:50%;width:9px;height:9px;border:solid var(--turquesa);border-width:2px 2px 0 0;transform:translateY(-50%) rotate(45deg)}
   .paso .ag{display:none}
   .opcion p{display:none}
   .opcion{padding-left:10px}
@@ -313,8 +315,8 @@ h3.sub{font-size:.85rem;font-weight:600;color:var(--txt-3);margin-bottom:10px}
   .paso .ag{grid-column:2;grid-row:2}
   .paso .res{grid-column:2;grid-row:3;font-size:.88rem}
   .paso .tag-sel{display:none!important}
-  .js .paso .mas>summary,.js .viaje .mas>summary{position:absolute;inset:0;z-index:1;min-height:0;padding:0;border:0;border-radius:0;color:transparent;background:none!important;overflow:hidden}
-  .js .paso .mas>summary::after,.js .viaje .mas>summary::after{content:"";position:absolute;right:6px;top:50%;width:9px;height:9px;border:solid var(--turquesa);border-width:2px 2px 0 0;transform:translateY(-50%) rotate(45deg)}
+  .paso .mas:not([open])>summary,.viaje .mas:not([open])>summary{position:absolute;inset:0;z-index:1;min-height:0;padding:0;border:0;border-radius:0;color:transparent;background:none!important;overflow:hidden}
+  .paso .mas:not([open])>summary::after,.viaje .mas:not([open])>summary::after{content:"";position:absolute;right:6px;top:50%;width:9px;height:9px;border:solid var(--turquesa);border-width:2px 2px 0 0;transform:translateY(-50%) rotate(45deg)}
   html:not(.js) .paso .mas{grid-column:1/-1}
   .perfil-pro{border-top:0}
   .perfil-pro .paso{border-left:0;padding-left:0}
@@ -329,7 +331,8 @@ h3.sub{font-size:.85rem;font-weight:600;color:var(--txt-3);margin-bottom:10px}
   .fila{position:relative;grid-template-columns:58px minmax(0,1fr);gap:1px 12px;padding:6px 24px 6px 0}
   .fecha{grid-column:1;grid-row:1/span 2}
   .fecha b{font-size:1.15rem;line-height:1.1}
-  .fecha span{font-size:.72rem;white-space:normal}
+  .fecha>span{font-size:.72rem;white-space:normal}
+  .fecha .fin{display:block}
   .v-tit,.v-dato{grid-column:2}
   .v-tit .destino,.v-meta,.gap{display:none!important}
   .v-tit h3{font-size:1rem}
@@ -494,7 +497,6 @@ h3.sub{font-size:.85rem;font-weight:600;color:var(--txt-3);margin-bottom:10px}
             <section><h4>Qué es</h4><p>La especialidad para bajar hasta 40&nbsp;m, el límite del buceo recreativo: planificación, narcosis y gestión de gas.</p></section>
             <section><h4>Qué hace falta</h4><p>Requisito de PADI: Adventure Diver o una titulación equivalente.</p></section>
             <section><h4>Cómo es</h4><p>Según PADI, cuatro inmersiones con el instructor, repartidas en dos días como mínimo: descensos, flotabilidad y paradas de seguridad.</p></section>
-            <section><h4>Dónde</h4><p>En los pecios de Cabo de Palos que en la carta van como Deep: El Sirio, con el que arranca nuestra Wreck Week, y el Naranjito, que es fijo en ella.</p></section>
             <section><h4>Duración y precio</h4><p>De 2 a 3&nbsp;días, según PADI. Precio <span class="ej">de ejemplo</span>: 290&nbsp;€.</p></section>
             <section><h4>Después</h4><p>La línea profesional, empezando por el Rescue. En viajes, con el Deep entras en los mismos que con el Advanced.</p></section>
           </div>
@@ -602,7 +604,7 @@ h3.sub{font-size:.85rem;font-weight:600;color:var(--txt-3);margin-bottom:10px}
     </article>
 
     <article class="fila viaje" data-rango="2" data-inm="30">
-      <p class="fecha"><b>5–14&nbsp;dic</b><span class="num">2026<i class="m-no"> · 10&nbsp;días</i></span></p>
+      <p class="fecha"><b>5<span class="fin">–14&nbsp;dic</span></b><span class="num">2026<i class="m-no"> · 10&nbsp;días</i></span></p>
       <div class="v-tit"><h3>Baja California Sur</h3><p class="destino">Cabo Pulmo y La Paz, México</p><p class="org">Organiza Te Moana Expeditions</p></div>
       <p class="v-meta">Desde tierra · 12 inmersiones · 23–25&nbsp;°C, 5&nbsp;mm<span class="req">Pide Advanced y 30&nbsp;inm.</span></p>
       <div class="v-dato"><p class="precio">Desde <b class="num">2.250&nbsp;€</b></p><div class="v-estado"><span class="pill" hidden></span><p class="gap" hidden></p></div></div>
@@ -621,7 +623,7 @@ h3.sub{font-size:.85rem;font-weight:600;color:var(--txt-3);margin-bottom:10px}
     </article>
 
     <article class="fila viaje" data-rango="2" data-inm="50">
-      <p class="fecha"><b>8–18&nbsp;mar</b><span class="num">2027<i class="m-no"> · 11&nbsp;días</i></span></p>
+      <p class="fecha"><b>8<span class="fin">–18&nbsp;mar</span></b><span class="num">2027<i class="m-no"> · 11&nbsp;días</i></span></p>
       <div class="v-tit"><h3>Maldivas</h3><p class="destino">Atolones centrales, Maldivas</p><p class="org">Organiza Te Moana Expeditions</p></div>
       <p class="v-meta">Vida a bordo · 18 inmersiones · 28&nbsp;°C, 3&nbsp;mm<span class="req">Pide Advanced y 50&nbsp;inm.</span></p>
       <div class="v-dato"><p class="precio">Desde <b class="num">2.950&nbsp;€</b></p><div class="v-estado"><span class="pill" hidden></span><p class="gap" hidden></p></div></div>
@@ -639,7 +641,7 @@ h3.sub{font-size:.85rem;font-weight:600;color:var(--txt-3);margin-bottom:10px}
     </article>
 
     <article class="fila viaje" data-rango="1" data-inm="20">
-      <p class="fecha"><b>17–24&nbsp;abr</b><span class="num">2027<i class="m-no"> · 8&nbsp;días</i></span></p>
+      <p class="fecha"><b>17<span class="fin">–24&nbsp;abr</span></b><span class="num">2027<i class="m-no"> · 8&nbsp;días</i></span></p>
       <div class="v-tit"><h3>Mar Rojo Norte y Tiran</h3><p class="destino">Hurghada, Egipto</p><p class="org">Organiza Te Moana Expeditions</p></div>
       <p class="v-meta">Vida a bordo · 16 inmersiones · 22–24&nbsp;°C, 5&nbsp;mm<span class="req">Pide Open Water y 20&nbsp;inm.</span></p>
       <div class="v-dato"><p class="precio">Desde <b class="num">1.490&nbsp;€</b></p><div class="v-estado"><span class="pill" hidden></span><p class="gap" hidden></p></div></div>
@@ -657,7 +659,7 @@ h3.sub{font-size:.85rem;font-weight:600;color:var(--txt-3);margin-bottom:10px}
     </article>
 
     <article class="fila viaje" data-rango="1" data-inm="0">
-      <p class="fecha"><b>30&nbsp;abr–3&nbsp;may</b><span class="num">2027<i class="m-no"> · 4&nbsp;días</i></span></p>
+      <p class="fecha"><b class="largo">30&nbsp;abr<span class="fin">–3&nbsp;may</span></b><span class="num">2027<i class="m-no"> · 4&nbsp;días</i></span></p>
       <div class="v-tit"><h3>Gran Canaria</h3><p class="destino">Gran Canaria</p><p class="org">Organiza Te Moana Expeditions</p></div>
       <p class="v-meta">Desde tierra · 6 inmersiones · 19&nbsp;°C, 7&nbsp;mm<span class="req">Pide Open Water</span></p>
       <div class="v-dato"><p class="precio">Desde <b class="num">590&nbsp;€</b></p><div class="v-estado"><span class="pill" hidden></span><p class="gap" hidden></p></div></div>
@@ -675,7 +677,7 @@ h3.sub{font-size:.85rem;font-weight:600;color:var(--txt-3);margin-bottom:10px}
     </article>
 
     <article class="fila viaje foto f-farasan-banks" data-rango="2" data-inm="40">
-      <p class="fecha"><b>9–17&nbsp;oct</b><span class="num">2027<i class="m-no"> · 9&nbsp;días</i></span></p>
+      <p class="fecha"><b>9<span class="fin">–17&nbsp;oct</span></b><span class="num">2027<i class="m-no"> · 9&nbsp;días</i></span></p>
       <div class="v-tit"><h3>Farasan Banks</h3><p class="destino">Mar Rojo, Arabia Saudí</p><p class="org">Organiza Te Moana Expeditions</p></div>
       <p class="v-meta">Vida a bordo · 20 inmersiones · 29&nbsp;°C, 3&nbsp;mm<span class="req">Pide Advanced y 40&nbsp;inm.</span></p>
       <div class="v-dato"><p class="precio">Desde <b class="num">3.200&nbsp;€</b></p><div class="v-estado"><span class="pill" hidden></span><p class="gap" hidden></p></div></div>
