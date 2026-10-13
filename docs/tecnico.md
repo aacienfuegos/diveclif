@@ -25,7 +25,7 @@ Alojamiento: Cloudflare Pages, con el formulario como Pages Function (`CLAUDE.md
 ## Estructura
 
 ```
-astro.config.mjs        sitio, integraciones, CSP en el build y esquema de entorno
+astro.config.mjs        sitio, integraciones, ajustes de build que exige la CSP y esquema de entorno
 public/_headers         cabeceras HTTP de Cloudflare Pages (CSP, HSTS, caché, noindex en previews)
 public/favicon.svg      logotipo en SVG
 functions/api/          Pages Function del formulario (POST /api/contacto)
@@ -59,9 +59,9 @@ El alias `@/` apunta a `src/` (`tsconfig.json:7`).
 
 | Servicio | Desde dónde | Para qué |
 |---|---|---|
-| Cloudflare Turnstile | navegador (`src/components/Contacto.astro:59,69-78`) y función (`functions/api/contacto.ts:13-22`) | antispam del formulario; la CSP permite su script y su iframe (`public/_headers:2`) |
+| Cloudflare Turnstile | navegador (`src/components/Contacto.astro:59,69-78`) y función (`functions/api/contacto.ts:13-22`) | antispam del formulario; la CSP permite su script (`script-src`) y su iframe (`frame-src`) (`public/_headers:2`) |
 | Resend | función (`functions/api/contacto.ts:40-50`) | envío del correo con la consulta |
-| Cloudflare Web Analytics | navegador | estadísticas de visitas. La CSP permite su script y su envío (`public/_headers:2`) y la política de privacidad lo menciona (`src/pages/legal/privacidad.astro:14`), pero el repo no lo inserta. Pendiente: confirmar dónde se activa (en Cloudflare, fuera del repo). |
+| Cloudflare Web Analytics | navegador | estadísticas de visitas. La CSP permite su script (`script-src`) y su envío (`connect-src`) (`public/_headers:2`) y la política de privacidad lo menciona (`src/pages/legal/privacidad.astro:14`), pero el repo no lo inserta. Pendiente: confirmar dónde se activa (en Cloudflare, fuera del repo). |
 
 Enlaces salientes (Instagram, comunidad de WhatsApp) están en `src/config.ts`; no cargan nada en la página.
 
