@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "titulo": {
+        "type": "string",
+        "maxLength": 30,
+        "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+      },
+      "cuando": {
+        "type": "string",
+        "maxLength": 20,
+        "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+      },
+      "resumen": {
+        "type": "string",
+        "maxLength": 110,
+        "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+      },
+      "tipo": {
+        "type": "string",
+        "enum": [
+          "internacional",
+          "nacional",
+          "day-trip",
+          "pecios"
+        ]
+      },
+      "orden": {
+        "type": "integer",
+        "minimum": -9007199254740991,
+        "maximum": 9007199254740991
+      },
+      "id": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      }
+    },
+    "required": [
+      "titulo",
+      "cuando",
+      "resumen",
+      "tipo",
+      "orden",
+      "id"
+    ]
+  }
+}

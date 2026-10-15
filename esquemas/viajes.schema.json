@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "titulo": {
+      "type": "string",
+      "maxLength": 100,
+      "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+    },
+    "destino": {
+      "type": "string",
+      "maxLength": 50,
+      "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "internacional",
+        "nacional",
+        "day-trip"
+      ]
+    },
+    "inicio": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+    },
+    "fin": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+    },
+    "formato": {
+      "type": "string",
+      "enum": [
+        "vida-a-bordo",
+        "desde-tierra",
+        "barco"
+      ]
+    },
+    "nivel": {
+      "type": "string",
+      "enum": [
+        "ninguno",
+        "open-water",
+        "advanced",
+        "deep"
+      ]
+    },
+    "inmersionesMinimas": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "inmersiones": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "agua": {
+      "type": "object",
+      "properties": {
+        "temperatura": {
+          "type": "string",
+          "maxLength": 20,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "traje": {
+          "type": "string",
+          "maxLength": 10,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        }
+      },
+      "required": [
+        "temperatura",
+        "traje"
+      ]
+    },
+    "precioDesde": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991
+    },
+    "organiza": {
+      "type": "string",
+      "maxLength": 30,
+      "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+    },
+    "estado": {
+      "default": "abierto",
+      "type": "string",
+      "enum": [
+        "abierto",
+        "ultimas-plazas",
+        "completo"
+      ]
+    },
+    "destacado": {
+      "default": false,
+      "type": "boolean"
+    },
+    "cita": {
+      "type": "string",
+      "maxLength": 60,
+      "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+    },
+    "fauna": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 30,
+        "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+      }
+    },
+    "incluye": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 50,
+        "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+      }
+    },
+    "noIncluye": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 60,
+        "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+      }
+    },
+    "resumen": {
+      "type": "string",
+      "maxLength": 160,
+      "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+    }
+  },
+  "required": [
+    "titulo",
+    "destino",
+    "tipo",
+    "inicio",
+    "fin",
+    "formato",
+    "nivel",
+    "inmersionesMinimas",
+    "inmersiones",
+    "agua",
+    "precioDesde",
+    "organiza",
+    "resumen"
+  ]
+}

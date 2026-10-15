@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "nombre": {
+      "type": "string",
+      "maxLength": 30,
+      "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+    },
+    "orden": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "linea": {
+      "type": "string",
+      "enum": [
+        "recreativa",
+        "profesional"
+      ]
+    },
+    "profundidadMax": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "agencias": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 20,
+        "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+      }
+    },
+    "resumen": {
+      "type": "string",
+      "maxLength": 200,
+      "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+    }
+  },
+  "required": [
+    "nombre",
+    "orden",
+    "linea",
+    "resumen"
+  ]
+}
