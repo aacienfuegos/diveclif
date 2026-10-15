@@ -12,20 +12,26 @@ import Pie from '@/components/Pie.astro';
 import OrdenadorBuceo from '@/components/OrdenadorBuceo.astro';
 import TituloSerif from '@/components/TituloSerif.astro';
 import { SITE } from '@/config';
-import { organizacion, pelayo, theSunset, viaje, webSite } from '@/lib/jsonld';
+import { curso, organizacion, pelayo, theSunset, viaje, webSite } from '@/lib/jsonld';
 import { texto } from '@/lib/textos';
-import { proximos } from '@/lib/viajes';
+import { proximas, proximos } from '@/lib/viajes';
 import '@/styles/home.css';
 
 const puntos = (await getCollection('puntos')).sort((a, b) => a.data.orden - b.data.orden);
 const t = await texto('puntos');
-const viajes = proximos(await getCollection('viajes'), new Date());
+const hoy = new Date();
+const viajes = proximos(await getCollection('viajes'), hoy);
+const LUGAR = { madrid: 'Madrid', 'cabo-de-palos': 'Cabo de Palos, Murcia' } as const;
+const cursos = (await getCollection('cursos'))
+  .map((c) => ({ ...c.data, convocatorias: proximas(c.data.convocatorias, hoy).map((x) => ({ ...x, lugar: LUGAR[x.lugar] })) }))
+  .filter((c) => c.convocatorias.length > 0);
 const jsonLd = [
   webSite(),
   organizacion(),
   pelayo(),
   theSunset(),
   ...viajes.map((v) => viaje({ ...v.data, url: `${SITE.url}/viajes/${v.id}` })),
+  ...cursos.map(curso),
 ];
 ---
 <Base titulo={SITE.nombre} jsonLd={jsonLd}>

@@ -1,0 +1,19 @@
+---
+import { rangoFechas } from '@/lib/fechas';
+import { textoPlazas } from '@/lib/plazas';
+import { proximas } from '@/lib/viajes';
+
+interface Props {
+  readonly convocatorias: readonly { inicio: Date; fin: Date; lugar: 'madrid' | 'cabo-de-palos'; plazas: { libres: number } }[];
+}
+const LUGAR = { madrid: 'Madrid', 'cabo-de-palos': 'Cabo de Palos' } as const;
+const fechas = proximas(Astro.props.convocatorias, new Date()).slice(0, 3);
+---
+{fechas.length > 0 && (
+  <ul class="fechas mono">
+    {fechas.map((c) => {
+      const plazas = textoPlazas(c.plazas.libres);
+      return <li><span>{rangoFechas(c.inicio, c.fin)}</span><span>{LUGAR[c.lugar]}</span>{plazas && <span class="c-coral">{plazas}</span>}</li>;
+    })}
+  </ul>
+)}

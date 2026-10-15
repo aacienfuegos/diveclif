@@ -107,11 +107,25 @@ export const punto = (p: { url: string; nombre: string; resumen: string; lat: nu
   containedInPlace: { '@type': 'Place', name: 'Reserva Marina de Cabo de Palos - Islas Hormigas' },
 });
 
-export const curso = (c: { nombre: string; resumen: string }): Nodo => ({
+interface CursoLd {
+  readonly nombre: string;
+  readonly resumen: string;
+  readonly convocatorias: readonly { inicio: Date; fin: Date; lugar: string }[];
+}
+
+export const curso = (c: CursoLd): Nodo => ({
   '@type': 'Course',
   name: c.nombre,
   description: c.resumen,
   provider: { '@id': ORG_ID },
+  ...(c.convocatorias.length > 0 && {
+    hasCourseInstance: c.convocatorias.map((x) => ({
+      '@type': 'CourseInstance',
+      startDate: isoFecha(x.inicio),
+      endDate: isoFecha(x.fin),
+      location: { '@type': 'Place', name: x.lugar },
+    })),
+  }),
 });
 
 export const articulo = (a: { url: string; titulo: string; resumen: string; fecha: Date }): Nodo => ({

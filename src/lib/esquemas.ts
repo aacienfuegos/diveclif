@@ -64,6 +64,12 @@ export const punto = z.object({
   resumen: texto(220),
 });
 
+export const LUGARES = ['madrid', 'cabo-de-palos'] as const;
+
+const convocatoria = z
+  .object({ inicio: fecha, fin: fecha, lugar: z.enum(LUGARES), plazas })
+  .refine((c) => c.fin >= c.inicio, finTrasInicio);
+
 export const curso = z.object({
   nombre: texto(30),
   orden: z.int(),
@@ -71,6 +77,7 @@ export const curso = z.object({
   profundidadMax: z.number().positive().optional(),
   agencias: z.array(texto(20)).default([]),
   resumen: texto(200),
+  convocatorias: z.array(convocatoria).default([]),
 });
 
 export const articulo = z.object({

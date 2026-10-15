@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import TituloSerif from './TituloSerif.astro';
+import Convocatorias from './Convocatorias.astro';
 import { texto } from '@/lib/textos';
 
 const t = await texto('cursos');
@@ -21,13 +22,14 @@ const profesionales = cursos.filter((c) => c.data.linea === 'profesional');
             <h3>{c.data.nombre.split(' ')[0]}<br />{c.data.nombre.split(' ').slice(1).join(' ')}</h3>
             <p>{c.data.resumen}</p>
             <div class="agency">{c.data.agencias.map((a) => <span class="chip c-tail">{a}</span>)}</div>
+            <Convocatorias convocatorias={c.data.convocatorias} />
           </article>
         </>
       ))}
     </div>
     <div class="pro">
       {profesionales.map((c) => (
-        <div id={`curso-${c.id}`}><span class="mono c-tail">Línea profesional</span><h4>{c.data.nombre}</h4><p>{c.data.resumen}</p></div>
+        <div id={`curso-${c.id}`}><span class="mono c-tail">Línea profesional</span><h4>{c.data.nombre}</h4><p>{c.data.resumen}</p><Convocatorias convocatorias={c.data.convocatorias} /></div>
       ))}
     </div>
   </div>
