@@ -1,0 +1,632 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "seccion": {
+          "type": "string",
+          "const": "hero"
+        },
+        "etiquetas": {
+          "minItems": 1,
+          "maxItems": 3,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 60,
+            "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+          }
+        },
+        "intro": {
+          "type": "object",
+          "properties": {
+            "destacado": {
+              "type": "string",
+              "maxLength": 120,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "texto": {
+              "type": "string",
+              "maxLength": 150,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            }
+          },
+          "required": [
+            "destacado",
+            "texto"
+          ]
+        },
+        "botonViajes": {
+          "type": "string",
+          "maxLength": 30,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "botonCursos": {
+          "type": "string",
+          "maxLength": 30,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        }
+      },
+      "required": [
+        "seccion",
+        "etiquetas",
+        "intro",
+        "botonViajes",
+        "botonCursos"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "seccion": {
+          "type": "string",
+          "const": "bases"
+        },
+        "etiqueta": {
+          "type": "string",
+          "maxLength": 50,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "titulo": {
+          "type": "object",
+          "properties": {
+            "antes": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "serif": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "despues": {
+              "type": "string",
+              "maxLength": 30,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            }
+          },
+          "required": [
+            "antes",
+            "serif",
+            "despues"
+          ]
+        },
+        "entradilla": {
+          "type": "string",
+          "maxLength": 210,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "caboDePalos": {
+          "type": "object",
+          "properties": {
+            "coordenadas": {
+              "type": "string",
+              "maxLength": 30,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "detalle": {
+              "type": "string",
+              "maxLength": 50,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "nombre": {
+              "minItems": 1,
+              "maxItems": 2,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 20,
+                "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+              }
+            },
+            "lista": {
+              "minItems": 1,
+              "maxItems": 4,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 80,
+                "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+              }
+            }
+          },
+          "required": [
+            "coordenadas",
+            "detalle",
+            "nombre",
+            "lista"
+          ]
+        },
+        "madrid": {
+          "type": "object",
+          "properties": {
+            "coordenadas": {
+              "type": "string",
+              "maxLength": 30,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "detalle": {
+              "type": "string",
+              "maxLength": 50,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "nombre": {
+              "minItems": 1,
+              "maxItems": 2,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 20,
+                "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+              }
+            },
+            "lista": {
+              "minItems": 1,
+              "maxItems": 4,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 80,
+                "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+              }
+            }
+          },
+          "required": [
+            "coordenadas",
+            "detalle",
+            "nombre",
+            "lista"
+          ]
+        }
+      },
+      "required": [
+        "seccion",
+        "etiqueta",
+        "titulo",
+        "entradilla",
+        "caboDePalos",
+        "madrid"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "seccion": {
+          "type": "string",
+          "const": "sunset"
+        },
+        "titulo": {
+          "type": "string",
+          "maxLength": 20,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "parrafo": {
+          "type": "object",
+          "properties": {
+            "destacado": {
+              "type": "string",
+              "maxLength": 120,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "texto": {
+              "type": "string",
+              "maxLength": 150,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            }
+          },
+          "required": [
+            "destacado",
+            "texto"
+          ]
+        },
+        "boton": {
+          "type": "string",
+          "maxLength": 20,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        }
+      },
+      "required": [
+        "seccion",
+        "titulo",
+        "parrafo",
+        "boton"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "seccion": {
+          "type": "string",
+          "const": "puntos"
+        },
+        "etiqueta": {
+          "type": "string",
+          "maxLength": 80,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "titulo": {
+          "type": "object",
+          "properties": {
+            "antes": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "serif": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "despues": {
+              "type": "string",
+              "maxLength": 30,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            }
+          },
+          "required": [
+            "antes",
+            "serif",
+            "despues"
+          ]
+        },
+        "entradilla": {
+          "type": "string",
+          "maxLength": 210,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        }
+      },
+      "required": [
+        "seccion",
+        "etiqueta",
+        "titulo",
+        "entradilla"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "seccion": {
+          "type": "string",
+          "const": "cursos"
+        },
+        "etiqueta": {
+          "type": "string",
+          "maxLength": 50,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "titulo": {
+          "type": "object",
+          "properties": {
+            "antes": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "serif": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "despues": {
+              "type": "string",
+              "maxLength": 30,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            }
+          },
+          "required": [
+            "antes",
+            "serif",
+            "despues"
+          ]
+        },
+        "entradilla": {
+          "type": "string",
+          "maxLength": 210,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        }
+      },
+      "required": [
+        "seccion",
+        "etiqueta",
+        "titulo",
+        "entradilla"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "seccion": {
+          "type": "string",
+          "const": "viajes"
+        },
+        "etiqueta": {
+          "type": "string",
+          "maxLength": 60,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "titulo": {
+          "type": "object",
+          "properties": {
+            "antes": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "serif": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "despues": {
+              "type": "string",
+              "maxLength": 30,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            }
+          },
+          "required": [
+            "antes",
+            "serif",
+            "despues"
+          ]
+        }
+      },
+      "required": [
+        "seccion",
+        "etiqueta",
+        "titulo"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "seccion": {
+          "type": "string",
+          "const": "puedo-ir"
+        },
+        "titulo": {
+          "type": "object",
+          "properties": {
+            "antes": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "serif": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "despues": {
+              "type": "string",
+              "maxLength": 30,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            }
+          },
+          "required": [
+            "antes",
+            "serif",
+            "despues"
+          ]
+        },
+        "etiqueta": {
+          "type": "string",
+          "maxLength": 30,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        }
+      },
+      "required": [
+        "seccion",
+        "titulo",
+        "etiqueta"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "seccion": {
+          "type": "string",
+          "const": "comunidad"
+        },
+        "parrafo": {
+          "type": "object",
+          "properties": {
+            "destacado": {
+              "type": "string",
+              "maxLength": 120,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "texto": {
+              "type": "string",
+              "maxLength": 150,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            }
+          },
+          "required": [
+            "destacado",
+            "texto"
+          ]
+        }
+      },
+      "required": [
+        "seccion",
+        "parrafo"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "seccion": {
+          "type": "string",
+          "const": "fauna"
+        },
+        "etiqueta": {
+          "type": "string",
+          "maxLength": 50,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "titulo": {
+          "type": "object",
+          "properties": {
+            "antes": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "serif": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "despues": {
+              "type": "string",
+              "maxLength": 30,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            }
+          },
+          "required": [
+            "antes",
+            "serif",
+            "despues"
+          ]
+        },
+        "entradilla": {
+          "type": "string",
+          "maxLength": 190,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        }
+      },
+      "required": [
+        "seccion",
+        "etiqueta",
+        "titulo",
+        "entradilla"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "seccion": {
+          "type": "string",
+          "const": "taller"
+        },
+        "etiqueta": {
+          "type": "string",
+          "maxLength": 50,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "titulo": {
+          "type": "string",
+          "maxLength": 30,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "texto": {
+          "type": "string",
+          "maxLength": 130,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "boton": {
+          "type": "string",
+          "maxLength": 20,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        }
+      },
+      "required": [
+        "seccion",
+        "etiqueta",
+        "titulo",
+        "texto",
+        "boton"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "seccion": {
+          "type": "string",
+          "const": "contacto"
+        },
+        "etiqueta": {
+          "type": "string",
+          "maxLength": 50,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "titulo": {
+          "type": "object",
+          "properties": {
+            "antes": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "serif": {
+              "type": "string",
+              "maxLength": 20,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "despues": {
+              "type": "string",
+              "maxLength": 30,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            }
+          },
+          "required": [
+            "antes",
+            "serif",
+            "despues"
+          ]
+        },
+        "instagram": {
+          "type": "object",
+          "properties": {
+            "etiqueta": {
+              "type": "string",
+              "maxLength": 40,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            },
+            "texto": {
+              "type": "string",
+              "maxLength": 80,
+              "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+            }
+          },
+          "required": [
+            "etiqueta",
+            "texto"
+          ]
+        }
+      },
+      "required": [
+        "seccion",
+        "etiqueta",
+        "titulo",
+        "instagram"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "seccion": {
+          "type": "string",
+          "const": "pagina-puntos"
+        },
+        "titulo": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        },
+        "entradilla": {
+          "type": "string",
+          "maxLength": 260,
+          "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+        }
+      },
+      "required": [
+        "seccion",
+        "titulo",
+        "entradilla"
+      ]
+    }
+  ]
+}

@@ -1,19 +1,22 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import SelectorTitulacion from './SelectorTitulacion.astro';
+import TituloSerif from './TituloSerif.astro';
 import { FICHA_INICIAL, NOMBRE_NIVEL, etiquetaEvaluacion, evaluarViaje } from '@/lib/buceo';
 import { FORMATO, precio } from '@/lib/viajes';
 import { duracionDias, rangoFechas } from '@/lib/fechas';
+import { texto } from '@/lib/textos';
 
 interface Props {
   readonly viajes: readonly CollectionEntry<'viajes'>[];
 }
 const { viajes } = Astro.props;
+const t = await texto('puedo-ir');
 ---
 <div class="puedo" id="puedo-ir">
   <div class="puedo-head">
-    <h3>¿Puedo ir <span class="serif">a este</span> viaje?</h3>
-    <span class="mono">Próximas salidas</span>
+    <h3><TituloSerif t={t.titulo} /></h3>
+    <span class="mono">{t.etiqueta}</span>
   </div>
   <div class="ficha">
     <div><span class="lbl">Tu titulación</span><SelectorTitulacion /></div>

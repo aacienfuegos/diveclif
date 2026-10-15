@@ -1,6 +1,6 @@
 import { defineCollection } from 'astro:content';
 import { file, glob } from 'astro/loaders';
-import { articulo, curso, entradaBitacora, punto, viaje } from './lib/esquemas';
+import { articulo, curso, entradaBitacora, punto, textos as esquemaTextos, viaje } from './lib/esquemas';
 
 const md = (carpeta: string) => glob({ pattern: '*.md', base: `./src/content/${carpeta}` });
 
@@ -9,5 +9,6 @@ const puntos = defineCollection({ loader: md('puntos'), schema: punto });
 const cursos = defineCollection({ loader: md('cursos'), schema: curso });
 const cuaderno = defineCollection({ loader: md('cuaderno'), schema: articulo });
 const bitacora = defineCollection({ loader: file('./src/content/bitacora.json'), schema: entradaBitacora });
+const textos = defineCollection({ loader: glob({ pattern: '*.json', base: './src/content/textos' }), schema: esquemaTextos });
 
-export const collections = { viajes, puntos, cursos, cuaderno, bitacora };
+export const collections = { viajes, puntos, cursos, cuaderno, bitacora, textos };

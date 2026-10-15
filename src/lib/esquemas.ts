@@ -76,6 +76,49 @@ export const entradaBitacora = z.object({
   orden: z.int(),
 });
 
+// Textos de la web, un JSON por sección. Sin HTML: la palabra en cursiva de un título y la negrita
+// de un párrafo van en su propio campo. En los tipos que se repiten, el máximo sale del texto más largo.
+const tituloSerif = z.object({ antes: texto(20), serif: texto(20), despues: texto(30) });
+const parrafo = z.object({ destacado: texto(120), texto: texto(150) });
+const base = z.object({
+  coordenadas: texto(30),
+  detalle: texto(50),
+  nombre: z.array(texto(20)).min(1).max(2),
+  lista: z.array(texto(80)).min(1).max(4),
+});
+const cabecera = (etiqueta: number, entradilla: number) =>
+  ({ etiqueta: texto(etiqueta), titulo: tituloSerif, entradilla: texto(entradilla) });
+
+export const textos = z.discriminatedUnion('seccion', [
+  z.object({
+    seccion: z.literal('hero'),
+    etiquetas: z.array(texto(60)).min(1).max(3),
+    intro: parrafo,
+    botonViajes: texto(30),
+    botonCursos: texto(30),
+  }),
+  z.object({ seccion: z.literal('bases'), ...cabecera(50, 210), caboDePalos: base, madrid: base }),
+  z.object({ seccion: z.literal('sunset'), titulo: texto(20), parrafo, boton: texto(20) }),
+  z.object({ seccion: z.literal('puntos'), ...cabecera(80, 210) }),
+  z.object({ seccion: z.literal('cursos'), ...cabecera(50, 210) }),
+  z.object({ seccion: z.literal('viajes'), etiqueta: texto(60), titulo: tituloSerif }),
+  z.object({ seccion: z.literal('puedo-ir'), titulo: tituloSerif, etiqueta: texto(30) }),
+  z.object({ seccion: z.literal('comunidad'), parrafo }),
+  z.object({ seccion: z.literal('fauna'), ...cabecera(50, 190) }),
+  z.object({ seccion: z.literal('taller'), etiqueta: texto(50), titulo: texto(30), texto: texto(130), boton: texto(20) }),
+  z.object({
+    seccion: z.literal('contacto'),
+    etiqueta: texto(50),
+    titulo: tituloSerif,
+    instagram: z.object({ etiqueta: texto(40), texto: texto(80) }),
+  }),
+  z.object({ seccion: z.literal('pagina-puntos'), titulo: texto(40), entradilla: texto(260) }),
+]);
+
+export type Textos = z.infer<typeof textos>;
+export type TituloSerif = z.infer<typeof tituloSerif>;
+export type Parrafo = z.infer<typeof parrafo>;
+
 // Un JSON Schema por colección, de lo que el conector escribe: el frontmatter de cada .md,
 // o el fichero entero en las colecciones de un solo JSON.
 export function esquemasJson(): Record<string, unknown> {
@@ -85,6 +128,7 @@ export function esquemasJson(): Record<string, unknown> {
     cursos: curso,
     cuaderno: articulo,
     bitacora: z.array(entradaBitacora.extend({ id: slug })),
+    textos,
   };
   return Object.fromEntries(Object.entries(esquemas).map(([k, s]) => [k, z.toJSONSchema(s, { io: 'input' })]));
 }

@@ -36,7 +36,8 @@
 .base ul { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 8px; color: var(--foam-2) }
 .base li { display: flex; gap: 10px }
 .base li::before { content: "→"; color: var(--tail); font-family: var(--f-mono) }
-.base .coord { position: absolute; top: 24px; left: 28px; right: 28px; display: flex; justify-content: space-between; gap: 12px; color: var(--foam-2) }
+/* en el flujo y no absoluta: con un nombre largo, el título no la pisa */
+.base .coord { margin: -4px 0 auto; padding-bottom: 20px; display: flex; justify-content: space-between; gap: 12px; color: var(--foam-2) }
 .base-art { position: absolute; inset: 0; z-index: -1; pointer-events: none; width: 100%; height: 100% }
 .sunset-card { margin-top: 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; padding: 18px 22px; background: var(--sand); color: var(--ink); border-radius: 4px }
 .sunset-card .big { font-family: var(--f-display); font-weight: 900; font-size: 2.2rem; line-height: .9; text-transform: uppercase; color: #e2622f }

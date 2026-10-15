@@ -1,9 +1,13 @@
 ---
 import { getCollection } from 'astro:content';
 import { PUBLIC_TURNSTILE_SITE_KEY } from 'astro:env/client';
+import TituloSerif from './TituloSerif.astro';
 import { SITE } from '@/config';
 import { TITULACIONES } from '@/lib/buceo';
+import { texto } from '@/lib/textos';
 import { proximos } from '@/lib/viajes';
+
+const t = await texto('contacto');
 
 const viajes = proximos(await getCollection('viajes'), new Date());
 const cursos = (await getCollection('cursos')).sort((a, b) => a.data.orden - b.data.orden);
@@ -17,8 +21,8 @@ const intereses = [
 ---
 <section class="sec contacto" id="contacto" data-depth="15" data-depth-end="3">
   <div class="wrap">
-    <div class="depth-tag"><b>−5 m</b> Parada de seguridad · 3 minutos</div>
-    <h2>¿Te vienes <span class="serif">con</span> nosotros?</h2>
+    <div class="depth-tag"><b>−5 m</b> {t.etiqueta}</div>
+    <h2><TituloSerif t={t.titulo} /></h2>
     <div class="contact-grid">
       <div class="channels">
         {SITE.whatsappNumero && (
@@ -49,9 +53,9 @@ const intereses = [
     </div>
     <div class="ig">
       <a class="ig-cta" href={SITE.instagram} target="_blank" rel="noopener">
-        <span class="mono">Visita nuestro Instagram</span>
+        <span class="mono">{t.instagram.etiqueta}</span>
         <b>@dive_clif</b>
-        <span class="ig-sub">Fauna, viajes, ejercicios y el día a día en el agua →</span>
+        <span class="ig-sub">{t.instagram.texto} →</span>
       </a>
     </div>
   </div>

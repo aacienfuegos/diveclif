@@ -1,0 +1,10 @@
+---
+import type { TituloSerif } from '@/lib/esquemas';
+import { pegado } from '@/lib/textos';
+
+interface Props {
+  readonly t: TituloSerif;
+}
+const { t } = Astro.props;
+---
+{t.antes} <span class="serif">{t.serif}</span>{pegado(t.despues) ? '' : ' '}{t.despues}

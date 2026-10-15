@@ -1,0 +1,10 @@
+---
+import type { Parrafo } from '@/lib/esquemas';
+import { pegado } from '@/lib/textos';
+
+interface Props {
+  readonly p: Parrafo;
+}
+const { p } = Astro.props;
+---
+<strong>{p.destacado}</strong>{pegado(p.texto) ? '' : ' '}{p.texto}

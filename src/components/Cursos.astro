@@ -1,15 +1,18 @@
 ---
 import { getCollection } from 'astro:content';
+import TituloSerif from './TituloSerif.astro';
+import { texto } from '@/lib/textos';
 
+const t = await texto('cursos');
 const cursos = (await getCollection('cursos')).sort((a, b) => a.data.orden - b.data.orden);
 const recreativos = cursos.filter((c) => c.data.linea === 'recreativa');
 const profesionales = cursos.filter((c) => c.data.linea === 'profesional');
 ---
 <section class="sec cursos" id="cursos" data-depth="12" data-depth-end="40">
   <div class="wrap">
-    <div class="depth-tag"><b>−12 → −40 m</b> Cada curso, en su profundidad</div>
-    <h2>¿Hasta dónde <span class="serif">quieres</span> bajar?</h2>
-    <p class="lede">Los cursos se ordenan por la profundidad máxima que certifican. Al bajar la página, el ordenador de buceo de la esquina te dice dónde estás.</p>
+    <div class="depth-tag"><b>−12 → −40 m</b> {t.etiqueta}</div>
+    <h2><TituloSerif t={t.titulo} /></h2>
+    <p class="lede">{t.entradilla}</p>
     <div class="scale">
       {recreativos.map((c) => (
         <>
