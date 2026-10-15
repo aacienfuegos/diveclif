@@ -77,6 +77,9 @@
 .f5 p { color: rgba(4, 19, 29, .8) }
 .f5 h3 { font-size: 2.3rem }
 .f5 .btn { align-self: flex-start; margin-top: 8px }
+.actividad-precio { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px }
+.actividad-precio b { font-family: var(--f-display); font-weight: 900; font-size: 1.8rem; line-height: 1 }
+.actividad-precio .mono { font-size: .66rem; letter-spacing: .08em; text-transform: uppercase }
 
 /* contacto */
 .contacto { background: linear-gradient(to bottom, var(--d30), var(--asc) 40%, var(--d0)) }

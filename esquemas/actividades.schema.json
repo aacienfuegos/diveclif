@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "titulo": {
+      "type": "string",
+      "maxLength": 100,
+      "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "taller",
+        "evento",
+        "salida-especial"
+      ]
+    },
+    "inicio": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+    },
+    "fin": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+    },
+    "lugar": {
+      "type": "string",
+      "maxLength": 80,
+      "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+    },
+    "precio": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "plazas": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "libres": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "total",
+        "libres"
+      ]
+    },
+    "resumen": {
+      "type": "string",
+      "maxLength": 130,
+      "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+    }
+  },
+  "required": [
+    "titulo",
+    "tipo",
+    "inicio",
+    "fin",
+    "lugar",
+    "precio",
+    "plazas",
+    "resumen"
+  ]
+}

@@ -89,6 +89,21 @@ export const articulo = z.object({
   arte: z.enum(['medusas', 'banco', 'arrecife', 'arena']),
 });
 
+// Talleres, eventos y salidas especiales (D3 de CIE-220). Título de 100 como mucho: "Actividad: <título>"
+// tiene que caber en los 120 caracteres de "interes" del formulario (src/lib/contacto.ts).
+export const actividad = z
+  .object({
+    titulo: texto(100),
+    tipo: z.enum(['taller', 'evento', 'salida-especial']),
+    inicio: fecha,
+    fin: fecha,
+    lugar: texto(80),
+    precio: z.int().min(0),
+    plazas,
+    resumen: texto(130),
+  })
+  .refine((a) => a.fin >= a.inicio, finTrasInicio);
+
 export const entradaBitacora = z.object({
   titulo: texto(30),
   cuando: texto(20),
@@ -148,6 +163,7 @@ export function esquemasJson(): Record<string, unknown> {
     puntos: punto,
     cursos: curso,
     cuaderno: articulo,
+    actividades: actividad,
     bitacora: z.array(entradaBitacora.extend({ id: slug })),
     textos,
   };

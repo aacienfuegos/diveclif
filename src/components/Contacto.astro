@@ -11,11 +11,12 @@ const t = await texto('contacto');
 
 const viajes = proximos(await getCollection('viajes'), new Date());
 const cursos = (await getCollection('cursos')).sort((a, b) => a.data.orden - b.data.orden);
+const actividades = proximos(await getCollection('actividades'), new Date());
 const intereses = [
   ...viajes.map((v) => `Viaje: ${v.data.titulo}`),
   ...cursos.map((c) => `Curso: ${c.data.nombre}`),
+  ...actividades.map((a) => `Actividad: ${a.data.titulo}`),
   'The Sunset',
-  'Taller de biología marina',
   'Otra cosa',
 ];
 ---
