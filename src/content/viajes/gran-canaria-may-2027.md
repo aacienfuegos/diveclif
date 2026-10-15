@@ -1,4 +1,5 @@
 ---
+# Datos de ejemplo: pendientes de validar por Pelayo
 titulo: "Gran Canaria"
 destino: "Gran Canaria"
 tipo: "nacional"
@@ -10,7 +11,7 @@ inmersionesMinimas: 0
 inmersiones: 6
 agua: {"temperatura": "19 °C", "traje": "7 mm"}
 precioDesde: 590
-plazas: {"total": 12, "libres": 8}
+plazas: {"total": 12, "libres": 7}
 organiza: "Te Moana Expeditions"
 fauna: ["Angelotes", "Rayas", "Tortugas"]
 resumen: "Puente de mayo en el Atlántico: rayas, angelotes y fondos volcánicos."

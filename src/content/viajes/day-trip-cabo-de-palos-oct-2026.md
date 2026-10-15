@@ -1,4 +1,5 @@
 ---
+# Datos de ejemplo: pendientes de validar por Pelayo
 titulo: "Day trip Cabo de Palos"
 destino: "Cabo de Palos, Murcia"
 tipo: "day-trip"
@@ -10,7 +11,7 @@ inmersionesMinimas: 0
 inmersiones: 2
 agua: {"temperatura": "21 °C", "traje": "7 mm"}
 precioDesde: 85
-plazas: {"total": 12, "libres": 8}
+plazas: {"total": 10, "libres": 6}
 organiza: "Dive Clif"
 fauna: ["Barracudas", "Meros", "Espetones"]
 incluye: ["Dos inmersiones desde barco", "Botellas y plomos", "Guía de Pelayo"]
