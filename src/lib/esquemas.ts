@@ -13,28 +13,42 @@ const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 const nivel = z.enum(NIVELES);
 const finTrasInicio = { message: 'fin no puede ser anterior a inicio', path: ['fin'] };
 
+export const plazas = z
+  .object({ total: z.int().min(1), libres: z.int().min(0) })
+  .refine((p) => p.libres <= p.total, { message: 'libres no puede ser mayor que total', path: ['libres'] });
+
+export const TE_MOANA = 'Te Moana Expeditions';
+
+const viajeComun = {
+  titulo: texto(100),
+  destino: texto(50),
+  inicio: fecha,
+  fin: fecha,
+  formato: z.enum(['vida-a-bordo', 'desde-tierra', 'barco']),
+  nivel: nivel.exclude(['tecnico']),
+  inmersionesMinimas: z.int().min(0),
+  inmersiones: z.int().min(1),
+  agua: z.object({ temperatura: texto(20), traje: texto(10) }),
+  precioDesde: z.int().positive(),
+  plazas,
+  destacado: z.boolean().default(false),
+  cita: texto(60).optional(),
+  fauna: z.array(texto(30)).default([]),
+  incluye: z.array(texto(50)).default([]),
+  noIncluye: z.array(texto(60)).default([]),
+  resumen: texto(160),
+};
+
+// Los viajes combinados los organiza Te Moana Expeditions (normativa); una salida de un día, cualquier centro
 export const viaje = z
-  .object({
-    titulo: texto(100),
-    destino: texto(50),
-    tipo: z.enum(['internacional', 'nacional', 'day-trip']),
-    inicio: fecha,
-    fin: fecha,
-    formato: z.enum(['vida-a-bordo', 'desde-tierra', 'barco']),
-    nivel: nivel.exclude(['tecnico']),
-    inmersionesMinimas: z.int().min(0),
-    inmersiones: z.int().min(1),
-    agua: z.object({ temperatura: texto(20), traje: texto(10) }),
-    precioDesde: z.int().positive(),
-    organiza: texto(30),
-    estado: z.enum(['abierto', 'ultimas-plazas', 'completo']).default('abierto'),
-    destacado: z.boolean().default(false),
-    cita: texto(60).optional(),
-    fauna: z.array(texto(30)).default([]),
-    incluye: z.array(texto(50)).default([]),
-    noIncluye: z.array(texto(60)).default([]),
-    resumen: texto(160),
-  })
+  .discriminatedUnion('tipo', [
+    z.object({
+      ...viajeComun,
+      tipo: z.literal(['internacional', 'nacional']),
+      organiza: z.literal(TE_MOANA, { error: `los viajes internacionales y nacionales los organiza ${TE_MOANA}` }),
+    }),
+    z.object({ ...viajeComun, tipo: z.literal('day-trip'), organiza: texto(60).min(2) }),
+  ])
   .refine((v) => v.fin >= v.inicio, finTrasInicio);
 
 export const punto = z.object({

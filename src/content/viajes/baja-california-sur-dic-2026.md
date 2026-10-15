@@ -10,6 +10,7 @@ inmersionesMinimas: 30
 inmersiones: 12
 agua: {"temperatura": "23–25 °C", "traje": "5 mm"}
 precioDesde: 2250
+plazas: {"total": 12, "libres": 8}
 organiza: "Te Moana Expeditions"
 destacado: true
 cita: "Un viaje que no se cuenta… se vive."

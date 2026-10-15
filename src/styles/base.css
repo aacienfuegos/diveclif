@@ -34,6 +34,7 @@ a { color: inherit }
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-family: var(--f-mono); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; box-shadow: inset 0 0 0 1px currentColor }
 .c-tail { color: var(--tail) } .c-foam { color: var(--foam) } .c-viaje { color: var(--viaje) }
 .c-daytrip { color: var(--daytrip) } .c-pecio { color: var(--pecio) } .c-fauna { color: var(--fauna) } .c-sand { color: var(--sand) }
+.c-coral { color: var(--coral) }
 .pill { flex-shrink: 0; font-family: var(--f-mono); font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; padding: 5px 9px; border-radius: 999px; white-space: nowrap }
 .pill.ok { background: rgba(31, 194, 140, .18); color: #8ff0c8 }
 .pill.no { background: rgba(255, 106, 61, .18); color: #ffb59d }

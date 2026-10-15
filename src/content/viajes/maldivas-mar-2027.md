@@ -10,6 +10,7 @@ inmersionesMinimas: 50
 inmersiones: 18
 agua: {"temperatura": "28 °C", "traje": "3 mm"}
 precioDesde: 2950
+plazas: {"total": 12, "libres": 8}
 organiza: "Te Moana Expeditions"
 fauna: ["Mantas", "Tiburones grises", "Tiburón ballena"]
 resumen: "Vida a bordo por los atolones centrales: canales con corriente, mantas y tiburones."

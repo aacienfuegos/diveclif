@@ -25,7 +25,7 @@ const jsonLd = [
   organizacion(),
   pelayo(),
   theSunset(),
-  ...viajes.map((v) => viaje({ ...v.data, url: `${SITE.url}/viajes/${v.id}`, completo: v.data.estado === 'completo' })),
+  ...viajes.map((v) => viaje({ ...v.data, url: `${SITE.url}/viajes/${v.id}` })),
 ];
 ---
 <Base titulo={SITE.nombre} jsonLd={jsonLd}>

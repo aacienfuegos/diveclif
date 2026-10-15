@@ -1,5 +1,7 @@
 import { SITE } from '../config';
+import { TE_MOANA } from './esquemas';
 import { isoFecha } from './fechas';
+import { estadoPlazas, type EstadoPlazas } from './plazas';
 
 type Nodo = Record<string, unknown>;
 
@@ -59,8 +61,19 @@ interface ViajeLd {
   readonly fin: Date;
   readonly precioDesde: number;
   readonly organiza: string;
-  readonly completo: boolean;
+  readonly plazas: { readonly libres: number };
 }
+
+const DISPONIBILIDAD: Readonly<Record<EstadoPlazas, string>> = {
+  completo: 'https://schema.org/SoldOut',
+  ultimas: 'https://schema.org/LimitedAvailability',
+  abierto: 'https://schema.org/InStock',
+};
+
+const organizador = (nombre: string): Nodo => {
+  if (nombre === SITE.nombre) return { '@id': ORG_ID };
+  return { '@type': nombre === TE_MOANA ? 'TravelAgency' : 'Organization', name: nombre };
+};
 
 export const viaje = (v: ViajeLd): Nodo => ({
   '@type': 'TouristTrip',
@@ -72,8 +85,8 @@ export const viaje = (v: ViajeLd): Nodo => ({
     '@type': 'Offer',
     price: String(v.precioDesde),
     priceCurrency: 'EUR',
-    availability: v.completo ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
-    offeredBy: v.organiza === SITE.nombre ? { '@id': ORG_ID } : { '@type': 'TravelAgency', name: v.organiza },
+    availability: DISPONIBILIDAD[estadoPlazas(v.plazas.libres)],
+    offeredBy: organizador(v.organiza),
   },
   subjectOf: {
     '@type': 'Event',
