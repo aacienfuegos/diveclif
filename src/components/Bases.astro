@@ -1,12 +1,16 @@
 ---
 import Banco from './Banco.astro';
 import Destacado from './Destacado.astro';
+import Foto from './Foto.astro';
 import TituloSerif from './TituloSerif.astro';
+import { buscarFoto } from '@/lib/fotos';
 import { texto } from '@/lib/textos';
 
 const [t, sunset] = await Promise.all([texto('bases'), texto('sunset')]);
 const cdp = t.caboDePalos;
 const mad = t.madrid;
+// con foto, un velo para que el texto se lea
+const velo = (slug: string) => ({ 'con-foto': buscarFoto('bases', slug) !== undefined });
 ---
 <section class="sec bases" id="bases" data-depth="3" data-depth-end="8">
   <div class="wrap">
@@ -14,16 +18,19 @@ const mad = t.madrid;
     <h2><TituloSerif t={t.titulo} /></h2>
     <p class="lede">{t.entradilla}</p>
     <div class="bases-grid">
-      <article class="base base-cdp">
-        <svg class="base-art" viewBox="0 0 600 440" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <Banco n={70} cx={330} cy={170} rx={230} ry={90} ancho={46} semilla={7} color="rgba(4,19,29,.35)" haciaIzquierda />
-          <path d="M0 400 Q120 360 240 390 T480 380 T600 395 V440 H0Z" fill="rgba(243,220,184,.25)" />
-        </svg>
+      <article class:list={['base base-cdp', velo('cabo-de-palos')]}>
+        <Foto uso="base" slug="cabo-de-palos" class="base-art">
+          <svg class="base-art" viewBox="0 0 600 440" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <Banco n={70} cx={330} cy={170} rx={230} ry={90} ancho={46} semilla={7} color="rgba(4,19,29,.35)" haciaIzquierda />
+            <path d="M0 400 Q120 360 240 390 T480 380 T600 395 V440 H0Z" fill="rgba(243,220,184,.25)" />
+          </svg>
+        </Foto>
         <div class="coord mono"><span>{cdp.coordenadas}</span><span>{cdp.detalle}</span></div>
         <h3>{cdp.nombre.map((l, i) => <>{i > 0 && <br />}{l}</>)}</h3>
         <ul>{cdp.lista.map((l) => <li>{l}</li>)}</ul>
       </article>
-      <article class="base base-mad">
+      <article class:list={['base base-mad', velo('madrid')]}>
+        <Foto uso="base" slug="madrid" class="base-art" />
         <div class="coord mono"><span>{mad.coordenadas}</span><span>{mad.detalle}</span></div>
         <h3>{mad.nombre.map((l, i) => <>{i > 0 && <br />}{l}</>)}</h3>
         <ul>{mad.lista.map((l) => <li>{l}</li>)}</ul>

@@ -139,3 +139,13 @@ a.channel:hover { background: rgba(2, 12, 24, .55) }
 @media (max-width: 980px) {
   .fechas { grid-column: auto }
 }
+
+/* fotos de Pelayo: recorte por CSS y, donde hay texto encima, un velo */
+.foto-fondo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover }
+img.base-art { object-fit: cover; z-index: -2 }
+.base.con-foto::before { background: linear-gradient(to top, rgba(2, 12, 24, .88) 0, rgba(2, 12, 24, .45) 50%, rgba(2, 12, 24, .25) 100%) }
+.fcard img.bg { object-fit: cover; z-index: -2 }
+.f5.con-foto { color: var(--foam) }
+.f5.con-foto::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgba(2, 12, 24, .92) 0, rgba(2, 12, 24, .6) 55%, rgba(2, 12, 24, .3) 100%) }
+.f5.con-foto p { color: var(--foam-2) }
+.f5.con-foto .btn { background: var(--coral); color: var(--ink) }

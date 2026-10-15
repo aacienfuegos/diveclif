@@ -1,0 +1,21 @@
+---
+import { Picture } from 'astro:assets';
+import { getEntry } from 'astro:content';
+import { USOS, buscarFoto, type Uso } from '@/lib/fotos';
+
+interface Props {
+  readonly uso: Uso;
+  readonly slug: string;
+  readonly class: string;
+}
+const { uso, slug, class: clase } = Astro.props;
+const u = USOS[uso];
+const foto = buscarFoto(u.hueco, slug);
+const alt = foto && (await getEntry('fotos', `${u.hueco}/${slug}`))?.data.alt;
+if (foto && !alt) throw new Error(`Falta el texto alternativo de ${u.hueco}/${slug} en src/content/fotos.json`);
+---
+{foto && alt ? (
+  <Picture src={foto.imagen} alt={alt} width={u.ancho} widths={[...u.anchos]} sizes={u.sizes} formats={['avif', 'webp']} class={clase} />
+) : (
+  <slot />
+)}

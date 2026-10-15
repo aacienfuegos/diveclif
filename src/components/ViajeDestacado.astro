@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import Banco from './Banco.astro';
+import Foto from './Foto.astro';
 import { precio } from '@/lib/viajes';
 import { duracionDias } from '@/lib/fechas';
 import { textoPlazas } from '@/lib/plazas';
@@ -17,12 +18,14 @@ const manta = 'M0 62 C40 30 80 18 104 40 C112 34 128 34 136 40 C160 18 200 30 24
 ---
 <article class="feature">
   <div class="feature-art">
-    <svg viewBox="0 0 600 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <path d={manta} transform="translate(150 120) scale(1.375)" fill="rgba(2,12,24,.55)" />
-      <path d={manta} transform="translate(40 330) scale(.58)" fill="rgba(2,12,24,.3)" />
-      <path d={manta} transform="translate(430 60) scale(.46)" fill="rgba(2,12,24,.3)" />
-      <Banco n={40} cx={460} cy={420} rx={150} ry={60} ancho={28} semilla={11} color="rgba(143,216,234,.28)" />
-    </svg>
+    <Foto uso="viaje-destacado" slug={viaje.id} class="foto-fondo">
+      <svg viewBox="0 0 600 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <path d={manta} transform="translate(150 120) scale(1.375)" fill="rgba(2,12,24,.55)" />
+        <path d={manta} transform="translate(40 330) scale(.58)" fill="rgba(2,12,24,.3)" />
+        <path d={manta} transform="translate(430 60) scale(.46)" fill="rgba(2,12,24,.3)" />
+        <Banco n={40} cx={460} cy={420} rx={150} ry={60} ancho={28} semilla={11} color="rgba(143,216,234,.28)" />
+      </svg>
+    </Foto>
     <div class="species">{v.fauna.map((f) => <span>{f}</span>)}</div>
   </div>
   <div class="feature-body">

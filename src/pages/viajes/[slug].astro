@@ -4,6 +4,7 @@ import Base from '@/layouts/Base.astro';
 import Nav from '@/components/Nav.astro';
 import Pie from '@/components/Pie.astro';
 import ComunidadWhatsApp from '@/components/ComunidadWhatsApp.astro';
+import Foto from '@/components/Foto.astro';
 import { SITE } from '@/config';
 import { NOMBRE_NIVEL } from '@/lib/buceo';
 import { duracionDias, rangoFechas } from '@/lib/fechas';
@@ -40,6 +41,7 @@ const jsonLd = [
         <h1>{v.titulo}</h1>
         {v.cita && <p class="quote">“{v.cita}”</p>}
       </header>
+      <Foto uso="viaje-ficha" slug={viaje.id} class="ficha-foto" />
       <dl class="facts">
         <div><dt>Desde</dt><dd>{precio(v.precioDesde)}</dd></div>
         {plazas && <div><dt>Plazas</dt><dd class="c-coral">{plazas}</dd></div>}

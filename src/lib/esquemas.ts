@@ -104,6 +104,8 @@ export const actividad = z
   })
   .refine((a) => a.fin >= a.inicio, finTrasInicio);
 
+export const foto = z.object({ alt: texto(150).min(5) });
+
 export const entradaBitacora = z.object({
   titulo: texto(30),
   cuando: texto(20),
@@ -166,6 +168,7 @@ export function esquemasJson(): Record<string, unknown> {
     actividades: actividad,
     bitacora: z.array(entradaBitacora.extend({ id: slug })),
     textos,
+    fotos: z.array(foto.extend({ id: z.string().regex(/^(viajes|bases|puntos|actividades)\/[a-z0-9]+(?:-[a-z0-9]+)*$/) })),
   };
   return Object.fromEntries(Object.entries(esquemas).map(([k, s]) => [k, z.toJSONSchema(s, { io: 'input' })]));
 }

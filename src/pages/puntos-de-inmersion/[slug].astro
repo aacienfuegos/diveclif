@@ -3,6 +3,7 @@ import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Base from '@/layouts/Base.astro';
 import Nav from '@/components/Nav.astro';
 import Pie from '@/components/Pie.astro';
+import Foto from '@/components/Foto.astro';
 import { SITE } from '@/config';
 import { NOMBRE_NIVEL } from '@/lib/buceo';
 import { formatearCoordenadas } from '@/lib/carta';
@@ -35,6 +36,7 @@ const jsonLd = [
         <span class="mono c-tail">{formatearCoordenadas(p.lat, p.lon)}</span>
         <h1>{p.nombre}</h1>
       </header>
+      <Foto uso="punto-ficha" slug={punto.id} class="ficha-foto" />
       <dl class="facts">
         <div><dt>Profundidad</dt><dd>{profundidad}</dd></div>
         <div><dt>Nivel</dt><dd>{NOMBRE_NIVEL[p.nivel]}</dd></div>

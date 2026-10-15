@@ -2,8 +2,14 @@ import type { APIRoute, GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
 import { NOMBRE_NIVEL } from '@/lib/buceo';
 import { rangoFechas } from '@/lib/fechas';
+import { buscarFoto } from '@/lib/fotos';
 import { renderizarTarjeta, type Tarjeta } from '@/lib/og';
 import { precio } from '@/lib/viajes';
+
+const foto = (...a: Parameters<typeof buscarFoto>) => {
+  const f = buscarFoto(...a);
+  return f ? { foto: f.ruta } : {};
+};
 
 export const getStaticPaths = (async () => {
   const [viajes, puntos, posts] = await Promise.all([getCollection('viajes'), getCollection('puntos'), getCollection('cuaderno')]);
@@ -17,12 +23,14 @@ export const getStaticPaths = (async () => {
       ...(v.data.cita ? { subtitulo: v.data.cita } : {}),
       dato: { valor: precio(v.data.precioDesde), etiqueta: `desde · organiza ${v.data.organiza}` },
       acento: '#e8399f',
+      ...foto('viajes', v.id),
     })),
     ...puntos.map((p): Tarjeta => ({
       clave: `puntos-de-inmersion/${p.id}`,
       antetitulo: `Cabo de Palos · ${p.data.tipo === 'pecio' ? 'pecio' : 'punto de inmersión'}`,
       titulo: p.data.nombre,
       dato: { valor: `${p.data.profundidad.min}–${p.data.profundidad.max} m`, etiqueta: NOMBRE_NIVEL[p.data.nivel] },
+      ...foto('puntos', p.id),
     })),
     ...posts.map((p): Tarjeta => ({
       clave: `cuaderno/${p.id}`,

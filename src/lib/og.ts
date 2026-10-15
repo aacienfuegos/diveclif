@@ -12,6 +12,8 @@ export interface Tarjeta {
   readonly subtitulo?: string;
   readonly dato?: { readonly valor: string; readonly etiqueta: string };
   readonly acento?: string;
+  // ruta de una foto de src/assets/fotos, para el panel cuando no hay JPG propia en src/assets/og
+  readonly foto?: string;
 }
 
 const ANCHO = 1200;
@@ -49,9 +51,10 @@ const ILUSTRACION = svgUri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0
   <path d="${MANTA}" transform="translate(30 470) scale(.35)" fill="rgba(2,12,24,.3)"/>
 </svg>`);
 
-async function panelDerecho(clave: string): Promise<string> {
-  const ruta = join(process.cwd(), 'src/assets/og', `${clave.replaceAll('/', '--')}.jpg`);
-  if (!existsSync(ruta)) return ILUSTRACION;
+async function panelDerecho(clave: string, foto: string | undefined): Promise<string> {
+  const og = join(process.cwd(), 'src/assets/og', `${clave.replaceAll('/', '--')}.jpg`);
+  const ruta = existsSync(og) ? og : foto && join(process.cwd(), foto);
+  if (!ruta) return ILUSTRACION;
   const jpg = await sharp(ruta).resize(PANEL, ALTO, { fit: 'cover' }).jpeg({ quality: 82 }).toBuffer();
   return `data:image/jpeg;base64,${jpg.toString('base64')}`;
 }
@@ -63,7 +66,7 @@ const h = (type: string, style: Record<string, unknown>, children?: unknown, ext
 export async function renderizarTarjeta(t: Tarjeta): Promise<Buffer> {
   const acento = t.acento ?? '#8fd8ea';
   const tamTitulo = t.titulo.length <= 14 ? 118 : t.titulo.length <= 24 ? 92 : 74;
-  const panel = await panelDerecho(t.clave);
+  const panel = await panelDerecho(t.clave, t.foto);
 
   const izquierda = h('div', { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: ANCHO - PANEL, height: ALTO, padding: '56px 60px' }, [
     h('div', { display: 'flex', alignItems: 'center', gap: 16 }, [

@@ -2,13 +2,17 @@
 import { getCollection } from 'astro:content';
 import Banco from './Banco.astro';
 import TituloSerif from './TituloSerif.astro';
+import Foto from './Foto.astro';
 import { rangoFechas } from '@/lib/fechas';
+import { buscarFoto } from '@/lib/fotos';
 import { textoPlazas } from '@/lib/plazas';
 import { texto } from '@/lib/textos';
 import { precio, proximos } from '@/lib/viajes';
 
 const [t, taller] = await Promise.all([texto('fauna'), texto('taller')]);
-const actividad = proximos(await getCollection('actividades'), new Date())[0]?.data;
+const proxima = proximos(await getCollection('actividades'), new Date())[0];
+const actividad = proxima?.data;
+const conFoto = proxima !== undefined && buscarFoto('actividades', proxima.id) !== undefined;
 const TIPO = { taller: 'Taller', evento: 'Evento', 'salida-especial': 'Salida especial' } as const;
 const plazas = actividad && textoPlazas(actividad.plazas.libres);
 const posts = (await getCollection('cuaderno')).sort((a, b) => b.data.fecha.getTime() - a.data.fecha.getTime()).slice(0, 4);
@@ -46,8 +50,9 @@ const tentaculos = Array.from({ length: 7 }, (_, i) => -60 + i * 20);
           {i >= 2 && <p>{p.data.resumen}</p>}
         </a>
       ))}
-      {actividad ? (
-        <article class="fcard f5">
+      {proxima && actividad ? (
+        <article class:list={['fcard f5', { 'con-foto': conFoto }]}>
+          <Foto uso="actividad" slug={proxima.id} class="bg" />
           <span class="mono">{TIPO[actividad.tipo]} · {rangoFechas(actividad.inicio, actividad.fin)} · {actividad.lugar}</span>
           <h3>{actividad.titulo}</h3>
           <p>{actividad.resumen}</p>
