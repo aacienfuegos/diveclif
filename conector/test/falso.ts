@@ -208,6 +208,23 @@ export class Falso {
       this.comentarios.push({ pr: Number(m[1]), body: c.body });
       return json({ id: this.comentarios.length }, 201);
     }
+    if ((m = /^pulls\/(\d+)\/files$/.exec(resto)) !== null && req.method === 'GET') {
+      const pr = this.pulls.get(Number(m[1]));
+      if (pr === undefined) return json({ message: 'Not Found' }, 404);
+      const base = this.ficheros('main') ?? new Map<string, string>();
+      const cabeza = this.ficheros(pr.head.sha) ?? new Map<string, string>();
+      const lista = [
+        ...[...cabeza].filter(([k, v]) => base.get(k) !== v).map(([k]) => ({ filename: k, status: base.has(k) ? 'modified' : 'added' })),
+        ...[...base.keys()].filter((k) => !cabeza.has(k)).map((k) => ({ filename: k, status: 'removed' })),
+      ];
+      const pagina = Number(url.searchParams.get('page') ?? '1');
+      return json(lista.slice((pagina - 1) * 100, pagina * 100));
+    }
+    if ((m = /^git\/trees\/([0-9a-f]{40})$/.exec(resto)) !== null && req.method === 'GET') {
+      const ficheros = this.commits.get(m[1] ?? '');
+      if (ficheros === undefined) return json({ message: 'Not Found' }, 404);
+      return json({ truncated: false, tree: [...ficheros.keys()].map((path) => ({ path, mode: '100644', type: 'blob' })) });
+    }
     if (resto === 'actions/runs' && req.method === 'GET') {
       const sha = url.searchParams.get('head_sha');
       const lista = this.runs.filter((r) => r.head_sha === sha);

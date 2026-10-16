@@ -108,7 +108,9 @@ export interface Pr {
   number: number;
   state: string;
   merged: boolean;
-  head: { sha: string; ref: string };
+  head: { sha: string; ref: string; repo: { full_name: string } | null };
+  user: { login: string } | null;
+  created_at: string;
 }
 
 function cabeceras(): Record<string, string> {

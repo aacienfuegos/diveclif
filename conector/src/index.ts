@@ -4,6 +4,7 @@ import type { JWTVerifyGetKey } from 'jose';
 import { ErrorConector, type Env } from './entorno';
 import { crearServidor } from './herramientas';
 import { clavesAccess, identidad } from './identidad';
+import { vuelta } from './avisos';
 import { almacenCache, type Almacen } from './capturas';
 import { atenderPagina } from './pagina';
 import { codigoError, registrar, type Entrada } from './registro';
@@ -33,6 +34,9 @@ export function crearWorker(deps: Dependencias = {}): ExportedHandler<Env> {
       entrada.estado = respuesta.status;
       registrar(entrada);
       return respuesta;
+    },
+    async scheduled(_evento, env) {
+      await vuelta(env, almacen(env));
     },
   };
 }
