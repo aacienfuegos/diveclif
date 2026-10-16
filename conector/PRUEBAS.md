@@ -1,6 +1,8 @@
 # Pruebas del conector antes de invitar a Pelayo
 
-Pruebas por el efecto B1 a B12 del plan de CIE-221. Todas van después del paso 8 de `MONTAJE.md` (`.github/` en `main` y rulesets importados). Si una falla, no se invita a Pelayo y vuelve a Andrés.
+Pruebas por el efecto B1 a B13 del plan de CIE-221. Todas van después del paso 8 de `MONTAJE.md` (rulesets en el 7, clave y despliegue en el 8). Si una falla, no se invita a Pelayo y vuelve a Andrés.
+
+Si antes de invitar a Pelayo se vuelve a aplicar el script de rulesets de CIE-270, se repiten B1 a B6: ese script no debe tocar `conector-r1` a `conector-r6`, y esto lo comprueba por el efecto.
 
 Las coordinan el `ciso` y el Jefe de Ingeniería. Las marcadas "tú" necesitan tu sesión, tu cuenta o la clave de la App, y se lanzan desde el mismo worktree limpio de `MONTAJE.md`.
 
@@ -12,16 +14,17 @@ Las coordinan el `ciso` y el Jefe de Ingeniería. Las marcadas "tú" necesitan t
 | B4 | Un push de `cienfuegos-agentes[bot]` a `pelayo/*` falla | Jefe de Ingeniería | Abajo |
 | B5 | La App no puede empujar a `develop`, crear ramas fuera de `pelayo/*` ni crear una etiqueta | Tú | Script B5 |
 | B6 | Un PR de una rama del equipo con un job `cambio-pequeno` duplicado en verde no queda mergeable por la App | Tú (el PR lo abre el Jefe de Ingeniería) | Script B6 |
-| B7 | El permiso por defecto del `GITHUB_TOKEN` es "Read" | Tú | Abajo |
+| B7 | El permiso por defecto del `GITHUB_TOKEN` es "Read" y Actions no puede aprobar PR | Tú | Abajo |
 | B8 | Ni secretos de repo ni environments con secretos | Tú | Abajo |
 | B9 | La página y `/mcp` sin sesión dan 401 o redirigen a Access; un `POST /publicar` sin JWT válido falla | Jefe de Ingeniería | Abajo |
 | B10 | La vista previa sin sesión redirige a Access | Jefe de Ingeniería | Abajo |
 | B11 | El conector no puede escribir fuera de `src/content/viajes/` | Tests y tú | Tests de `conector/test/herramientas.test.ts`; y a mano, abajo |
 | B12 | En modo `andres`, "Publicar" no mergea | Tú, y el Jefe de Ingeniería lo comprueba | Paso 10 de `MONTAJE.md`; abajo |
+| B13 | Con una aprobación de `cienfuegos-agentes[bot]` en un PR de contenido de la App, ni la App ni `cienfuegos-agentes` lo pueden mergear (falta la de code owner) | El Jefe de Ingeniería y tú | Script B13 |
 
 ## La clave temporal de la App
 
-B1, B5 y B6 usan una **segunda** clave privada de la App publicadora, solo para las pruebas: ajustes de la App > Private keys > Generate a private key, convertida a PKCS#8 como en el paso 3 de `MONTAJE.md`. Al terminar, se revoca en GitHub (ajustes de la App > Private keys > Delete); no basta con borrar el fichero.
+B1, B5, B6 y B13 usan una **segunda** clave privada de la App publicadora, solo para las pruebas, generada también después del paso 7 de `MONTAJE.md` (los seis `conector-r*` activos): ajustes de la App > Private keys > Generate a private key, convertida a PKCS#8 como en el paso 8. Al terminar, se revoca en GitHub (ajustes de la App > Private keys > Delete); no basta con borrar el fichero.
 
 Desde `conector/` del worktree limpio (después de `npm ci`), en una sola shell:
 
@@ -75,7 +78,7 @@ app -X PATCH "repos/$R/pulls/$pr" -f state=closed >/dev/null
 app -X DELETE "repos/$R/git/refs/heads/pelayo/prueba-b1"
 ```
 
-Tiene que salir `BIEN, rechazado`. Con `PUBLICACION=andres` lo para R2. Al pasar a publicación directa se repite con la App en el bypass de R2: entonces lo tiene que parar R3 (`cambio-pequeno` en rojo, porque un `.astro` no es una ruta permitida).
+Tiene que salir `BIEN, rechazado`. Con `PUBLICACION=andres` lo para R2. Al pasar a publicación directa se repite con la App en el bypass de R2 y de `revision-andres`: entonces lo tiene que parar R3 (`cambio-pequeno` en rojo, porque un `.astro` no es una ruta permitida).
 
 ## B5: la App no escribe fuera de `pelayo/*` ni crea etiquetas
 
@@ -106,9 +109,42 @@ cabeza=$(app "repos/$R/pulls/$pr" --jq .head.sha)
 debe_fallar -X PUT "repos/$R/pulls/$pr/merge" -f sha="$cabeza"
 ```
 
-Tiene que salir `BIEN, rechazado`. Mide el efecto, no la causa: puede pararlo la falta del permiso Workflows de la App y no R3. Con `PUBLICACION=andres` lo para R2; al pasar a directa se repite con la App en el bypass de R2. **Si llega a mergear**: primero sacas la App del bypass de R2 y después reviertes el workflow en `main`. El PR se cierra sin mergear al terminar.
+Tiene que salir `BIEN, rechazado`. Mide el efecto, no la causa: puede pararlo la falta del permiso Workflows de la App y no R3. Con `PUBLICACION=andres` lo para R2; al pasar a directa se repite con la App en el bypass de R2 y de `revision-andres`. **Si llega a mergear**: primero sacas la App de los dos bypass (el de `revision-andres`, por su JSON de `homelab-docs`) y después reviertes el workflow en `main`. El PR se cierra sin mergear al terminar.
 
-## Al terminar B1, B5 y B6
+## B13: sin tu aprobación, un PR de contenido no se mergea
+
+Con la opción (a), `CODEOWNERS` en `main` tiene `/src/content/viajes/ @aacienfuegos`: en un PR de contenido falta tu aprobación de code owner aunque lo apruebe `cienfuegos-agentes`. El PR solo añade un salto de línea al final de un viaje que ya existe, así que si llegara a mergear no cambiaría nada visible.
+
+1. Tú, como la App, creas la rama y el PR:
+
+   ```sh
+   main=$(app "repos/$R/git/ref/heads/main" --jq .object.sha)
+   v=$(app "repos/$R/contents/src/content/viajes?ref=main" --jq '[.[] | select(.name | endswith(".md"))][0].path')
+   app -X POST "repos/$R/git/refs" -f ref=refs/heads/pelayo/prueba-b13 -f sha="$main" >/dev/null
+   app "repos/$R/contents/$v?ref=main" -H 'Accept: application/vnd.github.raw' > "$d/b13"
+   printf '\n' >> "$d/b13"
+   app -X PUT "repos/$R/contents/$v" -f message="prueba B13" -f branch=pelayo/prueba-b13 \
+     -f sha="$(app "repos/$R/contents/$v?ref=main" --jq .sha)" -f content="$(base64 < "$d/b13" | tr -d '\n')" >/dev/null
+   pr=$(app -X POST "repos/$R/pulls" -f title="Prueba B13 (no mergear)" -f head=pelayo/prueba-b13 -f base=main --jq .number)
+   echo "PR $pr sobre $v"
+   ```
+
+   Le pasas el número al Jefe de Ingeniería.
+2. El Jefe de Ingeniería espera a que `build`, `visual` y `cambio-pequeno` terminen (así lo único que falta es la aprobación), lo aprueba con `cienfuegos-agentes` e intenta mergearlo con esa misma credencial: tiene que fallar. Lo cita en CIE-210.
+3. Después, tú, como la App:
+
+   ```sh
+   cabeza=$(app "repos/$R/pulls/$pr" --jq .head.sha)
+   debe_fallar -X PUT "repos/$R/pulls/$pr/merge" -f sha="$cabeza"
+
+   # Limpieza
+   app -X PATCH "repos/$R/pulls/$pr" -f state=closed >/dev/null
+   app -X DELETE "repos/$R/git/refs/heads/pelayo/prueba-b13"
+   ```
+
+Tiene que salir `BIEN, rechazado`, y el intento del paso 2 también tiene que fallar. **Si alguno lo consigue**, no se invita a Pelayo y vuelve a ti.
+
+## Al terminar B1, B5, B6 y B13
 
 ```sh
 unset TOKEN; rm -rf "$d"

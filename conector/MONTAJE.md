@@ -22,7 +22,7 @@ En lo que sigue, `CONECTOR_HOST` y `PAGINA_HOST` son los dos hostnames del Worke
 
 ## 2. GitHub: Actions sin permisos de escritura ni secretos
 
-- Settings > Actions > General > Workflow permissions: "Read repository contents and packages permissions", y sin "Allow GitHub Actions to create and approve pull requests".
+- Settings > Actions > General > Workflow permissions: "Read repository contents and packages permissions", y "Allow GitHub Actions to create and approve pull requests" desactivado. Un workflow de un PR desde una rama del repo puede pedir `pull-requests: write` en su propio `permissions:` y corre antes de que nadie lo mergee; con esa casilla desactivada, su aprobación no vale.
 - Settings > Secrets and variables > Actions: ningún secreto de repo. Settings > Environments: ninguno con secretos.
 
 Lo comprueban B7 y B8 de `PRUEBAS.md`.
@@ -34,13 +34,7 @@ En tu cuenta: Settings > Developer settings > GitHub Apps > New GitHub App.
 - Sin webhook (desmarca "Active").
 - Permisos del repositorio: **Contents** y **Pull requests** en "Read and write"; **Actions** y **Checks** en "Read-only". Nada más: ni **Workflows**, ni **Administration**, ni **Commit statuses**. Workflows no se le da nunca, tampoco al pasar a publicación directa: con él la App podría escribir en `.github/workflows/` un job `cambio-pequeno` que siempre pasa.
 - "Only on this account". Instálala solo en `aacienfuegos/diveclif` ("Only select repositories").
-- Genera una clave privada y conviértela a PKCS#8, que es lo que lee el Worker:
-
-  ```sh
-  openssl pkcs8 -topk8 -nocrypt -in <descargada>.pem -out app-pkcs8.pem
-  ```
-
-  Borra la descargada cuando hayas puesto el secreto (paso 7).
+- **No generes todavía su clave privada.** Se genera en el paso 8, con R1 a R6 ya activos. Hasta entonces, a `main` solo lo protege `revision-andres` (el ruleset de CIE-251), y con la clave ya creada una aprobación de la App sobre un PR de `cienfuegos-agentes` que toque `functions/` o `package-lock.json` bastaría para mergearlo.
 - Apunta el id de la App (página de la App, "App ID"), el id de la instalación (el número al final de la URL de Settings > Applications > la App > Configure) y el slug de la App (el de su URL pública, `github.com/apps/<slug>`).
 - En `.github/cambio-pequeno/config.json`, cambia `"autor": "__slug-de-la-app-publicadora__[bot]"` por `"<slug>[bot]"`. Ese cambio es un PR al repo, con revisión del `ciso` antes de mergearlo: la regla decide qué PR son de la App.
 
@@ -65,7 +59,77 @@ De cada aplicación, el "Application Audience (AUD) Tag" (Overview de la aplicac
 
 My Profile > API Tokens > Create Token > Custom token: **Account > Cloudflare Pages > Read**, solo en tu cuenta. Es el que usa el Worker para encontrar la vista previa de cada commit.
 
-## 7. Despliegue
+## 7. `.github/` en `main` y rulesets
+
+Todo este paso va antes de que exista la clave de la App (paso 8), en este orden.
+
+**7.1. `.github/` en `main`.** El arreglo del ordenador de buceo y después el PR a `main` con los commits del conector, que abre el Jefe de Ingeniería y mergeas tú. Más el `CODEOWNERS` de CIE-269 por la vía de CIE-251, con la línea `/src/content/viajes/ @aacienfuegos` (opción (a) del plan): con ella GitHub te exige a ti en todo PR de contenido a `main`, lo apruebe quien lo apruebe. Compruébalo:
+
+```sh
+for f in .github/CODEOWNERS .github/cambio-pequeno/regla.mjs .github/workflows/cambio-pequeno.yml; do
+  gh api "repos/aacienfuegos/diveclif/contents/$f?ref=main" --jq .path || echo "FALTA $f"
+done
+gh api 'repos/aacienfuegos/diveclif/contents/.github/CODEOWNERS?ref=main' -H 'Accept: application/vnd.github.raw' \
+  | grep -x '/src/content/viajes/ @aacienfuegos' || echo "FALTA la línea de los viajes en CODEOWNERS"
+```
+
+Tienen que salir las tres rutas y la línea, sin ningún `FALTA`. Sin eso, R2 no exige code owner en `/.github/` ni en los viajes, y `cambio-pequeno` no corre.
+
+**7.2. La medida de `cambio-pequeno`.** La hace el Jefe de Ingeniería, antes de que importes nada: abre un PR de prueba a `main` desde una rama del equipo, sin mergear, y cita en CIE-210 el `head_sha`, el `event` y los `pull_requests` de su run de `cambio-pequeno`. **Si el `head_sha` no es la cabeza del PR, el montaje para aquí**: el Worker busca los runs por la cabeza del PR, y el plan vuelve a una ronda con el `ciso`.
+
+**7.3. Importar R1 a R6.** Importa `.github/rulesets/r1-main.json`, `r2-main.json`, `r3-main.json`, `r4-ramas.json`, `r5-pelayo.json` y `r6-etiquetas.json` (Settings > Rules > Rulesets > New ruleset > Import a ruleset), cada uno desde `main`. Se llaman `conector-r1` a `conector-r6`, para que el script de CIE-270, que busca por nombre, no los toque. Antes de importar `r4-ramas.json` y `r5-pelayo.json`, cambia en tu worktree (sin subirlo) los marcadores de `bypass_actors`, comillas incluidas, por el número:
+
+- `"__ID_APP_PUBLICADORA__"` (en `r5-pelayo.json`): el id de la App publicadora (paso 3);
+- `"__ID_APP_CIENFUEGOS_AGENTES__"` (en `r4-ramas.json`): el id de la App `cienfuegos-agentes`, que sale con `gh api apps/cienfuegos-agentes --jq .id`.
+
+```sh
+cd .github/rulesets
+sed -i 's/"__ID_APP_PUBLICADORA__"/<id de la App publicadora>/' r5-pelayo.json
+sed -i 's/"__ID_APP_CIENFUEGOS_AGENTES__"/<id de cienfuegos-agentes>/' r4-ramas.json
+grep -n '__ID_' *.json   # sale vacío
+```
+
+R2 se queda sin bypass y la App publicadora fuera del bypass de `revision-andres`: con `PUBLICACION=andres`, es lo que impide que la App mergee.
+
+**7.4. Comprobar lo importado** (condición C12 del `ciso`). Los seis, `active`:
+
+```sh
+gh api repos/aacienfuegos/diveclif/rulesets --jq '.[] | select(.name | startswith("conector-")) | "\(.id) \(.name) \(.enforcement)"'
+```
+
+El listado no trae reglas ni bypass, así que después, uno a uno:
+
+```sh
+for id in $(gh api repos/aacienfuegos/diveclif/rulesets --jq '.[] | select(.name | startswith("conector-")) | .id'); do
+  gh api "repos/aacienfuegos/diveclif/rulesets/$id" \
+    --jq '{name, enforcement, bypass_actors, checks: [.rules[] | select(.type == "required_status_checks") | .parameters.required_status_checks[]]}'
+done
+```
+
+Tiene que salir:
+
+| Ruleset | `bypass_actors` | Checks |
+|---|---|---|
+| `conector-r1` | vacío | `build` y `visual`, los dos con `integration_id` 15368 (GitHub Actions) |
+| `conector-r2` | vacío | ninguno |
+| `conector-r3` | solo `{"actor_id": 5, "actor_type": "RepositoryRole"}` (rol de administrador) | `cambio-pequeno` con `integration_id` 15368 |
+| `conector-r4` | el rol de administrador y la App `cienfuegos-agentes` | ninguno |
+| `conector-r5` | solo la App publicadora | ninguno |
+| `conector-r6` | solo el rol de administrador | ninguno |
+
+Y en `revision-andres` (el ruleset de `main` de CIE-251), ningún `actor_id` con el id de la App publicadora en `bypass_actors`. Pega la salida en CIE-210.
+
+Que GitHub admita R4 y R5 con una App en el bypass en una cuenta personal está **sin comprobar**. Si no los admite, para aquí y decides tú (CIE-215 §3.3).
+
+## 8. Clave de la App y despliegue
+
+Solo con el paso 7 terminado (los seis `conector-r*` activos, comprobado con `gh api`).
+
+Genera la clave privada de la App publicadora (ajustes de la App > Private keys > Generate a private key) y conviértela a PKCS#8, que es lo que lee el Worker:
+
+```sh
+openssl pkcs8 -topk8 -nocrypt -in <descargada>.pem -out app-pkcs8.pem
+```
 
 Un token de API propio para desplegar, en vez de `wrangler login` (Custom token, solo tu cuenta y solo la zona de los dos hostnames):
 
@@ -114,28 +178,7 @@ npx wrangler deploy
 unset CLOUDFLARE_API_TOKEN
 ```
 
-Después, `shred -u app-pkcs8.pem` (o bórrala) y la `.pem` descargada.
-
-## 8. `.github/` en `main` y rulesets
-
-Antes de importar los rulesets, `.github/` tiene que estar en `main`: el PR a `main` con los commits del conector lo abre el Jefe de Ingeniería y lo mergeas tú. Compruébalo:
-
-```sh
-for f in .github/CODEOWNERS .github/cambio-pequeno/regla.mjs .github/workflows/cambio-pequeno.yml; do
-  gh api "repos/aacienfuegos/diveclif/contents/$f?ref=main" --jq .path || echo "FALTA $f"
-done
-```
-
-Sin eso, R2 no exige code owner y `cambio-pequeno` no corre.
-
-Después, importa `.github/rulesets/r1-main.json` a `r6-etiquetas.json` (Settings > Rules > Rulesets > New ruleset > Import a ruleset), cada uno desde `main`. Antes de importar cada uno, cambia en el fichero (en tu worktree, sin subirlo) los marcadores de ids de Apps de `bypass_actors`:
-
-- `__ID_APP_PUBLICADORA__`: el id de la App publicadora (paso 3);
-- `__ID_APP_CIENFUEGOS_AGENTES__`: el id de la App `cienfuegos-agentes`, que sale con `gh api apps/cienfuegos-agentes --jq .id`.
-
-Con `PUBLICACION=andres`, R2 sin bypass: es lo que impide que la App mergee.
-
-Que GitHub admita R4 y R5 con una App en el bypass en una cuenta personal está **sin comprobar**. Si no los admite, para aquí y decides tú (CIE-215 §3.3).
+Después, `shred -u app-pkcs8.pem <descargada>.pem` (o bórralas).
 
 ## 9. El conector en Claude
 
@@ -149,6 +192,6 @@ Un viaje de ejemplo de principio a fin ("Añade un viaje...", "Prepáralo", el c
 
 ## Pasar a publicación directa (después de probar, lo decides tú)
 
-1. La App publicadora en el bypass de R2, con `PUBLICACION=andres` todavía.
-2. Repetir B1 y B6 de `PRUEBAS.md` con la App en el bypass. B6 no es inocuo: si llega a mergear, primero sacas la App del bypass de R2 y después reviertes el workflow en `main`.
-3. Solo con B1 y B6 en verde, `PUBLICACION` a `directa` en `wrangler.jsonc` y `npx wrangler deploy`. Si alguna falla, la App sale del bypass y no hay publicación directa.
+1. La App publicadora en el bypass de R2 **y** en el de `revision-andres`, el ruleset de `main` de CIE-251, con `PUBLICACION=andres` todavía. Sin los dos, GitHub rechaza el merge aunque el Worker lo intente. El de `revision-andres` va en su JSON de `homelab-docs` (`scripts/github-rulesets/`), con PR y revisión del `ciso`, y lo aplica el script de CIE-270; nunca a mano, porque la siguiente pasada del script lo quitaría sin avisar.
+2. Repetir B1 y B6 de `PRUEBAS.md` con la App en los dos bypass. B6 no es inocuo: si llega a mergear, primero sacas la App de los dos bypass y después reviertes el workflow en `main`.
+3. Solo con B1 y B6 en verde, `PUBLICACION` a `directa` en `wrangler.jsonc` y `npx wrangler deploy`. Si alguna falla, la App sale de los dos bypass (el de `revision-andres`, por el mismo JSON de `homelab-docs`) y no hay publicación directa.
