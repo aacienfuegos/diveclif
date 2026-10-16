@@ -13,3 +13,7 @@ export function precio(eur: number): string {
 export function proximos<T extends { data: { fin: Date; inicio: Date } }>(viajes: readonly T[], hoy: Date): T[] {
   return viajes.filter((v) => v.data.fin >= hoy).sort((a, b) => a.data.inicio.getTime() - b.data.inicio.getTime());
 }
+
+export function proximas<T extends { fin: Date; inicio: Date }>(fechas: readonly T[], hoy: Date): T[] {
+  return fechas.filter((f) => f.fin >= hoy).sort((a, b) => a.inicio.getTime() - b.inicio.getTime());
+}

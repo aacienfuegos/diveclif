@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "alt": {
+        "type": "string",
+        "minLength": 5,
+        "maxLength": 150,
+        "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+      },
+      "id": {
+        "type": "string",
+        "pattern": "^(viajes|bases|puntos|actividades)\\/[a-z0-9]+(?:-[a-z0-9]+)*$"
+      }
+    },
+    "required": [
+      "alt",
+      "id"
+    ]
+  }
+}

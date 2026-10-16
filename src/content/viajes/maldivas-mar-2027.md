@@ -1,4 +1,5 @@
 ---
+# Datos de ejemplo: pendientes de validar por Pelayo
 titulo: "Maldivas"
 destino: "Atolones centrales, Maldivas"
 tipo: "internacional"
@@ -10,6 +11,7 @@ inmersionesMinimas: 50
 inmersiones: 18
 agua: {"temperatura": "28 °C", "traje": "3 mm"}
 precioDesde: 2950
+plazas: {"total": 14, "libres": 0}
 organiza: "Te Moana Expeditions"
 fauna: ["Mantas", "Tiburones grises", "Tiburón ballena"]
 resumen: "Vida a bordo por los atolones centrales: canales con corriente, mantas y tiburones."

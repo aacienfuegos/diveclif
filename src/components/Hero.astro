@@ -1,5 +1,9 @@
 ---
 import Nav from './Nav.astro';
+import Destacado from './Destacado.astro';
+import { texto } from '@/lib/textos';
+
+const t = await texto('hero');
 ---
 <svg width="0" height="0" class="sr-only" aria-hidden="true">
   <filter id="water" x="-5%" y="-5%" width="110%" height="110%">
@@ -21,17 +25,17 @@ import Nav from './Nav.astro';
   <Nav />
   <div class="wrap">
     <div class="hero-eyebrow mono">
-      <span>Pelayo · IDC Staff Instructor PADI</span><span>Divemaster Instructor SSI</span><span>Cabo de Palos ⇄ Madrid</span>
+      {t.etiquetas.map((e) => <span>{e}</span>)}
     </div>
     <div class="wl" data-wl>
       <h1>Dive<br /><em>Clif</em></h1>
       <div class="wl-under" aria-hidden="true">Dive<br /><em>Clif</em></div>
     </div>
     <div class="hero-under">
-      <p><strong>Cursos de buceo de todos los niveles y viajes a los mejores fondos del planeta.</strong> Con Pelayo, del Mediterráneo de Cabo de Palos al azul de Farasan Banks, siempre en grupo pequeño.</p>
+      <p><Destacado p={t.intro} /></p>
       <div class="hero-ctas">
-        <a class="btn btn-coral" href="#viajes">Próximos viajes</a>
-        <a class="btn btn-ghost" href="#cursos">Hazte buceador</a>
+        <a class="btn btn-coral" href="#viajes">{t.botonViajes}</a>
+        <a class="btn btn-ghost" href="#cursos">{t.botonCursos}</a>
       </div>
     </div>
   </div>

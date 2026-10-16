@@ -1,5 +1,7 @@
 import { SITE } from '../config';
+import { TE_MOANA } from './esquemas';
 import { isoFecha } from './fechas';
+import { estadoPlazas, type EstadoPlazas } from './plazas';
 
 type Nodo = Record<string, unknown>;
 
@@ -59,8 +61,19 @@ interface ViajeLd {
   readonly fin: Date;
   readonly precioDesde: number;
   readonly organiza: string;
-  readonly completo: boolean;
+  readonly plazas: { readonly libres: number };
 }
+
+const DISPONIBILIDAD: Readonly<Record<EstadoPlazas, string>> = {
+  completo: 'https://schema.org/SoldOut',
+  ultimas: 'https://schema.org/LimitedAvailability',
+  abierto: 'https://schema.org/InStock',
+};
+
+const organizador = (nombre: string): Nodo => {
+  if (nombre === SITE.nombre) return { '@id': ORG_ID };
+  return { '@type': nombre === TE_MOANA ? 'TravelAgency' : 'Organization', name: nombre };
+};
 
 export const viaje = (v: ViajeLd): Nodo => ({
   '@type': 'TouristTrip',
@@ -72,8 +85,8 @@ export const viaje = (v: ViajeLd): Nodo => ({
     '@type': 'Offer',
     price: String(v.precioDesde),
     priceCurrency: 'EUR',
-    availability: v.completo ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
-    offeredBy: v.organiza === SITE.nombre ? { '@id': ORG_ID } : { '@type': 'TravelAgency', name: v.organiza },
+    availability: DISPONIBILIDAD[estadoPlazas(v.plazas.libres)],
+    offeredBy: organizador(v.organiza),
   },
   subjectOf: {
     '@type': 'Event',
@@ -94,11 +107,25 @@ export const punto = (p: { url: string; nombre: string; resumen: string; lat: nu
   containedInPlace: { '@type': 'Place', name: 'Reserva Marina de Cabo de Palos - Islas Hormigas' },
 });
 
-export const curso = (c: { nombre: string; resumen: string }): Nodo => ({
+interface CursoLd {
+  readonly nombre: string;
+  readonly resumen: string;
+  readonly convocatorias: readonly { inicio: Date; fin: Date; lugar: string }[];
+}
+
+export const curso = (c: CursoLd): Nodo => ({
   '@type': 'Course',
   name: c.nombre,
   description: c.resumen,
   provider: { '@id': ORG_ID },
+  ...(c.convocatorias.length > 0 && {
+    hasCourseInstance: c.convocatorias.map((x) => ({
+      '@type': 'CourseInstance',
+      startDate: isoFecha(x.inicio),
+      endDate: isoFecha(x.fin),
+      location: { '@type': 'Place', name: x.lugar },
+    })),
+  }),
 });
 
 export const articulo = (a: { url: string; titulo: string; resumen: string; fecha: Date }): Nodo => ({

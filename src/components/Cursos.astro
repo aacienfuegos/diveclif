@@ -1,15 +1,19 @@
 ---
 import { getCollection } from 'astro:content';
+import TituloSerif from './TituloSerif.astro';
+import Convocatorias from './Convocatorias.astro';
+import { texto } from '@/lib/textos';
 
+const t = await texto('cursos');
 const cursos = (await getCollection('cursos')).sort((a, b) => a.data.orden - b.data.orden);
 const recreativos = cursos.filter((c) => c.data.linea === 'recreativa');
 const profesionales = cursos.filter((c) => c.data.linea === 'profesional');
 ---
 <section class="sec cursos" id="cursos" data-depth="12" data-depth-end="40">
   <div class="wrap">
-    <div class="depth-tag"><b>−12 → −40 m</b> Cada curso, en su profundidad</div>
-    <h2>¿Hasta dónde <span class="serif">quieres</span> bajar?</h2>
-    <p class="lede">Los cursos se ordenan por la profundidad máxima que certifican. Al bajar la página, el ordenador de buceo de la esquina te dice dónde estás.</p>
+    <div class="depth-tag"><b>−12 → −40 m</b> {t.etiqueta}</div>
+    <h2><TituloSerif t={t.titulo} /></h2>
+    <p class="lede">{t.entradilla}</p>
     <div class="scale">
       {recreativos.map((c) => (
         <>
@@ -18,13 +22,14 @@ const profesionales = cursos.filter((c) => c.data.linea === 'profesional');
             <h3>{c.data.nombre.split(' ')[0]}<br />{c.data.nombre.split(' ').slice(1).join(' ')}</h3>
             <p>{c.data.resumen}</p>
             <div class="agency">{c.data.agencias.map((a) => <span class="chip c-tail">{a}</span>)}</div>
+            <Convocatorias convocatorias={c.data.convocatorias} />
           </article>
         </>
       ))}
     </div>
     <div class="pro">
       {profesionales.map((c) => (
-        <div id={`curso-${c.id}`}><span class="mono c-tail">Línea profesional</span><h4>{c.data.nombre}</h4><p>{c.data.resumen}</p></div>
+        <div id={`curso-${c.id}`}><span class="mono c-tail">Línea profesional</span><h4>{c.data.nombre}</h4><p>{c.data.resumen}</p><Convocatorias convocatorias={c.data.convocatorias} /></div>
       ))}
     </div>
   </div>

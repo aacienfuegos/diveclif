@@ -4,10 +4,12 @@ import Base from '@/layouts/Base.astro';
 import Nav from '@/components/Nav.astro';
 import Pie from '@/components/Pie.astro';
 import ComunidadWhatsApp from '@/components/ComunidadWhatsApp.astro';
+import Foto from '@/components/Foto.astro';
 import { SITE } from '@/config';
 import { NOMBRE_NIVEL } from '@/lib/buceo';
 import { duracionDias, rangoFechas } from '@/lib/fechas';
 import { migas, viaje as viajeLd } from '@/lib/jsonld';
+import { textoPlazas } from '@/lib/plazas';
 import { FORMATO, precio } from '@/lib/viajes';
 import '@/styles/viajes.css';
 
@@ -23,8 +25,9 @@ const { viaje } = Astro.props;
 const v = viaje.data;
 const { Content } = await render(viaje);
 const url = `${SITE.url}/viajes/${viaje.id}`;
+const plazas = textoPlazas(v.plazas.libres);
 const jsonLd = [
-  viajeLd({ ...v, url, completo: v.estado === 'completo' }),
+  viajeLd({ ...v, url }),
   migas([{ nombre: 'Inicio', url: `${SITE.url}/` }, { nombre: 'Viajes', url: `${SITE.url}/#viajes` }, { nombre: v.titulo, url }]),
 ];
 ---
@@ -38,8 +41,10 @@ const jsonLd = [
         <h1>{v.titulo}</h1>
         {v.cita && <p class="quote">“{v.cita}”</p>}
       </header>
+      <Foto uso="viaje-ficha" slug={viaje.id} class="ficha-foto" />
       <dl class="facts">
         <div><dt>Desde</dt><dd>{precio(v.precioDesde)}</dd></div>
+        {plazas && <div><dt>Plazas</dt><dd class="c-coral">{plazas}</dd></div>}
         <div><dt>Formato</dt><dd>{FORMATO[v.formato]}</dd></div>
         <div><dt>Requisito</dt><dd>{NOMBRE_NIVEL[v.nivel]}{v.inmersionesMinimas > 0 && ` · ${v.inmersionesMinimas} inmersiones`}</dd></div>
         <div><dt>Inmersiones</dt><dd>{v.inmersiones}</dd></div>

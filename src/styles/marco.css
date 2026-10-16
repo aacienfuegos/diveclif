@@ -73,3 +73,4 @@
   .hud.hero-on { opacity: 0; transform: translateY(20px); pointer-events: none }
   .two { grid-template-columns: minmax(0, 1fr) }
 }
+.ficha-foto { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; margin-block: 8px 24px }

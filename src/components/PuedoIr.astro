@@ -1,19 +1,23 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import SelectorTitulacion from './SelectorTitulacion.astro';
+import TituloSerif from './TituloSerif.astro';
 import { FICHA_INICIAL, NOMBRE_NIVEL, etiquetaEvaluacion, evaluarViaje } from '@/lib/buceo';
 import { FORMATO, precio } from '@/lib/viajes';
 import { duracionDias, rangoFechas } from '@/lib/fechas';
+import { texto } from '@/lib/textos';
+import { estadoPlazas, textoPlazas } from '@/lib/plazas';
 
 interface Props {
   readonly viajes: readonly CollectionEntry<'viajes'>[];
 }
 const { viajes } = Astro.props;
+const t = await texto('puedo-ir');
 ---
 <div class="puedo" id="puedo-ir">
   <div class="puedo-head">
-    <h3>¿Puedo ir <span class="serif">a este</span> viaje?</h3>
-    <span class="mono">Próximas salidas</span>
+    <h3><TituloSerif t={t.titulo} /></h3>
+    <span class="mono">{t.etiqueta}</span>
   </div>
   <div class="ficha">
     <div><span class="lbl">Tu titulación</span><SelectorTitulacion /></div>
@@ -31,12 +35,15 @@ const { viajes } = Astro.props;
       const v = viaje.data;
       const e = evaluarViaje(FICHA_INICIAL, v.nivel, v.inmersionesMinimas);
       const dias = duracionDias(v.inicio, v.fin);
+      const completo = estadoPlazas(v.plazas.libres) === 'completo';
+      const plazas = textoPlazas(v.plazas.libres);
       return (
-        <article class:list={['tcard', e.ok ? 'ok' : 'no']} data-nivel={v.nivel} data-minimas={v.inmersionesMinimas}>
+        <article class:list={['tcard', e.ok ? 'ok' : 'no']} data-nivel={v.nivel} data-minimas={v.inmersionesMinimas} data-completo={completo ? '' : undefined}>
           <div class="ttop">
             <span class="tdate">{rangoFechas(v.inicio, v.fin)} · {dias} {dias === 1 ? 'día' : 'días'}</span>
-            <span class:list={['pill', e.ok ? 'ok' : 'no']} data-pill>{v.estado === 'completo' ? 'Completo' : etiquetaEvaluacion(e)}</span>
+            <span class:list={['pill', e.ok ? 'ok' : 'no']} data-pill>{completo ? 'Completo' : etiquetaEvaluacion(e)}</span>
           </div>
+          {plazas && !completo && <p class="tplazas mono c-coral">{plazas}</p>}
           <div class="tbody"><h4><a href={`/viajes/${viaje.id}`}>{v.titulo}</a></h4></div>
           <dl class="tmeta tbody">
             <div><dt>Formato</dt><dd>{FORMATO[v.formato]}</dd></div>
@@ -85,7 +92,7 @@ const { viajes } = Astro.props;
       card.classList.toggle('ok', e.ok);
       card.classList.toggle('no', !e.ok);
       const pill = card.querySelector<HTMLElement>('[data-pill]');
-      if (pill && pill.textContent !== 'Completo') {
+      if (pill && card.dataset.completo === undefined) {
         pill.textContent = etiquetaEvaluacion(e);
         pill.classList.toggle('ok', e.ok);
         pill.classList.toggle('no', !e.ok);

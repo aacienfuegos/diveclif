@@ -1,4 +1,5 @@
 ---
+# Datos de ejemplo: pendientes de validar por Pelayo
 titulo: "Farasan Banks"
 destino: "Mar Rojo, Arabia Saudí"
 tipo: "internacional"
@@ -10,6 +11,7 @@ inmersionesMinimas: 40
 inmersiones: 20
 agua: {"temperatura": "29 °C", "traje": "3 mm"}
 precioDesde: 3200
+plazas: {"total": 12, "libres": 12}
 organiza: "Te Moana Expeditions"
 fauna: ["Tiburones", "Delfines", "Bancos de barracudas"]
 resumen: "Volvemos al azul de Farasan Banks: tiburones, delfines y arrecifes casi sin buceadores."

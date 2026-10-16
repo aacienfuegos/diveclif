@@ -36,7 +36,8 @@
 .base ul { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 8px; color: var(--foam-2) }
 .base li { display: flex; gap: 10px }
 .base li::before { content: "→"; color: var(--tail); font-family: var(--f-mono) }
-.base .coord { position: absolute; top: 24px; left: 28px; right: 28px; display: flex; justify-content: space-between; gap: 12px; color: var(--foam-2) }
+/* en el flujo y no absoluta: con un nombre largo, el título no la pisa */
+.base .coord { margin: -4px 0 auto; padding-bottom: 20px; display: flex; justify-content: space-between; gap: 12px; color: var(--foam-2) }
 .base-art { position: absolute; inset: 0; z-index: -1; pointer-events: none; width: 100%; height: 100% }
 .sunset-card { margin-top: 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; padding: 18px 22px; background: var(--sand); color: var(--ink); border-radius: 4px }
 .sunset-card .big { font-family: var(--f-display); font-weight: 900; font-size: 2.2rem; line-height: .9; text-transform: uppercase; color: #e2622f }
@@ -76,6 +77,9 @@
 .f5 p { color: rgba(4, 19, 29, .8) }
 .f5 h3 { font-size: 2.3rem }
 .f5 .btn { align-self: flex-start; margin-top: 8px }
+.actividad-precio { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px }
+.actividad-precio b { font-family: var(--f-display); font-weight: 900; font-size: 1.8rem; line-height: 1 }
+.actividad-precio .mono { font-size: .66rem; letter-spacing: .08em; text-transform: uppercase }
 
 /* contacto */
 .contacto { background: linear-gradient(to bottom, var(--d30), var(--asc) 40%, var(--d0)) }
@@ -129,3 +133,19 @@ a.channel:hover { background: rgba(2, 12, 24, .55) }
   .sunset-card { grid-template-columns: minmax(0, 1fr) }
   .base { min-height: 340px }
 }
+.fechas { grid-column: 2 / -1; list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--foam-2) }
+.fechas li { display: flex; flex-wrap: wrap; gap: 4px 14px; padding-top: 6px; border-top: 1px solid rgba(143, 216, 234, .12) }
+.pro .fechas { margin-top: 12px }
+@media (max-width: 980px) {
+  .fechas { grid-column: auto }
+}
+
+/* fotos de Pelayo: recorte por CSS y, donde hay texto encima, un velo */
+.foto-fondo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover }
+img.base-art { object-fit: cover; z-index: -2 }
+.base.con-foto::before { background: linear-gradient(to top, rgba(2, 12, 24, .88) 0, rgba(2, 12, 24, .45) 50%, rgba(2, 12, 24, .25) 100%) }
+.fcard img.bg { object-fit: cover; z-index: -2 }
+.f5.con-foto { color: var(--foam) }
+.f5.con-foto::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgba(2, 12, 24, .92) 0, rgba(2, 12, 24, .6) 55%, rgba(2, 12, 24, .3) 100%) }
+.f5.con-foto p { color: var(--foam-2) }
+.f5.con-foto .btn { background: var(--coral); color: var(--ink) }

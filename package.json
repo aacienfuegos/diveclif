@@ -10,7 +10,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "vitest run"
+    "test": "vitest run",
+    "esquemas": "node scripts/esquemas.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

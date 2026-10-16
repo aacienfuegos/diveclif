@@ -1,0 +1,18 @@
+{
+  "seccion": "bases",
+  "etiqueta": "Parada de seguridad · dos bases",
+  "titulo": { "antes": "Mediterráneo", "serif": "y", "despues": "piscina de 20 m" },
+  "entradilla": "Pelayo reparte el año entre la costa de Murcia y Madrid: el mar para bucear de verdad y la piscina para aprender y entrenar entre viajes.",
+  "caboDePalos": {
+    "coordenadas": "37°38′N 0°41′W",
+    "detalle": "Reserva Marina Islas Hormigas",
+    "nombre": ["Cabo de", "Palos"],
+    "lista": ["Bajo de Dentro, Hormigas y los pecios de la zona", "Bancos de barracudas, espetones y meros", "Day trips y fines de semana de club"]
+  },
+  "madrid": {
+    "coordenadas": "40°25′N 3°42′W",
+    "detalle": "Piscina de 20 m",
+    "nombre": ["Madrid"],
+    "lista": ["Bautismos para probar sin compromiso", "Parte teórica y confinadas de los cursos", "Entrenamientos y talleres entre viajes"]
+  }
+}

@@ -32,6 +32,7 @@
 .tcard.no .tbody { opacity: .55 }
 .ttop { display: flex; justify-content: space-between; gap: 10px; align-items: start }
 .tdate { font-family: var(--f-mono); font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--foam-2) }
+.tplazas { margin: -4px 0 0; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase }
 .tcard h4 { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 1.9rem; line-height: .95; text-transform: uppercase }
 .tcard h4 a { text-decoration: none }
 .tcard h4 a::after { content: ""; position: absolute; inset: 0 }

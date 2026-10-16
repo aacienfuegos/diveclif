@@ -1,6 +1,6 @@
 {
   "extends": "astro/tsconfigs/strictest",
-  "include": [".astro/types.d.ts", "src/**/*", "tests/**/*"],
+  "include": [".astro/types.d.ts", "src/**/*", "tests/**/*", "scripts/**/*.ts"],
   "exclude": ["dist", "functions"],
   "compilerOptions": {
     "baseUrl": ".",

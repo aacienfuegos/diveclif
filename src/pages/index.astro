@@ -10,19 +10,28 @@ import Fauna from '@/components/Fauna.astro';
 import Contacto from '@/components/Contacto.astro';
 import Pie from '@/components/Pie.astro';
 import OrdenadorBuceo from '@/components/OrdenadorBuceo.astro';
+import TituloSerif from '@/components/TituloSerif.astro';
 import { SITE } from '@/config';
-import { organizacion, pelayo, theSunset, viaje, webSite } from '@/lib/jsonld';
-import { proximos } from '@/lib/viajes';
+import { curso, organizacion, pelayo, theSunset, viaje, webSite } from '@/lib/jsonld';
+import { texto } from '@/lib/textos';
+import { proximas, proximos } from '@/lib/viajes';
 import '@/styles/home.css';
 
 const puntos = (await getCollection('puntos')).sort((a, b) => a.data.orden - b.data.orden);
-const viajes = proximos(await getCollection('viajes'), new Date());
+const t = await texto('puntos');
+const hoy = new Date();
+const viajes = proximos(await getCollection('viajes'), hoy);
+const LUGAR = { madrid: 'Madrid', 'cabo-de-palos': 'Cabo de Palos, Murcia' } as const;
+const cursos = (await getCollection('cursos'))
+  .map((c) => ({ ...c.data, convocatorias: proximas(c.data.convocatorias, hoy).map((x) => ({ ...x, lugar: LUGAR[x.lugar] })) }))
+  .filter((c) => c.convocatorias.length > 0);
 const jsonLd = [
   webSite(),
   organizacion(),
   pelayo(),
   theSunset(),
-  ...viajes.map((v) => viaje({ ...v.data, url: `${SITE.url}/viajes/${v.id}`, completo: v.data.estado === 'completo' })),
+  ...viajes.map((v) => viaje({ ...v.data, url: `${SITE.url}/viajes/${v.id}` })),
+  ...cursos.map(curso),
 ];
 ---
 <Base titulo={SITE.nombre} jsonLd={jsonLd}>
@@ -31,9 +40,9 @@ const jsonLd = [
     <Bases />
     <section class="sec puntos" id="puntos" data-depth="8" data-depth-end="12">
       <div class="wrap">
-        <div class="depth-tag"><b>−10 m</b> Reserva Marina de Cabo de Palos · Islas Hormigas</div>
-        <h2>Carta de <span class="serif">los</span> puntos de inmersión</h2>
-        <p class="lede">Elige tu titulación y la carta te muestra a qué puntos puedes bajar. Cada punto tiene su ficha con profundidad, nivel, corriente y fauna.</p>
+        <div class="depth-tag"><b>−10 m</b> {t.etiqueta}</div>
+        <h2><TituloSerif t={t.titulo} /></h2>
+        <p class="lede">{t.entradilla}</p>
         <Carta puntos={puntos} />
       </div>
     </section>

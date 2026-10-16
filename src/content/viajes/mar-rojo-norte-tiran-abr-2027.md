@@ -1,4 +1,5 @@
 ---
+# Datos de ejemplo: pendientes de validar por Pelayo
 titulo: "Mar Rojo Norte y Tiran"
 destino: "Hurghada, Egipto"
 tipo: "internacional"
@@ -10,6 +11,7 @@ inmersionesMinimas: 20
 inmersiones: 16
 agua: {"temperatura": "22–24 °C", "traje": "5 mm"}
 precioDesde: 1490
+plazas: {"total": 16, "libres": 9}
 organiza: "Te Moana Expeditions"
 fauna: ["Pecios", "Corales", "Delfines"]
 resumen: "Pecios del norte, arrecifes de Tiran y el Thistlegorm en una semana de vida a bordo."

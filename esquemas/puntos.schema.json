@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "nombre": {
+      "type": "string",
+      "maxLength": 30,
+      "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+    },
+    "orden": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "costa",
+        "arenal",
+        "isla",
+        "bajo",
+        "pecio"
+      ]
+    },
+    "lat": {
+      "type": "number",
+      "minimum": 37.6,
+      "maximum": 37.72
+    },
+    "lon": {
+      "type": "number",
+      "minimum": -0.78,
+      "maximum": -0.6
+    },
+    "profundidad": {
+      "type": "object",
+      "properties": {
+        "min": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "aproximada": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "min",
+        "max"
+      ]
+    },
+    "nivel": {
+      "type": "string",
+      "enum": [
+        "ninguno",
+        "open-water",
+        "advanced",
+        "deep",
+        "tecnico"
+      ]
+    },
+    "corriente": {
+      "type": "string",
+      "enum": [
+        "Nula",
+        "Baja",
+        "Media",
+        "Fuerte"
+      ]
+    },
+    "fauna": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 50,
+        "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+      }
+    },
+    "resumen": {
+      "type": "string",
+      "maxLength": 220,
+      "pattern": "^(?![\\s\\S]*<[A-Za-z!/?])"
+    }
+  },
+  "required": [
+    "nombre",
+    "orden",
+    "tipo",
+    "lat",
+    "lon",
+    "profundidad",
+    "nivel",
+    "corriente",
+    "fauna",
+    "resumen"
+  ]
+}
