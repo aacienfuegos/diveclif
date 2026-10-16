@@ -1,0 +1,35 @@
+# Regla de cambio pequeño sobre los PR a main. Corre con el workflow y el checkout de main (GitHub
+# solo lo lanza si este fichero ya está en main): del PR solo se leen datos, por la API.
+name: cambio-pequeno
+
+on:
+  pull_request_target:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  cambio-pequeno:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/heads/main
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: Regla de cambio pequeño
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          AUTOR: ${{ github.event.pull_request.user.login }}
+          RAMA: ${{ github.event.pull_request.head.ref }}
+          REPO_CABEZA: ${{ github.event.pull_request.head.repo.full_name }}
+          FECHA_PR: ${{ github.event.pull_request.created_at }}
+        run: node .github/cambio-pequeno/revisar-pr.mjs

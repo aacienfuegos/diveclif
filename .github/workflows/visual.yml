@@ -1,0 +1,40 @@
+# Revisión visual: desbordes, CSP y ordenador de buceo a 1500, 390 y 360 px, con capturas. El Worker
+# del conector lee resultado.json del artefacto, que solo trae códigos.
+name: visual
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Ficheros que cambia el PR
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: git diff --name-only "$BASE_SHA...$HEAD_SHA" > "$RUNNER_TEMP/cambiados.txt"
+      - run: node scripts/visual.mjs "$RUNNER_TEMP/capturas" "$RUNNER_TEMP/cambiados.txt"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: capturas
+          path: ${{ runner.temp }}/capturas
+          retention-days: 14
+          if-no-files-found: error

@@ -93,29 +93,36 @@ function fichasCambiadas() {
 
 const codigoPagina = (url) => url.replace(/\.html$/, '');
 
+// Falla si algún `a` o `button` visible queda tapado por el HUD en todas las posiciones de scroll en
+// las que está entero en pantalla: en ninguna, elementFromPoint en su centro da el elemento o un hijo.
+// Lo que el scroll puede destapar no cuenta, porque el HUD es fijo y siempre pasa algo por debajo.
 async function solapesHud(page) {
   return page.evaluate(async () => {
     const hud = document.querySelector('[data-hud]');
     if (hud === null) return false;
-    const espera = (ms) => new Promise((ok) => setTimeout(ok, ms));
-    const corta = (a, b) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+    // Un ciclo del temporizador del HUD (400 ms) más su transición (0,2 s).
+    const espera = () => new Promise((ok) => setTimeout(ok, 600));
+    const pulsables = new Set();
+    const tapados = new Set();
     const fin = document.documentElement.scrollHeight - innerHeight;
-    for (let y = 0; ; y = Math.min(fin, y + innerHeight / 2)) {
+    for (let y = 0; ; y = Math.min(fin, y + innerHeight / 3)) {
       scrollTo({ top: y, behavior: 'instant' });
-      await espera(450);
-      const s = getComputedStyle(hud);
-      const r = hud.getBoundingClientRect();
-      if (s.display !== 'none' && s.visibility !== 'hidden' && Number(s.opacity) > 0.05 && r.width > 0) {
-        for (const el of document.querySelectorAll('a, button')) {
-          if (hud.contains(el)) continue;
-          const e = el.getBoundingClientRect();
-          const es = getComputedStyle(el);
-          const visible = e.width > 0 && e.height > 0 && es.visibility !== 'hidden' && e.bottom > 0 && e.top < innerHeight;
-          if (visible && corta(e, r)) return true;
-        }
+      await espera();
+      for (const el of document.querySelectorAll('a, button')) {
+        if (hud.contains(el) || pulsables.has(el)) continue;
+        const e = el.getBoundingClientRect();
+        const visible = e.width > 0 && e.height > 0 && getComputedStyle(el).visibility !== 'hidden';
+        const entero = e.top >= 0 && e.left >= 0 && e.bottom <= innerHeight && e.right <= innerWidth;
+        if (!visible || !entero) continue;
+        // Un enlace en línea partido en dos renglones tiene el centro de su caja fuera del texto: se mira
+        // el centro de cada renglón.
+        const encima = [...el.getClientRects()].map((c) => document.elementFromPoint(c.left + c.width / 2, c.top + c.height / 2));
+        if (encima.some((x) => x !== null && el.contains(x))) pulsables.add(el);
+        else if (encima.some((x) => x !== null && hud.contains(x))) tapados.add(el);
       }
-      if (y >= fin) return false;
+      if (y >= fin) break;
     }
+    return [...tapados].some((el) => !pulsables.has(el));
   });
 }
 
