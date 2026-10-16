@@ -12,3 +12,8 @@ AGENTS.md @aacienfuegos
 .githooks/ @aacienfuegos
 .envrc @aacienfuegos
 .vscode/ @aacienfuegos
+
+# Viajes (CIE-221, opción (a)): los publica el conector de Pelayo como PR; sin esta línea bastaría
+# la aprobación de un agente o de la App publicadora. Toda ruta de .github/cambio-pequeno/config.json
+# tiene que tener dueño aquí mientras la publicación sea un PR a Andrés.
+/src/content/viajes/ @aacienfuegos
