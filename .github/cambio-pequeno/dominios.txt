@@ -1,0 +1,2 @@
+# Dominios a los que se puede enlazar desde el cuerpo de una ficha sin pasar por Andrés.
+# Uno por línea, sin esquema ni ruta (ejemplo: temoana.example). Lo mantiene Andrés.
