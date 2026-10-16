@@ -56,8 +56,10 @@
     ndlEl.textContent = n === null ? '--' : String(n);
     hud.classList.toggle('low', n !== null && n < 15);
     hud.classList.toggle('hero-on', (hero?.getBoundingClientRect().bottom ?? 0) > innerHeight * 0.9);
+    // Se oculta en cuanto el pie llega a la altura del HUD. Su borde inferior sale del CSS y no de
+    // getBoundingClientRect, que incluye el desplazamiento de `off` y haría alternar la clase.
     const fin = document.querySelector('footer')?.getBoundingClientRect().top ?? Infinity;
-    hud.classList.toggle('off', fin < innerHeight * 0.7);
+    hud.classList.toggle('off', fin < innerHeight - parseFloat(getComputedStyle(hud).bottom));
 
     const ahora = performance.now(), dt = (ahora - tAnterior) / 1000;
     if (dt > 0.05) {
