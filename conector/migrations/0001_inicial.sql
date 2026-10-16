@@ -28,6 +28,16 @@ CREATE INDEX propuestas_correo ON propuestas (correo);
 -- Como mucho una propuesta abierta por viaje.
 CREATE UNIQUE INDEX propuestas_abierta_por_slug ON propuestas (slug) WHERE estado NOT IN ('publicada', 'cerrada');
 
+-- Token del botón "Publicar": solo su hash, ligado a PR, SHA y correo. Se consume con DELETE ... RETURNING.
+CREATE TABLE tokens_publicar (
+  hash TEXT PRIMARY KEY,
+  pr INTEGER NOT NULL,
+  sha TEXT NOT NULL,
+  correo TEXT NOT NULL,
+  -- Milisegundos.
+  caduca INTEGER NOT NULL
+);
+
 -- Límites: se comprueban y se suman en la misma sentencia.
 CREATE TABLE contadores (
   clave TEXT NOT NULL,
