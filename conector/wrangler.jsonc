@@ -1,0 +1,45 @@
+// Worker del conector de Dive Clif. Los valores __ENTRE_GUIONES__ los rellena Andrés al montar
+// (conector/MONTAJE.md); los secretos van con `wrangler secret put`, nunca aquí.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "diveclif-conector",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  // Solo los dos hostnames propios: ni workers.dev ni URL de vista previa.
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "__CONECTOR_HOST__", "custom_domain": true },
+    { "pattern": "__PAGINA_HOST__", "custom_domain": true }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "diveclif-conector",
+      "database_id": "__ID_DE_D1__",
+      "migrations_dir": "migrations"
+    }
+  ],
+  // Avisos por correo: cada 2 minutos.
+  "triggers": { "crons": ["*/2 * * * *"] },
+  // Logs del Worker sí; los de invocación no, para que Cloudflare no guarde las cabeceras.
+  "observability": {
+    "enabled": true,
+    "logs": { "enabled": true, "invocation_logs": false }
+  },
+  "vars": {
+    "CONECTOR_HOST": "__CONECTOR_HOST__",
+    "PAGINA_HOST": "__PAGINA_HOST__",
+    "ACCESS_EQUIPO": "__EQUIPO_DE_ACCESS__",
+    "ACCESS_AUD_MCP": "__AUD_DE_LA_APLICACION_DEL_CONECTOR__",
+    "ACCESS_AUD_PAGINA": "__AUD_DE_LA_APLICACION_DE_LA_PAGINA__",
+    "CORREOS_PERMITIDOS": "__CORREO_DE_ANDRES__",
+    "CORREO_ANDRES": "__CORREO_DE_ANDRES__",
+    "CORREO_DESDE": "Dive Clif <__REMITENTE_VERIFICADO_EN_RESEND__>",
+    "PUBLICACION": "andres",
+    "REPO": "aacienfuegos/diveclif",
+    "PAGES_PROYECTO": "__PROYECTO_DE_PAGES__",
+    "PAGES_CUENTA": "__ID_DE_CUENTA_DE_CLOUDFLARE__"
+  }
+}
