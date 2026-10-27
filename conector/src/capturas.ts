@@ -123,7 +123,9 @@ export async function leerArtefacto(flujo: ReadableStream<Uint8Array>): Promise<
       leidos += trozo.value.length;
       // El zip comprimido tampoco puede pasar del tope total.
       if (leidos > TOPES.total) roto = true;
-      if (!roto) unzip.push(trozo.value, false);
+      // fflate infla cada push entero antes de llamar a ondata: en trozos de 1 KB, lo inflado de una
+      // vez no pasa de 1 MB aunque el zip sea una bomba.
+      for (let i = 0; i < trozo.value.length && !roto; i += 1024) unzip.push(trozo.value.subarray(i, i + 1024), false);
     } catch {
       roto = true;
     }
