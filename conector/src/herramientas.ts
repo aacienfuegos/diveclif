@@ -178,7 +178,7 @@ async function crearRama(gh: GitHub, slug: string): Promise<string> {
  * se haya creado en GitHub se deshace: una rama huérfana gastaría uno de los nombres del viaje.
  */
 async function abrirPropuesta(
-  { env, correo }: Contexto,
+  { env }: Contexto,
   gh: GitHub,
   p: { id: string; slug: string; nuevo: boolean; creada: string; contenido: string; titulo: string; shaMain?: string },
 ): Promise<CallToolResult> {
@@ -196,7 +196,7 @@ async function abrirPropuesta(
     pr = await gh.abrirPr(
       rama,
       `Viaje ${p.slug}: ${p.titulo}`,
-      `Propuesta ${p.id} de ${correo}, preparada con el conector de Dive Clif.`,
+      `Propuesta ${p.id}, preparada con el conector de Dive Clif.`,
     );
     await completarReserva(env.DB, p.id, { rama, pr, sha, ahora: Date.now() });
     return ok(

@@ -203,4 +203,4 @@ En la conversación con Claude, pídele que escriba en otro sitio: "Cambia el te
 
 ## B12: "Publicar" no mergea
 
-En la prueba del paso 10 de `MONTAJE.md`, después de pulsar "Publicar": el PR sigue abierto, con el comentario "Visto bueno de <tu correo> al commit <sha>", y te llega el correo. El Jefe de Ingeniería comprueba en GitHub que el PR sigue abierto hasta que lo mergeas tú.
+En la prueba del paso 10 de `MONTAJE.md`, después de pulsar "Publicar": el PR sigue abierto, con el comentario "Visto bueno de quien la pidió al commit <sha>" (sin tu correo: el repo es público), y te llega el correo. El Jefe de Ingeniería comprueba en GitHub que el PR sigue abierto hasta que lo mergeas tú.

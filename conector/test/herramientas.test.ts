@@ -33,6 +33,8 @@ describe('proponer_viaje', () => {
     expect(r.texto).toContain(String(p?.['id']));
     const pr = b.falso.pulls.get(1);
     expect(pr?.head.sha).toBe(p?.['sha']);
+    // El repo es público: el PR no lleva el correo de quien propone.
+    expect(pr?.body).toBe(`Propuesta ${String(p?.['id'])}, preparada con el conector de Dive Clif.`);
     const contenido = b.falso.ficheros('pelayo/viaje-mar-rojo-sur-may-2027')?.get('src/content/viajes/mar-rojo-sur-may-2027.md') ?? '';
     // El fichero escrito pasa la regla con los datos del PR, como la pasará el workflow.
     expect(
