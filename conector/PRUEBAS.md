@@ -10,10 +10,10 @@ Las coordinan el `ciso` y el Jefe de Ingeniería. Las marcadas "tú" necesitan t
 |---|---|---|---|
 | B1 | Un PR de la App con un `.astro` no se puede mergear desde la App | Tú | Script B1 |
 | B2 | El botón no publica un SHA distinto del último que empujó el Worker, ni con token usado, de otro PR o caducado | Tests y tú | Tests de `conector/test/pagina.test.ts`; y a mano, abajo |
-| B3 | Un PR cuyo `build` intenta crear un check `cambio-pequeno` no lo consigue (403) | Jefe de Ingeniería | Abajo |
+| B3 | Un PR cuyo `build` intenta crear un check `cambio-pequeno` no lo consigue (403) | Jefe de Ingeniería (la rama la empujas tú) | Abajo |
 | B4 | Un push de `cienfuegos-agentes[bot]` a `pelayo/*` falla | Jefe de Ingeniería | Abajo |
 | B5 | La App no puede empujar a `develop`, crear ramas fuera de `pelayo/*` ni crear una etiqueta | Tú | Script B5 |
-| B6 | Un PR de una rama del equipo con un job `cambio-pequeno` duplicado en verde no queda mergeable por la App | Tú (el PR lo abre el Jefe de Ingeniería) | Script B6 |
+| B6 | Un PR de una rama del equipo con un job `cambio-pequeno` duplicado en verde no queda mergeable por la App | Tú (empujas la rama y el Jefe de Ingeniería abre el PR) | Script B6 |
 | B7 | El permiso por defecto del `GITHUB_TOKEN` es "Read" y Actions no puede aprobar PR | Tú | Abajo |
 | B8 | Ni secretos de repo ni environments con secretos | Tú | Abajo |
 | B9 | La página y `/mcp` sin sesión dan 401 o redirigen a Access; un `POST /publicar` sin JWT válido falla | Jefe de Ingeniería | Abajo |
@@ -101,7 +101,7 @@ Las cuatro tienen que salir `BIEN, rechazado`. Si alguna sale `FALLO`, para: bor
 
 ## B6: un `cambio-pequeno` duplicado no deja mergear a la App
 
-El Jefe de Ingeniería abre desde una rama del equipo un PR a `main` que añade a `build.yml` un job llamado `cambio-pequeno` que siempre pasa, y te da su número. Tú intentas mergearlo como la App:
+El Jefe de Ingeniería prepara un commit que añade a `build.yml` un job llamado `cambio-pequeno` que siempre pasa, como bloque autocontenido que se para en el primer error (igual que en B3). Lo empujas tú a la rama `prueba-b6`, porque a `cienfuegos-agentes` GitHub le rechaza el push sin el permiso Workflows; él abre desde ella el PR a `main` y te da su número. Tú intentas mergearlo como la App:
 
 ```sh
 pr=<número del PR de B6>
@@ -109,7 +109,7 @@ cabeza=$(app "repos/$R/pulls/$pr" --jq .head.sha)
 debe_fallar -X PUT "repos/$R/pulls/$pr/merge" -f sha="$cabeza"
 ```
 
-Tiene que salir `BIEN, rechazado`. Mide el efecto, no la causa: puede pararlo la falta del permiso Workflows de la App y no R3. Con `PUBLICACION=andres` lo para R2; al pasar a directa se repite con la App en el bypass de R2 y de `revision-andres`. **Si llega a mergear**: primero sacas la App de los dos bypass (el de `revision-andres`, por su JSON de `homelab-docs`) y después reviertes el workflow en `main`. El PR se cierra sin mergear al terminar.
+Tiene que salir `BIEN, rechazado`. Mide el efecto, no la causa: puede pararlo la falta del permiso Workflows de la App y no R3. Con `PUBLICACION=andres` lo para R2; al pasar a directa se repite con la App en el bypass de R2 y de `revision-andres`. **Si llega a mergear**: primero sacas la App de los dos bypass (el de `revision-andres`, por su JSON de `homelab-docs`) y después reviertes el workflow en `main`. El PR se cierra sin mergear al terminar y se borra la rama `prueba-b6`.
 
 ## B13: sin tu aprobación, un PR de contenido no se mergea
 
@@ -161,7 +161,9 @@ Y revoca la clave temporal en GitHub (ajustes de la App > Private keys > Delete)
 
 ## B3: un `build` que intenta crear el check `cambio-pequeno`
 
-Jefe de Ingeniería: PR de prueba a `main` desde una rama del equipo, sin mergear, con un paso en `build.yml` que llama a `POST /repos/aacienfuegos/diveclif/check-runs` con `name: cambio-pequeno` y `conclusion: success` usando `GITHUB_TOKEN`. El paso tiene que dar 403 (el token es de solo lectura y sin `checks: write`) y en el PR no tiene que aparecer un `cambio-pequeno` en verde. Se cierra sin mergear.
+Jefe de Ingeniería: PR de prueba a `main` desde la rama `prueba-b3`, sin mergear, con un paso en `build.yml` que llama a `POST /repos/aacienfuegos/diveclif/check-runs` con `name: cambio-pequeno` y `conclusion: success` usando `GITHUB_TOKEN`. El paso tiene que dar 403 (el token es de solo lectura y sin `checks: write`) y en el PR no tiene que aparecer un `cambio-pequeno` en verde. Se cierra sin mergear y se borra la rama.
+
+La rama la empujas tú: `cienfuegos-agentes` no tiene el permiso Workflows y GitHub le rechaza cualquier push que toque `.github/workflows/` (medido en CIE-279). El Jefe de Ingeniería te deja el commit en el issue como un bloque autocontenido que se para en el primer error, igual que el de los workflows de CIE-279; tú lo ejecutas y él abre el PR desde `prueba-b3`.
 
 ## B4: `cienfuegos-agentes[bot]` no empuja a `pelayo/*`
 
