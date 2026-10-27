@@ -62,6 +62,8 @@ describe('página', () => {
       "default-src 'none'; img-src 'self'; style-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
     );
     expect(r.headers.get('X-Content-Type-Options')).toBe('nosniff');
+    // Con no-referrer el navegador manda `Origin: null` en el POST del botón y publicar da 403.
+    expect(r.headers.get('Referrer-Policy')).toBe('same-origin');
     expect(texto).toContain('<td>precioDesde</td><td></td><td>1850</td>');
     expect(texto).not.toMatch(/<script|style=/i);
     expect(tokenDe(texto)).not.toBeNull();

@@ -45,7 +45,7 @@ ${cuerpo}
       'Content-Type': 'text/html; charset=utf-8',
       'Content-Security-Policy': CSP_PAGINA,
       'X-Content-Type-Options': 'nosniff',
-      'Referrer-Policy': 'no-referrer',
+      'Referrer-Policy': 'same-origin',
       'Cache-Control': 'no-store',
     },
   });
