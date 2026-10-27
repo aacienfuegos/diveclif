@@ -24,6 +24,25 @@ export interface Run {
 
 export const RE_SHA = /^[0-9a-f]{40}$/;
 
+/** Páginas de 100 que se leen como mucho por workflow; si no basta, la propuesta se queda en "pendiente". */
+const PAGINAS_RUNS = 10;
+
+/** Runs de un workflow y su event sobre el SHA, paginados: los de forks con la misma cabeza no tapan los buenos. */
+async function runsDe(gh: GitHub, nombre: Workflow, sha: string): Promise<Run[]> {
+  const { path, event } = WORKFLOWS[nombre];
+  const fichero = path.slice(path.lastIndexOf('/') + 1);
+  const runs: Run[] = [];
+  for (let pagina = 1; pagina <= PAGINAS_RUNS; pagina++) {
+    const { workflow_runs } = await gh.json<{ workflow_runs: Run[] }>(
+      'GET',
+      `actions/workflows/${fichero}/runs?head_sha=${sha}&event=${event}&per_page=100&page=${pagina}`,
+    );
+    runs.push(...workflow_runs);
+    if (workflow_runs.length < 100) break;
+  }
+  return runs;
+}
+
 /**
  * El run más reciente de cada workflow que cumple todo: `path` y `event` del workflow, repo de cabeza
  * igual a REPO, `head_sha` igual al SHA y el PR guardado entre sus `pull_requests`. Así un PR desde
@@ -31,9 +50,9 @@ export const RE_SHA = /^[0-9a-f]{40}$/;
  */
 export async function runsQueCuentan(gh: GitHub, sha: string, pr: number): Promise<Partial<Record<Workflow, Run>>> {
   if (!RE_SHA.test(sha)) throw new ErrorConector('sha');
-  const { workflow_runs } = await gh.json<{ workflow_runs: Run[] }>('GET', `actions/runs?head_sha=${sha}&per_page=100`);
+  const listas = await Promise.all(NOMBRES.map((n) => runsDe(gh, n, sha)));
   const elegidos: Partial<Record<Workflow, Run>> = {};
-  for (const run of workflow_runs) {
+  for (const run of listas.flat()) {
     const nombre = NOMBRES.find((n) => WORKFLOWS[n].path === run.path);
     if (nombre === undefined) continue;
     if (run.event !== WORKFLOWS[nombre].event) continue;

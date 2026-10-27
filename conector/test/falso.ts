@@ -267,10 +267,15 @@ export class Falso {
       if (ficheros === undefined) return json({ message: 'Not Found' }, 404);
       return json({ truncated: false, tree: [...ficheros.keys()].map((path) => ({ path, mode: '100644', type: 'blob' })) });
     }
-    if (resto === 'actions/runs' && req.method === 'GET') {
+    if ((m = /^actions\/workflows\/([^/]+)\/runs$/.exec(resto)) !== null && req.method === 'GET') {
+      const fichero = `.github/workflows/${m[1] ?? ''}`;
       const sha = url.searchParams.get('head_sha');
-      const lista = this.runs.filter((r) => r.head_sha === sha);
-      return json({ total_count: lista.length, workflow_runs: lista });
+      const event = url.searchParams.get('event');
+      const lista = this.runs.filter((r) => r.path === fichero && r.head_sha === sha && (event === null || r.event === event));
+      // Como GitHub: los más recientes primero y paginados.
+      const porPagina = Number(url.searchParams.get('per_page') ?? '30');
+      const desde = (Number(url.searchParams.get('page') ?? '1') - 1) * porPagina;
+      return json({ total_count: lista.length, workflow_runs: [...lista].reverse().slice(desde, desde + porPagina) });
     }
     if ((m = /^actions\/runs\/(\d+)\/artifacts$/.exec(resto)) !== null && req.method === 'GET') {
       const todos = [...this.artefactos.entries()].flatMap(([run, as]) => as.map((a) => ({ run, ...a })));

@@ -237,6 +237,12 @@ describe('qué runs cuentan', () => {
     expect(tokenDe(await (await aLaPagina(b, `/p/${id}`)).text())).not.toBeNull();
   });
 
+  it('más de 100 runs de forks con la misma cabeza no tapan los buenos', async () => {
+    verde();
+    for (let i = 0; i < 120; i++) b.falso.run(1, 'build', { head_repository: { full_name: `fork${i}/diveclif` }, pull_requests: [] });
+    expect(tokenDe(await (await aLaPagina(b, `/p/${id}`)).text())).not.toBeNull();
+  });
+
   it('cuenta el más reciente de cada workflow', async () => {
     verde();
     b.falso.run(1, 'visual', { conclusion: 'failure' });
