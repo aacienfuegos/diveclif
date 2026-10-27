@@ -26,6 +26,7 @@ import {
   contarAbiertas,
   delCorreo,
   deQuien,
+  desmarcarCommit,
   idValido,
   marcarCommit,
   nuevoId,
@@ -61,6 +62,8 @@ const ESTADOS: Record<string, string> = {
 
 const ok = (texto: string): CallToolResult => ({ content: [{ type: 'text', text: texto }] });
 const rechazo = (texto: string): CallToolResult => ({ content: [{ type: 'text', text: texto }], isError: true });
+
+const MENSAJE_ABIERTAS = `Ya tienes ${PROPUESTAS_ABIERTAS_IDENTIDAD} propuestas abiertas. Cuando Andrés publique o cierre alguna, podrás preparar más.`;
 
 function mensajeTope(c: Contador): string {
   if (c.tipo === 'peticiones') return 'Hoy ya no puedo mandar más peticiones a Andrés; mañana sí.';
@@ -220,21 +223,28 @@ async function proponerViaje(ctx: Contexto, campos: unknown): Promise<CallToolRe
   if (regla !== null) return rechazo(regla);
 
   // Límites antes de llamar a GitHub.
-  if ((await contarAbiertas(env.DB, correo)) >= PROPUESTAS_ABIERTAS_IDENTIDAD) {
-    return rechazo(`Ya tienes ${PROPUESTAS_ABIERTAS_IDENTIDAD} propuestas abiertas. Cuando Andrés publique o cierre alguna, podrás preparar más.`);
-  }
-  const tope = await sumarTodos(env.DB, [commitsDia(correo), commitsMes()]);
+  if ((await contarAbiertas(env.DB, correo)) >= PROPUESTAS_ABIERTAS_IDENTIDAD) return rechazo(MENSAJE_ABIERTAS);
+  const contadores = [commitsDia(correo), commitsMes()];
+  const tope = await sumarTodos(env.DB, contadores);
   if (tope !== null) return rechazo(mensajeTope(tope));
 
+  // Un rechazo a partir de aquí no ha escrito nada en GitHub: lo gastado se devuelve.
+  const r = await proponerEnSlugLibre(ctx, { base, creada, contenido, titulo: v.valor.titulo });
+  if (r.isError === true) for (const c of contadores) await devolver(env.DB, c);
+  return r;
+}
+
+async function proponerEnSlugLibre(ctx: Contexto, v: { base: string; creada: string; contenido: string; titulo: string }): Promise<CallToolResult> {
+  const { env, correo } = ctx;
   const gh = new GitHub(env);
   const ocupados = new Set((await gh.listar(config.rutas.viajes.replace(/\/$/, ''), 'main')).map((n) => n.replace(/\.md$/, '')));
   const id = nuevoId();
   for (let intento = 0; intento < 10; intento++) {
-    const slug = slugLibre(base, ocupados);
+    const slug = slugLibre(v.base, ocupados);
     if (slug === null) break;
-    if (await reservar(env.DB, { id, correo, slug, nuevo: true, creada })) {
-      return abrirPropuesta(ctx, gh, { id, slug, nuevo: true, creada, contenido, titulo: v.valor.titulo });
-    }
+    const reserva = await reservar(env.DB, { id, correo, slug, nuevo: true, creada: v.creada });
+    if (reserva === 'tope') return rechazo(MENSAJE_ABIERTAS);
+    if (reserva === 'ok') return abrirPropuesta(ctx, gh, { id, slug, nuevo: true, creada: v.creada, contenido: v.contenido, titulo: v.titulo });
     ocupados.add(slug);
   }
   return rechazo('No encuentro un nombre libre para ese viaje. Pídeselo a Andrés.');
@@ -246,47 +256,50 @@ async function cambiarViaje(ctx: Contexto, slug: string, campos: unknown): Promi
   const cambio = validarCambio(campos);
   if (!cambio.ok) return rechazo(cambio.motivo);
 
-  let abierta = await abiertaDeSlug(env.DB, slug);
+  const abierta = await abiertaDeSlug(env.DB, slug);
   if (abierta !== null && abierta.correo !== correo) return rechazo('Ya hay otra propuesta abierta de este viaje.');
   if (abierta?.estado === 'preparando') return rechazo('Esa propuesta se está preparando ahora mismo. Prueba en un momento.');
-  if (abierta === null && (await contarAbiertas(env.DB, correo)) >= PROPUESTAS_ABIERTAS_IDENTIDAD) {
-    return rechazo(`Ya tienes ${PROPUESTAS_ABIERTAS_IDENTIDAD} propuestas abiertas. Cuando Andrés publique o cierre alguna, podrás preparar más.`);
-  }
+  if (abierta === null && (await contarAbiertas(env.DB, correo)) >= PROPUESTAS_ABIERTAS_IDENTIDAD) return rechazo(MENSAJE_ABIERTAS);
 
   // Límites antes de llamar a GitHub.
   const contadores = [commitsDia(correo), commitsMes()];
   const tope = await sumarTodos(env.DB, contadores);
   if (tope !== null) return rechazo(mensajeTope(tope));
-  if (abierta !== null && !(await marcarCommit(env.DB, abierta.id, Date.now(), COMMIT_INTERVALO_PROPUESTA_MS))) {
+  const ahora = Date.now();
+  if (abierta !== null && !(await marcarCommit(env.DB, abierta.id, ahora, COMMIT_INTERVALO_PROPUESTA_MS))) {
     for (const c of contadores) await devolver(env.DB, c);
     return rechazo('Acabo de guardar un cambio en esta propuesta. Espera un par de minutos y vuelve a pedírmelo.');
   }
 
+  // Un rechazo a partir de aquí no ha escrito nada en GitHub: lo gastado se devuelve, también la marca
+  // del último commit, para que corregir el cambio no espere dos minutos.
+  const r = await cambiarDesde(ctx, slug, abierta, cambio.valor);
+  if (r.isError === true) {
+    for (const c of contadores) await devolver(env.DB, c);
+    if (abierta !== null) await desmarcarCommit(env.DB, abierta.id, ahora, abierta.ultimo_commit);
+  }
+  return r;
+}
+
+async function cambiarDesde(ctx: Contexto, slug: string, abierta: Propuesta | null, cambio: Parameters<typeof aplicarCambio>[1]): Promise<CallToolResult> {
+  const { env, correo } = ctx;
   const gh = new GitHub(env);
   if (abierta !== null) {
     const pr = await gh.pr(abierta.pr);
-    if (!(await cerrarSiTerminada(env, gh, abierta, pr))) return cambiarPropuesta(ctx, gh, abierta, pr.head.sha, cambio.valor);
+    if (!(await cerrarSiTerminada(env, gh, abierta, pr))) return cambiarPropuesta(ctx, gh, abierta, pr.head.sha, cambio);
     // El PR se cerró después de la última vuelta de los avisos: se cierra como lo haría el cron y se parte de main.
-    if ((await abiertaDeSlug(env.DB, slug)) !== null) {
-      for (const c of contadores) await devolver(env.DB, c);
-      return rechazo('Esta propuesta se acaba de publicar. Prueba otra vez dentro de un rato.');
-    }
-    abierta = null;
+    if ((await abiertaDeSlug(env.DB, slug)) !== null) return rechazo('Esta propuesta se acaba de publicar. Prueba otra vez dentro de un rato.');
   }
 
   const actual = await gh.leer(rutaViaje(slug), 'main');
-  if (actual === null) {
-    for (const c of contadores) await devolver(env.DB, c);
-    return rechazo('No encuentro ese viaje en la web. Los que hay están en ver_viajes.');
-  }
-  const r = viajeCambiado(actual.contenido, cambio.valor);
-  if (!r.ok) {
-    for (const c of contadores) await devolver(env.DB, c);
-    return rechazo(r.motivo);
-  }
+  if (actual === null) return rechazo('No encuentro ese viaje en la web. Los que hay están en ver_viajes.');
+  const r = viajeCambiado(actual.contenido, cambio);
+  if (!r.ok) return rechazo(r.motivo);
   const id = nuevoId();
   const creada = new Date().toISOString();
-  if (!(await reservar(env.DB, { id, correo, slug, nuevo: false, creada }))) return rechazo('Ya hay otra propuesta abierta de este viaje.');
+  const reserva = await reservar(env.DB, { id, correo, slug, nuevo: false, creada });
+  if (reserva === 'tope') return rechazo(MENSAJE_ABIERTAS);
+  if (reserva === 'ocupado') return rechazo('Ya hay otra propuesta abierta de este viaje.');
   return abrirPropuesta(ctx, gh, { id, slug, nuevo: false, creada, contenido: plantilla(r.valor), titulo: r.valor.titulo, shaMain: actual.sha });
 }
 

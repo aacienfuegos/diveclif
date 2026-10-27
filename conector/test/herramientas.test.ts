@@ -251,6 +251,30 @@ describe('límites', () => {
     expect(b.db.sql("SELECT cuenta FROM contadores WHERE clave = ? AND tipo = 'commits'", ANDRES)).toEqual([{ cuenta: 20 }]);
   });
 
+  it('con 9 abiertas, tres propuestas a la vez dejan 10', async () => {
+    for (let i = 0; i < 9; i++) {
+      b.db.sql("INSERT INTO propuestas (id, correo, slug, nuevo, creada, estado) VALUES (?, ?, ?, 1, '2026-10-16', 'compilando')", `p${i}`, ANDRES, `s${i}`);
+    }
+    const rs = await Promise.all(['Uno', 'Dos', 'Tres'].map((titulo) => llamar(b, 'proponer_viaje', { campos: viaje({ titulo }) })));
+    expect(rs.filter((r) => r.error).map((r) => r.texto)).toEqual([expect.stringContaining('Ya tienes 10'), expect.stringContaining('Ya tienes 10')]);
+    expect(b.db.sql("SELECT count(*) AS n FROM propuestas WHERE estado NOT IN ('publicada', 'cerrada')")).toEqual([{ n: 10 }]);
+    // Los dos rechazados no gastan commits.
+    expect(b.db.sql("SELECT cuenta FROM contadores WHERE clave = ? AND tipo = 'commits'", ANDRES)).toEqual([{ cuenta: 1 }]);
+  });
+
+  it('un cambio rechazado en la propuesta propia no gasta commits ni bloquea dos minutos', async () => {
+    await llamar(b, 'proponer_viaje', { campos: viaje() });
+    vi.setSystemTime(new Date('2026-10-16T10:02:00Z'));
+    // inicio después de fin: se rechaza al aplicarlo sobre la ficha de la propuesta.
+    const r1 = await llamar(b, 'cambiar_viaje', { slug: 'mar-rojo-sur-may-2027', campos: { inicio: '2027-05-20' } });
+    expect(r1.error).toBe(true);
+    expect(r1.texto).not.toContain('Espera');
+    vi.setSystemTime(new Date('2026-10-16T10:02:30Z'));
+    const r2 = await llamar(b, 'cambiar_viaje', { slug: 'mar-rojo-sur-may-2027', campos: { precioDesde: 1790 } });
+    expect(r2.error, r2.texto).toBe(false);
+    expect(b.db.sql("SELECT cuenta FROM contadores WHERE clave = ? AND tipo = 'commits'", ANDRES)).toEqual([{ cuenta: 2 }]);
+  });
+
   it('con 10 propuestas abiertas no deja abrir otra', async () => {
     for (let i = 0; i < 10; i++) {
       b.db.sql("INSERT INTO propuestas (id, correo, slug, nuevo, creada, estado) VALUES (?, ?, ?, 1, '2026-10-16', 'compilando')", `p${i}`, ANDRES, `s${i}`);

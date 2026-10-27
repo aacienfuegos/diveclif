@@ -1,4 +1,6 @@
 // Propuestas en D1. Cada una es de la identidad que la creó; para otra, no existe.
+import { PROPUESTAS_ABIERTAS_IDENTIDAD } from './limites';
+
 export interface Propuesta {
   id: string;
   correo: string;
@@ -50,16 +52,28 @@ export async function contarAbiertas(db: D1Database, correo: string): Promise<nu
   return r?.n ?? 0;
 }
 
-/** Reserva el slug antes de escribir en GitHub. False si ya hay otra propuesta abierta de ese viaje. */
-export async function reservar(db: D1Database, p: { id: string; correo: string; slug: string; nuevo: boolean; creada: string }): Promise<boolean> {
+/**
+ * Reserva el slug antes de escribir en GitHub, si la identidad no está en el tope de abiertas: las
+ * dos cosas en una sentencia, para que dos llamadas a la vez no pasen las dos del tope. `ocupado` si
+ * ya hay otra propuesta abierta de ese viaje.
+ */
+export async function reservar(
+  db: D1Database,
+  p: { id: string; correo: string; slug: string; nuevo: boolean; creada: string },
+): Promise<'ok' | 'ocupado' | 'tope'> {
   try {
-    await db
-      .prepare("INSERT INTO propuestas (id, correo, slug, nuevo, creada, estado) VALUES (?1, ?2, ?3, ?4, ?5, 'preparando')")
-      .bind(p.id, p.correo, p.slug, p.nuevo ? 1 : 0, p.creada)
-      .run();
-    return true;
+    const fila = await db
+      .prepare(
+        `INSERT INTO propuestas (id, correo, slug, nuevo, creada, estado)
+         SELECT ?1, ?2, ?3, ?4, ?5, 'preparando'
+         WHERE (SELECT count(*) FROM propuestas WHERE correo = ?2 AND ${ABIERTA}) < ?6
+         RETURNING id`,
+      )
+      .bind(p.id, p.correo, p.slug, p.nuevo ? 1 : 0, p.creada, PROPUESTAS_ABIERTAS_IDENTIDAD)
+      .first();
+    return fila === null ? 'tope' : 'ok';
   } catch (error) {
-    if (error instanceof Error && error.message.includes('UNIQUE constraint failed')) return false;
+    if (error instanceof Error && error.message.includes('UNIQUE constraint failed')) return 'ocupado';
     throw error;
   }
 }
@@ -82,6 +96,11 @@ export async function marcarCommit(db: D1Database, id: string, ahora: number, in
     .bind(id, ahora, ahora - intervalo)
     .first();
   return fila !== null;
+}
+
+/** Deshace `marcarCommit` cuando el cambio se ha rechazado sin escribir nada. */
+export async function desmarcarCommit(db: D1Database, id: string, marcado: number, anterior: number): Promise<void> {
+  await db.prepare('UPDATE propuestas SET ultimo_commit = ?3 WHERE id = ?1 AND ultimo_commit = ?2').bind(id, marcado, anterior).run();
 }
 
 /** Commit nuevo del Worker: el visto bueno anterior deja de valer. */
