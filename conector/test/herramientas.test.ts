@@ -106,6 +106,11 @@ describe('validación por /mcp', () => {
     expect(r).toEqual({ error: true, texto: NO_ENLACES });
   });
 
+  it.each(['2027-13-01', '2027-05-32', '2027-02-30'])('la fecha imposible %s se rechaza con su motivo', async (inicio) => {
+    const r = await llamar(b, 'proponer_viaje', { campos: viaje({ inicio }) });
+    expect(r).toEqual({ error: true, texto: expect.stringContaining('inicio tiene que ser fecha AAAA-MM-DD') });
+  });
+
   it('un salto de línea en titulo se rechaza', async () => {
     const r = await llamar(b, 'proponer_viaje', { campos: viaje({ titulo: 'Mar Rojo\nsur' }) });
     expect(r).toEqual({ error: true, texto: expect.stringContaining('titulo tiene que ser texto de una línea') });

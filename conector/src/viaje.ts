@@ -60,7 +60,11 @@ const linea = (max: number) =>
     .transform((s) => s.trim())
     .pipe(z.string().min(1).max(max));
 const lista = z.array(linea(80)).max(12);
-const fecha = z.string().refine((s) => RE_FECHA.test(s) && new Date(`${s}T00:00:00Z`).toISOString().slice(0, 10) === s);
+// Una fecha imposible (2027-13-01) da Invalid Date, y toISOString lanzaría dentro del refine.
+const fecha = z.string().refine((s) => {
+  const d = new Date(`${s}T00:00:00Z`);
+  return RE_FECHA.test(s) && !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
+});
 
 const forma = {
   titulo: linea(100),
