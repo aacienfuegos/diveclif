@@ -184,6 +184,8 @@ Después, `shred -u app-pkcs8.pem <descargada>.pem` (o bórralas).
 
 En claude.ai, desde el ordenador: Ajustes > Conectores > Añadir conector personalizado, con `https://<CONECTOR_HOST>/mcp`. Inicia sesión con el PIN. En el móvil aparece solo.
 
+En los permisos del conector, `proponer_viaje`, `cambiar_viaje` y `pedir_a_andres` nunca en "Permitir siempre": que Claude pida permiso en cada llamada y la mires antes de aceptarla. Las dos primeras suben lo que reciben a un PR del repositorio público desde el primer commit, y la tercera manda un correo; si en la conversación hay contenido de fuera (una web, un PDF, un correo) con instrucciones escondidas, una llamada aceptada sin mirar puede sacar por ahí datos de la conversación. Lo mismo se le dice a Pelayo al invitarle.
+
 Que Managed OAuth de Access funcione con el conector de Claude está **sin comprobar**: lo mide esta primera conexión. Si falla, dilo en CIE-210 (la alternativa es una ronda nueva del plan).
 
 ## 10. Primera prueba

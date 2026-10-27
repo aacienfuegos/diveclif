@@ -106,7 +106,7 @@ export function crearServidor(env: Env, correo: string, entrada: Entrada): McpSe
   servidor.registerTool(
     'proponer_viaje',
     {
-      description: 'Prepara un viaje nuevo como propuesta. Los campos están en campos_viaje. No publica nada.',
+      description: 'Prepara un viaje nuevo como propuesta. Los campos están en campos_viaje. No lo publica en la web, pero la propuesta queda a la vista de cualquiera en GitHub (el repositorio es público) desde que se prepara: no pongas datos personales.',
       inputSchema: { campos: z.record(z.string(), z.unknown()).describe('Campos del viaje, como los da campos_viaje') },
     },
     envolver('proponer_viaje', ({ campos }: { campos: Record<string, unknown> }) => proponerViaje(ctx, campos)),
@@ -114,7 +114,7 @@ export function crearServidor(env: Env, correo: string, entrada: Entrada): McpSe
   servidor.registerTool(
     'cambiar_viaje',
     {
-      description: 'Cambia campos de un viaje existente (o de tu propuesta abierta de ese viaje). Solo hay que pasar lo que cambia.',
+      description: 'Cambia campos de un viaje existente (o de tu propuesta abierta de ese viaje). Solo hay que pasar lo que cambia. No lo publica en la web, pero el cambio queda a la vista de cualquiera en GitHub (el repositorio es público) desde que se guarda: no pongas datos personales.',
       inputSchema: {
         slug: z.string().describe('Slug del viaje, como lo da ver_viajes'),
         campos: z.record(z.string(), z.unknown()).describe('Solo los campos que cambian'),
