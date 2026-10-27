@@ -46,7 +46,7 @@ export async function atenderPagina(request: Request, env: Env, correo: string, 
   if (p === null || p.estado === 'preparando') return noEncontrado();
   const gh = new GitHub(env);
   if (ruta.tipo === 'captura') return captura(gh, almacen, p, ruta.nombre);
-  if (ruta.tipo === 'publicar') return publicar(request, env, gh, p, correo, entrada);
+  if (ruta.tipo === 'publicar') return publicar(request, env, gh, almacen, p, correo, entrada);
   return pagina(env, gh, almacen, p, correo);
 }
 
@@ -69,6 +69,7 @@ async function situacion(gh: GitHub, p: Propuesta, indice: (runs: Partial<Record
   else if (pr.head.sha !== p.sha) bloqueo = [frase({ codigo: 'pr-cambiado' })];
   else if (v.tipo === 'pendiente') bloqueo = ['La revisión automática todavía no ha terminado. Vuelve a cargar la página en unos minutos.'];
   else if (v.tipo === 'rojo') bloqueo = await motivosRojo(v.fallidos, p, () => indice(runs));
+  else if ((await indice(runs))?.rechazado !== false) bloqueo = [frase({ codigo: 'visual-generico' })];
   return { pr, runs, veredicto: v, bloqueo };
 }
 
@@ -116,10 +117,14 @@ async function hash(token: string): Promise<string> {
   return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-async function pagina(env: Env, gh: GitHub, almacen: Almacen, p: Propuesta, correo: string): Promise<Response> {
+/** Índice de capturas del run de visual, leído como mucho una vez por petición. */
+function lectorIndice(gh: GitHub, almacen: Almacen, p: Propuesta): (runs: Partial<Record<Workflow, Run>>) => Promise<Indice | null> {
   let indice: Promise<Indice | null> | null = null;
-  const leer = (runs: Partial<Record<Workflow, Run>>) =>
-    (indice ??= runs.visual?.status === 'completed' ? capturasDelRun(gh, almacen, runs.visual, p.sha) : Promise.resolve(null));
+  return (runs) => (indice ??= runs.visual?.status === 'completed' ? capturasDelRun(gh, almacen, runs.visual, p.sha) : Promise.resolve(null));
+}
+
+async function pagina(env: Env, gh: GitHub, almacen: Almacen, p: Propuesta, correo: string): Promise<Response> {
+  const leer = lectorIndice(gh, almacen, p);
   const s = await situacion(gh, p, leer);
   const [lista, vista, art] = await Promise.all([cambios(gh, p), vistaPrevia(env, p.sha), leer(s.runs)]);
   const capturas = art?.nombres ?? [];
@@ -191,7 +196,7 @@ function rechazoPublicar(texto: string, estado: number): Response {
   return documento('No se ha publicado', html`<h1>No se ha publicado</h1><p>${texto}</p><p>Vuelve a la página de la propuesta y recárgala.</p>`, estado);
 }
 
-async function publicar(request: Request, env: Env, gh: GitHub, p: Propuesta, correo: string, entrada: Entrada): Promise<Response> {
+async function publicar(request: Request, env: Env, gh: GitHub, almacen: Almacen, p: Propuesta, correo: string, entrada: Entrada): Promise<Response> {
   if (request.headers.get('Origin') !== `https://${env.PAGINA_HOST}`) return rechazoPublicar('La petición no viene de la página de la propuesta.', 403);
   let token: unknown = null;
   try {
@@ -210,7 +215,7 @@ async function publicar(request: Request, env: Env, gh: GitHub, p: Propuesta, co
   }
   if (p.visto_bueno === p.sha || CERRADAS.includes(p.estado)) return rechazoPublicar('Esta versión ya tiene tu visto bueno.', 409);
 
-  const s = await situacion(gh, p, async () => null);
+  const s = await situacion(gh, p, lectorIndice(gh, almacen, p));
   if (s.bloqueo !== null) return rechazoPublicar(s.bloqueo.join(' '), 409);
 
   if (env.PUBLICACION === 'directa') {

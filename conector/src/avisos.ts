@@ -147,18 +147,24 @@ async function revisar(env: Env, gh: GitHub, almacen: Almacen, p: Propuesta): Pr
         await avisarVistoBueno(env, gh, p);
         return;
       }
-      if (p.estado !== 'lista') await cambiarEstado(env.DB, p.id, 'lista');
-      await avisarUnaVez(env, p.id, p.sha, 'lista', {
-        para: p.correo,
-        asunto: `Tu viaje está listo para ver: ${p.slug}`,
-        texto: `La propuesta ${p.id} del viaje ${p.slug} está lista. Mírala y, si está bien, pulsa Publicar:\n${pagina(env, p)}\n`,
-      });
-      return;
+      // Sin capturas que enseñar no está lista: la página tampoco da el botón.
+      const indice = runs.visual === undefined ? null : await capturasDelRun(gh, almacen, runs.visual, p.sha);
+      if (indice !== null && !indice.rechazado) {
+        if (p.estado !== 'lista') await cambiarEstado(env.DB, p.id, 'lista');
+        await avisarUnaVez(env, p.id, p.sha, 'lista', {
+          para: p.correo,
+          asunto: `Tu viaje está listo para ver: ${p.slug}`,
+          texto: `La propuesta ${p.id} del viaje ${p.slug} está lista. Mírala y, si está bien, pulsa Publicar:\n${pagina(env, p)}\n`,
+        });
+        return;
+      }
+      motivos.push({ codigo: 'visual-generico' });
+    } else {
+      if (v.fallidos.includes('cambio-pequeno')) motivos.push(...(await motivosDeLaRegla(gh, pr)));
+      if (v.fallidos.includes('build')) motivos.push({ codigo: 'build' });
+      if (v.fallidos.includes('visual') && runs.visual !== undefined) motivos.push(...(await capturasDelRun(gh, almacen, runs.visual, p.sha)).motivos);
+      if (motivos.length === 0) motivos.push({ codigo: 'visual-generico' });
     }
-    if (v.fallidos.includes('cambio-pequeno')) motivos.push(...(await motivosDeLaRegla(gh, pr)));
-    if (v.fallidos.includes('build')) motivos.push({ codigo: 'build' });
-    if (v.fallidos.includes('visual') && runs.visual !== undefined) motivos.push(...(await capturasDelRun(gh, almacen, runs.visual, p.sha)).motivos);
-    if (motivos.length === 0) motivos.push({ codigo: 'visual-generico' });
   }
   await cambiarEstado(env.DB, p.id, 'no-publicable', motivos);
   await avisarUnaVez(env, p.id, p.sha, 'no-publicable', {

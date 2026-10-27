@@ -58,7 +58,10 @@ export function leerResultado(bytes: Uint8Array | undefined): Motivo[] {
   return descartado ? [...motivos, GENERICO] : motivos;
 }
 
-/** Descomprime el zip con los topes. null si se pasa alguno: el artefacto entero se rechaza. */
+/**
+ * Descomprime el zip con los topes. null si se pasa alguno o el zip está roto: el artefacto entero
+ * se rechaza. Un error al leer el flujo (la red) no es un rechazo: lanza, para que se reintente.
+ */
 export async function leerArtefacto(flujo: ReadableStream<Uint8Array>): Promise<Artefacto | null> {
   const unzip = new Unzip();
   unzip.register(UnzipInflate);
@@ -104,21 +107,27 @@ export async function leerArtefacto(flujo: ReadableStream<Uint8Array>): Promise<
 
   const lector = flujo.getReader();
   let leidos = 0;
-  try {
-    for (;;) {
-      const { done, value } = await lector.read();
-      if (done) {
+  for (;;) {
+    let trozo: ReadableStreamReadResult<Uint8Array>;
+    try {
+      trozo = await lector.read();
+    } catch {
+      await lector.cancel().catch(() => undefined);
+      throw new ErrorConector('artefacto-lectura');
+    }
+    try {
+      if (trozo.done) {
         unzip.push(new Uint8Array(0), true);
         break;
       }
-      leidos += value.length;
+      leidos += trozo.value.length;
       // El zip comprimido tampoco puede pasar del tope total.
       if (leidos > TOPES.total) roto = true;
-      if (!roto) unzip.push(value, false);
-      if (roto) break;
+      if (!roto) unzip.push(trozo.value, false);
+    } catch {
+      roto = true;
     }
-  } catch {
-    roto = true;
+    if (roto) break;
   }
   if (roto) {
     await lector.cancel().catch(() => undefined);
@@ -158,6 +167,8 @@ export function almacenCache(env: Env): Almacen {
 export interface Indice {
   nombres: string[];
   motivos: Motivo[];
+  /** El artefacto falta o se ha rechazado por los topes: sin capturas no hay botón. */
+  rechazado: boolean;
 }
 
 export async function leerIndice(almacen: Almacen, sha: string): Promise<Indice | null> {
@@ -165,13 +176,16 @@ export async function leerIndice(almacen: Almacen, sha: string): Promise<Indice 
   return bytes === null ? null : (JSON.parse(new TextDecoder().decode(bytes)) as Indice);
 }
 
-/** Descarga, valida y guarda las capturas del run de visual que cuenta. Devuelve el índice. */
+/**
+ * Descarga, valida y guarda las capturas del run de visual que cuenta. Devuelve el índice. Si la
+ * descarga falla, lanza sin guardar nada y la siguiente carga lo reintenta.
+ */
 export async function capturasDelRun(gh: GitHub, almacen: Almacen, run: Run, sha: string): Promise<Indice> {
   const guardado = await leerIndice(almacen, sha);
   if (guardado !== null) return guardado;
   const { artifacts } = await gh.json<{ artifacts: { id: number; name: string; expired: boolean }[] }>('GET', `actions/runs/${run.id}/artifacts`);
   const artefacto = artifacts.find((a) => a.name === 'capturas' && !a.expired);
-  let indice: Indice = { nombres: [], motivos: [GENERICO] };
+  let indice: Indice = { nombres: [], motivos: [GENERICO], rechazado: true };
   if (artefacto !== undefined) {
     // La API redirige a un almacén externo: se sigue a mano para no mandarle el token.
     const r = await gh.pedir('GET', `actions/artifacts/${artefacto.id}/zip`);
@@ -182,7 +196,7 @@ export async function capturasDelRun(gh: GitHub, almacen: Almacen, run: Run, sha
     const leido = await leerArtefacto(zip.body);
     if (leido !== null) {
       for (const [nombre, datos] of leido.capturas) await almacen.guardar(`${sha}/${nombre}.png`, datos);
-      indice = { nombres: [...leido.capturas.keys()].sort(), motivos: leido.motivos };
+      indice = { nombres: [...leido.capturas.keys()].sort(), motivos: leido.motivos, rechazado: false };
     }
   }
   await almacen.guardar(`${sha}/indice.json`, new TextEncoder().encode(JSON.stringify(indice)));

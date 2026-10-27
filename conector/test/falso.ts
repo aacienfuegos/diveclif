@@ -1,4 +1,5 @@
 // GitHub, Resend y la API de Pages falsos, en memoria, para los tests del Worker.
+import { strToU8, zipSync } from 'fflate';
 import { exportPKCS8, generateKeyPair } from 'jose';
 import config from '../../.github/cambio-pequeno/config.json';
 
@@ -21,6 +22,9 @@ resumen: "Vida a bordo por los atolones centrales: canales con corriente, mantas
 
 Once días de vida a bordo entrando y saliendo de los canales de los atolones.
 `;
+
+const PNG = Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3, 4]);
+const ARTEFACTO_BUENO = zipSync({ 'portada-390.png': PNG, 'resultado.json': strToU8('{"fallos":[]}') });
 
 export const TOKEN_INSTALACION = 'ghs_token_de_instalacion_de_prueba';
 
@@ -76,6 +80,8 @@ export class Falso {
   despliegues: { url: string; deployment_trigger: { metadata: { commit_hash: string } } }[] = [];
   /** Peticiones a api.github.com, como "MÉTODO /ruta". */
   llamadas: string[] = [];
+  /** Si se pone, la descarga del artefacto se corta a mitad. */
+  cortarDescarga = false;
   /** Si se pone, la siguiente apertura de PR falla con este estado. */
   fallarPr: number | null = null;
   /** Si se pone, la siguiente escritura de contenidos falla con este estado. */
@@ -119,7 +125,19 @@ export class Falso {
     if (url.hostname === 'blob.prueba.test') {
       const id = Number(url.pathname.slice(1));
       const a = [...this.artefactos.values()].flat().find((_, i) => i + 1 === id);
-      return a === undefined ? new Response('', { status: 404 }) : new Response(a.zip);
+      if (a === undefined) return new Response('', { status: 404 });
+      if (!this.cortarDescarga) return new Response(a.zip);
+      const zip = a.zip;
+      let enviado = false;
+      return new Response(
+        new ReadableStream<Uint8Array>({
+          pull(c) {
+            if (enviado) c.error(new TypeError('Network connection lost.'));
+            else c.enqueue(zip.subarray(0, 10));
+            enviado = true;
+          },
+        }),
+      );
     }
     if (url.hostname !== 'api.github.com') throw new Error(`fetch inesperado a ${url.hostname}`);
     this.llamadas.push(`${req.method} ${url.pathname}`);
@@ -265,7 +283,10 @@ export class Falso {
     return json({ message: `Ruta no simulada: ${req.method} ${resto}` }, 501);
   }
 
-  /** Un run de uno de los tres workflows sobre la cabeza de un PR, en `success` por defecto. */
+  /**
+   * Un run de uno de los tres workflows sobre la cabeza de un PR, en `success` por defecto. Un
+   * `visual` en `success` trae su artefacto de capturas, como en Actions.
+   */
   run(pr: number, workflow: 'cambio-pequeno' | 'build' | 'visual', extra: Partial<RunFalso> = {}): RunFalso {
     const p = this.pulls.get(pr);
     const r: RunFalso = {
@@ -281,6 +302,7 @@ export class Falso {
       ...extra,
     };
     this.runs.push(r);
+    if (workflow === 'visual' && r.conclusion === 'success') this.artefactos.set(r.id, [{ nombre: 'capturas', zip: ARTEFACTO_BUENO }]);
     return r;
   }
 }

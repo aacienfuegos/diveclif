@@ -337,6 +337,16 @@ describe('artefacto de capturas', () => {
     expect(await leerArtefacto(flujo(zipSync(ficheros)))).toBeNull();
   });
 
+  it('un error al leer el flujo no es un rechazo: lanza', async () => {
+    const roto = new ReadableStream<Uint8Array>({
+      start(c) {
+        c.enqueue(zipSync({ 'portada-390.png': png() }).subarray(0, 10));
+        c.error(new TypeError('Network connection lost.'));
+      },
+    });
+    await expect(leerArtefacto(roto)).rejects.toMatchObject({ codigo: 'artefacto-lectura' });
+  });
+
   it('un resultado.json que pasa de 64 KB se rechaza', async () => {
     expect(await leerArtefacto(flujo(zipSync({ 'resultado.json': new Uint8Array(TOPES.resultado + 1) })))).toBeNull();
   });
@@ -370,6 +380,36 @@ describe('capturas servidas por el Worker', () => {
     await llamar(b, 'cambiar_viaje', { slug: 'mar-rojo-sur-may-2027', campos: { precioDesde: 1790 } });
     expect((await aLaPagina(b, `/p/${id}/captura/portada-390.png`)).status).toBe(404);
     expect((await aLaPagina(b, `/p/${id}/captura/no-existe-390.png`)).status).toBe(404);
+  });
+
+  it('con visual en verde y un artefacto rechazado por los topes, no hay botón ni aviso de "listo"', async () => {
+    verde();
+    conArtefacto(Object.fromEntries(Array.from({ length: 41 }, (_, i) => [`p${i}-390.png`, png()])));
+    const texto = await (await aLaPagina(b, `/p/${id}`)).text();
+    expect(tokenDe(texto)).toBeNull();
+    expect(texto).toContain('La revisión automática ha fallado.');
+    b.db.sql('INSERT INTO tokens_publicar (hash, pr, sha, correo, caduca) VALUES (?, 1, ?, ?, ?)', await sha256('t'), sha, ANDRES, Date.now() + 60_000);
+    expect((await pulsar(b, id, 't')).status).toBe(409);
+    await cron();
+    expect(b.falso.correos.map((c) => c['subject'])).toEqual([expect.stringMatching(/^\[Dive Clif\] No se puede publicar solo/)]);
+    expect(b.db.sql('SELECT estado FROM propuestas WHERE id = ?', id)).toEqual([{ estado: 'no-publicable' }]);
+  });
+
+  it('con visual en verde y sin artefacto, no hay botón', async () => {
+    verde();
+    b.falso.artefactos.clear();
+    expect(tokenDe(await (await aLaPagina(b, `/p/${id}`)).text())).toBeNull();
+  });
+
+  it('un corte de red al descargar el artefacto no se guarda: la siguiente carga lo vuelve a leer', async () => {
+    verde();
+    b.falso.cortarDescarga = true;
+    expect((await capturarConsola(async () => expect((await aLaPagina(b, `/p/${id}`)).status).toBe(500)))).toContain('artefacto-lectura');
+    expect([...b.cache.keys()]).toEqual([]);
+    b.falso.cortarDescarga = false;
+    const texto = await (await aLaPagina(b, `/p/${id}`)).text();
+    expect(texto).toContain(`src="/p/${id}/captura/portada-390.png"`);
+    expect(tokenDe(texto)).not.toBeNull();
   });
 
   it('un nombre fuera de la expresión da 404', async () => {
