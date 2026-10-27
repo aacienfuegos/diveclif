@@ -106,7 +106,7 @@ describe('botón Publicar (modo andres)', () => {
     const r = await pulsar(b, id, await token());
     expect(r.status).toBe(200);
     expect(b.db.sql('SELECT estado, visto_bueno FROM propuestas WHERE id = ?', id)).toEqual([{ estado: 'esperando-andres', visto_bueno: sha }]);
-    expect(b.falso.comentarios).toEqual([{ pr: 1, body: `Visto bueno de ${ANDRES} al commit ${sha}.` }]);
+    expect(b.falso.comentarios).toEqual([{ pr: 1, body: `Visto bueno de quien la pidió al commit ${sha}.` }]);
     expect(b.falso.correos).toHaveLength(1);
     expect(b.falso.correos[0]).toMatchObject({ to: [ANDRES], subject: expect.stringMatching(/^\[Dive Clif\] Visto bueno/) });
     expect(b.falso.correos[0]).not.toHaveProperty('html');
@@ -188,7 +188,7 @@ describe('botón Publicar (modo andres)', () => {
     b.falso.fallarComentario = null;
     await cron();
     await cron();
-    expect(b.falso.comentarios).toEqual([{ pr: 1, body: `Visto bueno de ${ANDRES} al commit ${sha}.` }]);
+    expect(b.falso.comentarios).toEqual([{ pr: 1, body: `Visto bueno de quien la pidió al commit ${sha}.` }]);
     expect(b.falso.correos.map((c) => c['subject'])).toEqual([expect.stringMatching(/^\[Dive Clif\] Visto bueno/)]);
   });
 

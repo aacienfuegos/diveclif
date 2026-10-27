@@ -69,7 +69,7 @@ export async function avisarVistoBueno(env: Env, gh: GitHub, p: Propuesta): Prom
   const hechos: unknown = JSON.parse(p.avisos);
   if (Array.isArray(hechos) && claves.every((c) => hechos.includes(c))) return;
   await unaVez(env.DB, p.id, `${p.sha}:comentario-visto-bueno`, async () => {
-    await gh.json('POST', `issues/${p.pr}/comments`, { body: `Visto bueno de ${p.correo} al commit ${p.sha}.` });
+    await gh.json('POST', `issues/${p.pr}/comments`, { body: `Visto bueno de quien la pidió al commit ${p.sha}.` });
     return true;
   });
   const vista = await vistaPrevia(env, p.sha);

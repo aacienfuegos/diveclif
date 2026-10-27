@@ -184,6 +184,8 @@ Después, `shred -u app-pkcs8.pem <descargada>.pem` (o bórralas).
 
 En claude.ai, desde el ordenador: Ajustes > Conectores > Añadir conector personalizado, con `https://<CONECTOR_HOST>/mcp`. Inicia sesión con el PIN. En el móvil aparece solo.
 
+En los permisos del conector, `proponer_viaje`, `cambiar_viaje` y `pedir_a_andres` nunca en "Permitir siempre": que Claude pida permiso en cada llamada y la mires antes de aceptarla. Las dos primeras suben lo que reciben a un PR del repositorio público desde el primer commit, y la tercera manda un correo; si en la conversación hay contenido de fuera (una web, un PDF, un correo) con instrucciones escondidas, una llamada aceptada sin mirar puede sacar por ahí datos de la conversación. Lo mismo se le dice a Pelayo al invitarle.
+
 Que Managed OAuth de Access funcione con el conector de Claude está **sin comprobar**: lo mide esta primera conexión. Si falla, dilo en CIE-210 (la alternativa es una ronda nueva del plan).
 
 ## 10. Primera prueba
@@ -193,5 +195,5 @@ Un viaje de ejemplo de principio a fin ("Añade un viaje...", "Prepáralo", el c
 ## Pasar a publicación directa (después de probar, lo decides tú)
 
 1. La App publicadora en el bypass de R2 **y** en el de `revision-andres`, el ruleset de `main` de CIE-251, con `PUBLICACION=andres` todavía. Sin los dos, GitHub rechaza el merge aunque el Worker lo intente. El de `revision-andres` va en su JSON de `homelab-docs` (`scripts/github-rulesets/`), con PR y revisión del `ciso`, y lo aplica el script de CIE-270; nunca a mano, porque la siguiente pasada del script lo quitaría sin avisar.
-2. Repetir B1 y B6 de `PRUEBAS.md` con la App en los dos bypass. B6 no es inocuo: si llega a mergear, primero sacas la App de los dos bypass y después reviertes el workflow en `main`.
+2. Repetir B1 y B6 de `PRUEBAS.md` con la App en los dos bypass. En B6, la rama con el workflow la vuelves a empujar tú (`cienfuegos-agentes` no tiene el permiso Workflows) y el Jefe de Ingeniería abre el PR. B6 no es inocuo: si llega a mergear, primero sacas la App de los dos bypass y después reviertes el workflow en `main`.
 3. Solo con B1 y B6 en verde, `PUBLICACION` a `directa` en `wrangler.jsonc` y `npx wrangler deploy`. Si alguna falla, la App sale de los dos bypass (el de `revision-andres`, por el mismo JSON de `homelab-docs`) y no hay publicación directa.
