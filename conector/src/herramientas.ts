@@ -4,6 +4,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import config from '../../.github/cambio-pequeno/config.json';
+import { cerrarSiTerminada } from './avisos';
 import { enviar } from './correo';
 import type { Env } from './entorno';
 import { GitHub } from './github';
@@ -21,7 +22,6 @@ import { frases } from './motivos';
 import {
   abiertaDeSlug,
   anularReserva,
-  cambiarEstado,
   completarReserva,
   contarAbiertas,
   delCorreo,
@@ -170,21 +170,27 @@ async function crearRama(gh: GitHub, slug: string): Promise<string> {
   throw new Error('sin-rama');
 }
 
-/** Rama, commit y PR de una propuesta ya reservada en D1. Si algo falla, la reserva se anula. */
+/**
+ * Rama, commit y PR de una propuesta ya reservada en D1. Si algo falla, la reserva se anula y lo que
+ * se haya creado en GitHub se deshace: una rama huérfana gastaría uno de los nombres del viaje.
+ */
 async function abrirPropuesta(
   { env, correo }: Contexto,
   gh: GitHub,
   p: { id: string; slug: string; nuevo: boolean; creada: string; contenido: string; titulo: string; shaMain?: string },
 ): Promise<CallToolResult> {
+  // La regla solo mira el prefijo de la rama: da lo mismo con el sufijo que acabe teniendo.
+  const regla = pasaLaRegla(p.slug, p.nuevo, p.contenido, `${config.prefijoRama}viaje-${p.slug}`, env.REPO, p.creada);
+  if (regla !== null) {
+    await anularReserva(env.DB, p.id);
+    return rechazo(regla);
+  }
+  let rama: string | null = null;
+  let pr: number | null = null;
   try {
-    const rama = await crearRama(gh, p.slug);
-    const regla = pasaLaRegla(p.slug, p.nuevo, p.contenido, rama, env.REPO, p.creada);
-    if (regla !== null) {
-      await anularReserva(env.DB, p.id);
-      return rechazo(regla);
-    }
+    rama = await crearRama(gh, p.slug);
     const sha = await gh.escribir(rutaViaje(p.slug), rama, p.contenido, `feat: viaje ${p.slug} (propuesta ${p.id})`, p.shaMain);
-    const pr = await gh.abrirPr(
+    pr = await gh.abrirPr(
       rama,
       `Viaje ${p.slug}: ${p.titulo}`,
       `Propuesta ${p.id} de ${correo}, preparada con el conector de Dive Clif.`,
@@ -196,6 +202,9 @@ async function abrirPropuesta(
     );
   } catch (error) {
     await anularReserva(env.DB, p.id);
+    // Se relanza el error original; si deshacer también falla, no lo tapa.
+    if (pr !== null) await gh.cerrarPr(pr).catch(() => undefined);
+    if (rama !== null) await gh.borrarRama(rama).catch(() => undefined);
     throw error;
   }
 }
@@ -256,9 +265,12 @@ async function cambiarViaje(ctx: Contexto, slug: string, campos: unknown): Promi
   const gh = new GitHub(env);
   if (abierta !== null) {
     const pr = await gh.pr(abierta.pr);
-    if (pr.state === 'open') return cambiarPropuesta(ctx, gh, abierta, pr.head.sha, cambio.valor);
-    // El PR se cerró después de la última vuelta de los avisos: se parte de main.
-    await cambiarEstado(env.DB, abierta.id, pr.merged ? 'publicada' : 'cerrada');
+    if (!(await cerrarSiTerminada(env, gh, abierta, pr))) return cambiarPropuesta(ctx, gh, abierta, pr.head.sha, cambio.valor);
+    // El PR se cerró después de la última vuelta de los avisos: se cierra como lo haría el cron y se parte de main.
+    if ((await abiertaDeSlug(env.DB, slug)) !== null) {
+      for (const c of contadores) await devolver(env.DB, c);
+      return rechazo('Esta propuesta se acaba de publicar. Prueba otra vez dentro de un rato.');
+    }
     abierta = null;
   }
 

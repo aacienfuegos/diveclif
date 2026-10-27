@@ -251,6 +251,8 @@ describe('modo directa', () => {
     expect((await pulsar(b, id, await token())).status).toBe(200);
     expect(b.falso.merges).toEqual([{ pr: 1, sha }]);
     expect(b.falso.correos[0]).toMatchObject({ to: [ANDRES], subject: expect.stringMatching(/^\[Dive Clif\] .* ha publicado/) });
+    expect(b.db.sql('SELECT estado FROM propuestas WHERE id = ?', id)).toEqual([{ estado: 'publicada' }]);
+    expect([...b.falso.ramas.keys()]).toEqual(['main']);
   });
 
   it('si Resend falla después del merge, la respuesta sigue siendo "Publicado"', async () => {

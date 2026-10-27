@@ -4,7 +4,7 @@ import config from '../../.github/cambio-pequeno/config.json';
 import { NO_ENLACES, NO_HTML } from '../src/viaje';
 import { banco, fijarContador, llamar, viaje, type Banco } from './banco';
 import { capturarConsola } from './consola';
-import { ANDRES, PELAYO } from './util';
+import { ANDRES, ctx, PELAYO } from './util';
 
 let b: Banco;
 beforeEach(async () => {
@@ -19,6 +19,10 @@ afterEach(() => {
 
 const idDe = (texto: string) => /propuesta ([a-z2-7]{24})/.exec(texto)?.[1] ?? '';
 const propuestas = () => b.db.sql('SELECT * FROM propuestas');
+const cron = () =>
+  capturarConsola(async () => {
+    await b.worker.scheduled!({ cron: '*/2 * * * *', scheduledTime: Date.now(), noRetry: () => undefined } as ScheduledController, b.env, ctx);
+  });
 
 describe('proponer_viaje', () => {
   it('crea la rama desde main, el fichero y el PR, y lo apunta en D1', async () => {
@@ -65,6 +69,15 @@ describe('proponer_viaje', () => {
     expect(propuestas()).toEqual([]);
     expect(salida).toContain('"herramienta":"proponer_viaje","error":"github-500"');
     expect(salida).not.toContain('secreto');
+    expect([...b.falso.ramas.keys()]).toEqual(['main']);
+  });
+
+  it('si GitHub falla al abrir el PR, la rama creada se borra', async () => {
+    b.falso.fallarPr = 500;
+    const r = await capturarConsola(() => llamar(b, 'proponer_viaje', { campos: viaje() }));
+    expect(r).toContain('"error":"github-500"');
+    expect(propuestas()).toEqual([]);
+    expect([...b.falso.ramas.keys()]).toEqual(['main']);
   });
 });
 
@@ -128,6 +141,32 @@ describe('cambiar_viaje', () => {
     expect(b.falso.ficheros('pelayo/viaje-mar-rojo-sur-may-2027')?.get('src/content/viajes/mar-rojo-sur-may-2027.md')).toContain(
       'precioDesde: 1790\n',
     );
+  });
+
+  it('diez propuestas seguidas del mismo viaje, publicadas o cerradas, tienen rama', async () => {
+    for (let i = 0; i < 10; i++) {
+      const r = await llamar(b, 'cambiar_viaje', { slug: 'maldivas-mar-2027', campos: { precioDesde: 2000 + i } });
+      expect(r.error, `propuesta ${i + 1}: ${r.texto}`).toBe(false);
+      const pr = b.falso.pulls.get(i + 1);
+      if (pr !== undefined) Object.assign(pr, i % 2 === 0 ? { state: 'closed', merged: true } : { state: 'closed' });
+      await cron();
+    }
+    expect(b.db.sql("SELECT count(*) AS n FROM propuestas WHERE estado IN ('publicada', 'cerrada')")).toEqual([{ n: 10 }]);
+    expect([...b.falso.ramas.keys()]).toEqual(['main']);
+  });
+
+  it('sobre un PR mergeado que el cron aún no ha visto, manda el "Publicado" y abre otra propuesta', async () => {
+    await llamar(b, 'cambiar_viaje', { slug: 'maldivas-mar-2027', campos: { precioDesde: 2790 } });
+    const pr = b.falso.pulls.get(1);
+    if (pr !== undefined) Object.assign(pr, { state: 'closed', merged: true });
+    vi.setSystemTime(new Date('2026-10-16T10:02:00Z'));
+    const r = await llamar(b, 'cambiar_viaje', { slug: 'maldivas-mar-2027', campos: { precioDesde: 2690 } });
+    expect(r.error, r.texto).toBe(false);
+    expect(b.falso.correos.map((c) => c['subject'])).toEqual(['[Dive Clif] Publicado: viaje maldivas-mar-2027']);
+    expect(b.db.sql('SELECT pr, estado, rama FROM propuestas ORDER BY pr')).toEqual([
+      { pr: 1, estado: 'publicada', rama: 'pelayo/viaje-maldivas-mar-2027' },
+      { pr: 2, estado: 'compilando', rama: 'pelayo/viaje-maldivas-mar-2027' },
+    ]);
   });
 
   it('si alguien empujó a la rama fuera del conector, no escribe', async () => {

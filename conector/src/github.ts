@@ -1,6 +1,7 @@
 // Escritura y lectura en GitHub con la GitHub App publicadora (instalada solo en el repo).
 // Los tokens de instalación no se guardan ni se registran.
 import { importPKCS8, SignJWT } from 'jose';
+import config from '../../.github/cambio-pequeno/config.json';
 import { ErrorConector, type Env } from './entorno';
 
 const API = 'https://api.github.com';
@@ -81,6 +82,18 @@ export class GitHub {
     if (r.status === 422) return false;
     if (!r.ok) throw new ErrorConector(`github-${r.status}`);
     return true;
+  }
+
+  /** Borra una rama del conector; si ya no existe, no hace nada. Las que no son del conector no se tocan. */
+  async borrarRama(rama: string): Promise<void> {
+    if (!rama.startsWith(config.prefijoRama)) throw new ErrorConector('rama-ajena');
+    const r = await this.pedir('DELETE', `git/refs/heads/${rama}`);
+    // GitHub da 422 al borrar una ref que ya no existe.
+    if (r.status !== 204 && r.status !== 404 && r.status !== 422) throw new ErrorConector(`github-${r.status}`);
+  }
+
+  async cerrarPr(numero: number): Promise<void> {
+    await this.json('PATCH', `pulls/${numero}`, { state: 'closed' });
   }
 
   /** Escribe un fichero en una rama y devuelve el SHA del commit. */

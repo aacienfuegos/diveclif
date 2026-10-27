@@ -3,7 +3,7 @@ import { motivosDeLaRegla } from './cambio';
 import { capturasDelRun, type Almacen } from './capturas';
 import { enviar, type Correo } from './correo';
 import type { Env } from './entorno';
-import { GitHub } from './github';
+import { GitHub, type Pr } from './github';
 import { frases, type Motivo } from './motivos';
 import { vistaPrevia } from './pages';
 import { abiertas, cambiarEstado, type Propuesta } from './propuestas';
@@ -104,22 +104,34 @@ export async function vuelta(env: Env, almacen: Almacen): Promise<void> {
 
 const pagina = (env: Env, p: Propuesta) => `https://${env.PAGINA_HOST}/p/${p.id}`;
 
-async function revisar(env: Env, gh: GitHub, almacen: Almacen, p: Propuesta): Promise<void> {
-  const pr = await gh.pr(p.pr);
+/**
+ * Si el PR ya está mergeado o cerrado, manda el "Publicado", borra la rama y cierra la propuesta.
+ * True si el PR ya no está abierto. Si el aviso queda pendiente o algo falla, la propuesta sigue
+ * abierta y la siguiente vuelta lo reintenta.
+ */
+export async function cerrarSiTerminada(env: Env, gh: GitHub, p: Propuesta, pr: Pr): Promise<boolean> {
   if (pr.merged) {
     const r = await avisarUnaVez(env, p.id, p.sha, 'publicada', {
       para: p.correo,
       asunto: `Publicado: viaje ${p.slug}`,
       texto: `El viaje ${p.slug} ya está en la web.\n`,
     });
-    // Si el aviso queda pendiente, la propuesta sigue abierta para que la próxima vuelta lo mande.
-    if (r !== 'pendiente') await cambiarEstado(env.DB, p.id, 'publicada');
-    return;
+    if (r === 'pendiente') return true;
+    await gh.borrarRama(p.rama);
+    await cambiarEstado(env.DB, p.id, 'publicada');
+    return true;
   }
   if (pr.state !== 'open') {
+    await gh.borrarRama(p.rama);
     await cambiarEstado(env.DB, p.id, 'cerrada');
-    return;
+    return true;
   }
+  return false;
+}
+
+async function revisar(env: Env, gh: GitHub, almacen: Almacen, p: Propuesta): Promise<void> {
+  const pr = await gh.pr(p.pr);
+  if (await cerrarSiTerminada(env, gh, p, pr)) return;
 
   let motivos: Motivo[] = [];
   if (pr.head.sha !== p.sha) motivos = [{ codigo: 'pr-cambiado' }];

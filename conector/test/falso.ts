@@ -76,6 +76,8 @@ export class Falso {
   despliegues: { url: string; deployment_trigger: { metadata: { commit_hash: string } } }[] = [];
   /** Peticiones a api.github.com, como "MÉTODO /ruta". */
   llamadas: string[] = [];
+  /** Si se pone, la siguiente apertura de PR falla con este estado. */
+  fallarPr: number | null = null;
   /** Si se pone, la siguiente escritura de contenidos falla con este estado. */
   fallarEscritura: number | null = null;
   /** Si se pone, los comentarios en PR fallan con este estado. */
@@ -172,6 +174,17 @@ export class Falso {
       const sha = this.ramas.get(m[1] ?? '');
       return sha === undefined ? json({ message: 'Not Found' }, 404) : json({ object: { sha } });
     }
+    if ((m = /^git\/refs\/heads\/(.+)$/.exec(resto)) !== null && req.method === 'DELETE') {
+      if (!this.ramas.delete(m[1] ?? '')) return json({ message: 'Reference does not exist' }, 422);
+      for (const pr of this.pulls.values()) if (pr.head.ref === m[1] && !pr.merged) pr.state = 'closed';
+      return new Response(null, { status: 204 });
+    }
+    if ((m = /^pulls\/(\d+)$/.exec(resto)) !== null && req.method === 'PATCH') {
+      const pr = this.pulls.get(Number(m[1]));
+      if (pr === undefined) return json({ message: 'Not Found' }, 404);
+      pr.state = ((await req.json()) as { state: 'open' | 'closed' }).state;
+      return json(pr);
+    }
     if (resto === 'git/refs' && req.method === 'POST') {
       const c = (await req.json()) as { ref: string; sha: string };
       const rama = c.ref.replace(/^refs\/heads\//, '');
@@ -180,6 +193,11 @@ export class Falso {
       return json({ ref: c.ref, object: { sha: c.sha } }, 201);
     }
     if (resto === 'pulls' && req.method === 'POST') {
+      if (this.fallarPr !== null) {
+        const s = this.fallarPr;
+        this.fallarPr = null;
+        return json({ message: 'falla' }, s);
+      }
       const c = (await req.json()) as { title: string; head: string; body: string };
       const pr: PrFalso = {
         number: this.siguientePr++,

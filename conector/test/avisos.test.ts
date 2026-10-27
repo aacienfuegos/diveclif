@@ -86,6 +86,15 @@ describe('avisos', () => {
     await cron();
     expect(b.falso.correos).toEqual([]);
     expect(b.db.sql('SELECT estado FROM propuestas')).toEqual([{ estado: 'cerrada' }]);
+    expect([...b.falso.ramas.keys()]).toEqual(['main']);
+  });
+
+  it('un PR mergeado borra la rama al mandar el "Publicado"', async () => {
+    const pr = b.falso.pulls.get(1);
+    if (pr !== undefined) Object.assign(pr, { state: 'closed', merged: true });
+    await cron();
+    expect([...b.falso.ramas.keys()]).toEqual(['main']);
+    expect(b.db.sql('SELECT estado FROM propuestas')).toEqual([{ estado: 'publicada' }]);
   });
 
   it('con el tope diario de correos no llama a Resend y el aviso queda para el día siguiente', async () => {
@@ -112,9 +121,12 @@ describe('avisos', () => {
     if (pr !== undefined) Object.assign(pr, { state: 'closed', merged: true });
     await cron();
     expect(b.falso.correos).toEqual([]);
+    // Mientras el aviso está pendiente, la rama sigue: la propuesta no está cerrada.
+    expect(b.falso.ramas.has('pelayo/viaje-mar-rojo-sur-may-2027')).toBe(true);
     vi.setSystemTime(new Date('2026-10-17T00:00:30Z'));
     await cron();
     expect(asuntos()).toEqual(['[Dive Clif] Publicado: viaje mar-rojo-sur-may-2027']);
+    expect(b.falso.ramas.has('pelayo/viaje-mar-rojo-sur-may-2027')).toBe(false);
   });
 
   it('un error en una propuesta solo registra su código y sigue con las demás', async () => {

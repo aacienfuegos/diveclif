@@ -1,13 +1,13 @@
 // Página de la propuesta en PAGINA_HOST: qué cambia, capturas, vista previa y el botón "Publicar".
 // Solo la ve la identidad dueña de la propuesta; para otra, 404 como un id inventado.
 import { capturasDelRun, leerIndice, RE_CAPTURA, type Almacen, type Indice } from './capturas';
-import { avisarUnaVez, avisarVistoBueno } from './avisos';
+import { avisarUnaVez, avisarVistoBueno, cerrarSiTerminada } from './avisos';
 import type { Env } from './entorno';
 import { GitHub, type Pr } from './github';
 import { documento, html, type Html } from './html';
 import { frase, frases, type Motivo } from './motivos';
 import { vistaPrevia } from './pages';
-import { cambiarEstado, CERRADAS, deQuien, idValido, type Propuesta } from './propuestas';
+import { CERRADAS, deQuien, idValido, type Propuesta } from './propuestas';
 import { codigoError, type Entrada } from './registro';
 import { CSP_PAGINA, noEncontrado } from './respuestas';
 import { runsQueCuentan, veredicto, type Run, type Veredicto, type Workflow } from './runs';
@@ -217,14 +217,19 @@ async function publicar(request: Request, env: Env, gh: GitHub, p: Propuesta, co
     // La API de merge falla si la cabeza ya no es este SHA.
     const r = await gh.pedir('PUT', `pulls/${p.pr}/merge`, { sha: p.sha });
     if (!r.ok) return rechazoPublicar('GitHub no ha dejado publicarla. Pídeselo a Andrés.', 409);
-    await cambiarEstado(env.DB, p.id, 'publicada');
-    // Ya está publicada: un fallo del correo se registra, pero no se le enseña como error.
+    // Ya está publicada: lo que falle a partir de aquí se registra, pero no se le enseña como error.
     try {
       await avisarUnaVez(env, p.id, p.sha, 'publicada-directa', {
         para: env.CORREO_ANDRES,
         asunto: `${correo} ha publicado el viaje ${p.slug}`,
         texto: `${correo} ha publicado el commit ${p.sha} del viaje ${p.slug}.\n\nPR: https://github.com/${env.REPO}/pull/${p.pr}\nFichero: ${rutaViaje(p.slug)}\n`,
       });
+    } catch (error) {
+      entrada.error = codigoError(error);
+    }
+    // Si no se puede cerrar ahora, el cron ve el PR mergeado y lo reintenta.
+    try {
+      await cerrarSiTerminada(env, gh, p, { ...s.pr, state: 'closed', merged: true });
     } catch (error) {
       entrada.error = codigoError(error);
     }
