@@ -78,6 +78,10 @@ export class Falso {
   llamadas: string[] = [];
   /** Si se pone, la siguiente escritura de contenidos falla con este estado. */
   fallarEscritura: number | null = null;
+  /** Si se pone, los comentarios en PR fallan con este estado. */
+  fallarComentario: number | null = null;
+  /** Si se pone, Resend falla con este estado. */
+  fallarCorreo: number | null = null;
   private siguientePr = 1;
 
   constructor(ficheros: Record<string, string> = { 'src/content/viajes/maldivas-mar-2027.md': MALDIVAS }) {
@@ -105,6 +109,7 @@ export class Falso {
     const req = new Request(entrada, init);
     const url = new URL(req.url);
     if (url.hostname === 'api.resend.com') {
+      if (this.fallarCorreo !== null) return json({ message: 'falla' }, this.fallarCorreo);
       this.correos.push((await req.json()) as Record<string, unknown>);
       return json({ id: `correo-${this.correos.length}` });
     }
@@ -204,6 +209,7 @@ export class Falso {
       return json({ merged: true, sha: nuevoSha() });
     }
     if ((m = /^issues\/(\d+)\/comments$/.exec(resto)) !== null && req.method === 'POST') {
+      if (this.fallarComentario !== null) return json({ message: 'falla' }, this.fallarComentario);
       const c = (await req.json()) as { body: string };
       this.comentarios.push({ pr: Number(m[1]), body: c.body });
       return json({ id: this.comentarios.length }, 201);

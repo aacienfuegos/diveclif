@@ -5,9 +5,11 @@ import { enviar, type Correo } from './correo';
 import type { Env } from './entorno';
 import { GitHub } from './github';
 import { frases, type Motivo } from './motivos';
+import { vistaPrevia } from './pages';
 import { abiertas, cambiarEstado, type Propuesta } from './propuestas';
 import { codigoError, registrar, type Entrada } from './registro';
 import { runsQueCuentan, veredicto } from './runs';
+import { rutaViaje } from './viaje';
 
 /** Apunta el aviso `clave` en la propuesta; false si ya estaba apuntado. */
 async function reservarAviso(db: D1Database, id: string, clave: string): Promise<boolean> {
@@ -35,20 +37,50 @@ async function liberarAviso(db: D1Database, id: string, clave: string): Promise<
 export type ResultadoAviso = 'enviado' | 'ya-enviado' | 'pendiente';
 
 /**
+ * Hace `accion` una sola vez por `clave`. Si lanza o devuelve false, la clave se libera y la
+ * siguiente vuelta del cron lo reintenta.
+ */
+async function unaVez(db: D1Database, id: string, clave: string, accion: () => Promise<boolean>): Promise<ResultadoAviso> {
+  if (!(await reservarAviso(db, id, clave))) return 'ya-enviado';
+  try {
+    if (await accion()) return 'enviado';
+  } catch (error) {
+    await liberarAviso(db, id, clave);
+    throw error;
+  }
+  await liberarAviso(db, id, clave);
+  return 'pendiente';
+}
+
+/**
  * Manda el correo si no se ha mandado ya el aviso `<sha>:<estado>`. Con el tope de correos
  * alcanzado no llama a Resend y el aviso queda pendiente: la siguiente vuelta del cron lo reintenta.
  */
-export async function avisarUnaVez(env: Env, id: string, sha: string, estado: string, correo: Correo): Promise<ResultadoAviso> {
-  const clave = `${sha}:${estado}`;
-  if (!(await reservarAviso(env.DB, id, clave))) return 'ya-enviado';
-  try {
-    if (await enviar(env, correo)) return 'enviado';
-  } catch (error) {
-    await liberarAviso(env.DB, id, clave);
-    throw error;
-  }
-  await liberarAviso(env.DB, id, clave);
-  return 'pendiente';
+export function avisarUnaVez(env: Env, id: string, sha: string, estado: string, correo: Correo): Promise<ResultadoAviso> {
+  return unaVez(env.DB, id, `${sha}:${estado}`, () => enviar(env, correo));
+}
+
+/**
+ * Comentario en el PR y correo a Andrés por el visto bueno al SHA de la propuesta, cada uno una
+ * sola vez. Lo llaman el botón y cada vuelta del cron, así que lo que falle se reintenta solo.
+ */
+export async function avisarVistoBueno(env: Env, gh: GitHub, p: Propuesta): Promise<void> {
+  const claves = [`${p.sha}:comentario-visto-bueno`, `${p.sha}:esperando-andres`];
+  const hechos: unknown = JSON.parse(p.avisos);
+  if (Array.isArray(hechos) && claves.every((c) => hechos.includes(c))) return;
+  await unaVez(env.DB, p.id, `${p.sha}:comentario-visto-bueno`, async () => {
+    await gh.json('POST', `issues/${p.pr}/comments`, { body: `Visto bueno de ${p.correo} al commit ${p.sha}.` });
+    return true;
+  });
+  const vista = await vistaPrevia(env, p.sha);
+  await avisarUnaVez(env, p.id, p.sha, 'esperando-andres', {
+    para: env.CORREO_ANDRES,
+    asunto: `Visto bueno de ${p.correo}: viaje ${p.slug}`,
+    texto:
+      `${p.correo} da el visto bueno al commit ${p.sha} del viaje ${p.slug}.\n\n` +
+      `PR: https://github.com/${env.REPO}/pull/${p.pr}\nFichero: ${rutaViaje(p.slug)}\nVista previa: ${vista ?? 'aún no está lista'}\n\n` +
+      'Para publicarlo, revisa y mergea el PR en GitHub.\n',
+  });
 }
 
 /** Ronda del cron: mira cada propuesta abierta, actualiza su estado y manda los avisos que falten. */
@@ -99,7 +131,10 @@ async function revisar(env: Env, gh: GitHub, almacen: Almacen, p: Propuesta): Pr
       return;
     }
     if (v.tipo === 'verde') {
-      if (p.visto_bueno === p.sha) return;
+      if (p.visto_bueno === p.sha) {
+        await avisarVistoBueno(env, gh, p);
+        return;
+      }
       if (p.estado !== 'lista') await cambiarEstado(env.DB, p.id, 'lista');
       await avisarUnaVez(env, p.id, p.sha, 'lista', {
         para: p.correo,

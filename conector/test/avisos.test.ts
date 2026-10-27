@@ -56,11 +56,14 @@ describe('avisos', () => {
     expect(b.db.sql('SELECT estado FROM propuestas')).toEqual([{ estado: 'publicada' }]);
   });
 
-  it('con visto bueno sobre el SHA no vuelve a mandar "listo"', async () => {
+  it('con visto bueno sobre el SHA no manda "listo"; comenta y avisa a Andrés una sola vez', async () => {
     verde();
     b.db.sql("UPDATE propuestas SET visto_bueno = sha, estado = 'esperando-andres'");
     await cron();
-    expect(b.falso.correos).toEqual([]);
+    await cron();
+    expect(asuntos()).toEqual(['[Dive Clif] Visto bueno de pelayo@prueba.test: viaje mar-rojo-sur-may-2027']);
+    expect(b.falso.correos[0]).toMatchObject({ to: [ANDRES] });
+    expect(b.falso.comentarios).toHaveLength(1);
   });
 
   it('si falla cambio-pequeno, los motivos son los de la regla en llano', async () => {

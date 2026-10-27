@@ -1,14 +1,14 @@
 // Página de la propuesta en PAGINA_HOST: qué cambia, capturas, vista previa y el botón "Publicar".
 // Solo la ve la identidad dueña de la propuesta; para otra, 404 como un id inventado.
 import { capturasDelRun, leerIndice, RE_CAPTURA, type Almacen, type Indice } from './capturas';
-import { avisarUnaVez } from './avisos';
+import { avisarUnaVez, avisarVistoBueno } from './avisos';
 import type { Env } from './entorno';
 import { GitHub, type Pr } from './github';
 import { documento, html, type Html } from './html';
 import { frase, frases, type Motivo } from './motivos';
 import { vistaPrevia } from './pages';
 import { cambiarEstado, CERRADAS, deQuien, idValido, type Propuesta } from './propuestas';
-import type { Entrada } from './registro';
+import { codigoError, type Entrada } from './registro';
 import { CSP_PAGINA, noEncontrado } from './respuestas';
 import { runsQueCuentan, veredicto, type Run, type Veredicto, type Workflow } from './runs';
 import { leerViaje, rutaViaje } from './viaje';
@@ -46,7 +46,7 @@ export async function atenderPagina(request: Request, env: Env, correo: string, 
   if (p === null || p.estado === 'preparando') return noEncontrado();
   const gh = new GitHub(env);
   if (ruta.tipo === 'captura') return captura(gh, almacen, p, ruta.nombre);
-  if (ruta.tipo === 'publicar') return publicar(request, env, gh, p, correo);
+  if (ruta.tipo === 'publicar') return publicar(request, env, gh, p, correo, entrada);
   return pagina(env, gh, almacen, p, correo);
 }
 
@@ -191,7 +191,7 @@ function rechazoPublicar(texto: string, estado: number): Response {
   return documento('No se ha publicado', html`<h1>No se ha publicado</h1><p>${texto}</p><p>Vuelve a la página de la propuesta y recárgala.</p>`, estado);
 }
 
-async function publicar(request: Request, env: Env, gh: GitHub, p: Propuesta, correo: string): Promise<Response> {
+async function publicar(request: Request, env: Env, gh: GitHub, p: Propuesta, correo: string, entrada: Entrada): Promise<Response> {
   if (request.headers.get('Origin') !== `https://${env.PAGINA_HOST}`) return rechazoPublicar('La petición no viene de la página de la propuesta.', 403);
   let token: unknown = null;
   try {
@@ -213,30 +213,38 @@ async function publicar(request: Request, env: Env, gh: GitHub, p: Propuesta, co
   const s = await situacion(gh, p, async () => null);
   if (s.bloqueo !== null) return rechazoPublicar(s.bloqueo.join(' '), 409);
 
-  const enlacePr = `https://github.com/${env.REPO}/pull/${p.pr}`;
-  const vista = await vistaPrevia(env, p.sha);
   if (env.PUBLICACION === 'directa') {
     // La API de merge falla si la cabeza ya no es este SHA.
     const r = await gh.pedir('PUT', `pulls/${p.pr}/merge`, { sha: p.sha });
     if (!r.ok) return rechazoPublicar('GitHub no ha dejado publicarla. Pídeselo a Andrés.', 409);
     await cambiarEstado(env.DB, p.id, 'publicada');
-    await avisarUnaVez(env, p.id, p.sha, 'publicada-directa', {
-      para: env.CORREO_ANDRES,
-      asunto: `${correo} ha publicado el viaje ${p.slug}`,
-      texto: `${correo} ha publicado el commit ${p.sha} del viaje ${p.slug}.\n\nPR: ${enlacePr}\nFichero: ${rutaViaje(p.slug)}\n`,
-    });
+    // Ya está publicada: un fallo del correo se registra, pero no se le enseña como error.
+    try {
+      await avisarUnaVez(env, p.id, p.sha, 'publicada-directa', {
+        para: env.CORREO_ANDRES,
+        asunto: `${correo} ha publicado el viaje ${p.slug}`,
+        texto: `${correo} ha publicado el commit ${p.sha} del viaje ${p.slug}.\n\nPR: https://github.com/${env.REPO}/pull/${p.pr}\nFichero: ${rutaViaje(p.slug)}\n`,
+      });
+    } catch (error) {
+      entrada.error = codigoError(error);
+    }
     return documento('Publicado', html`<h1>Publicado</h1><p>El viaje ${p.slug} ya está en la web.</p>`);
   }
 
-  await env.DB.prepare("UPDATE propuestas SET visto_bueno = ?2, estado = 'esperando-andres' WHERE id = ?1 AND sha = ?2").bind(p.id, p.sha).run();
-  await gh.json('POST', `issues/${p.pr}/comments`, { body: `Visto bueno de ${correo} al commit ${p.sha}.` });
-  await avisarUnaVez(env, p.id, p.sha, 'esperando-andres', {
-    para: env.CORREO_ANDRES,
-    asunto: `Visto bueno de ${correo}: viaje ${p.slug}`,
-    texto:
-      `${correo} da el visto bueno al commit ${p.sha} del viaje ${p.slug}.\n\n` +
-      `PR: ${enlacePr}\nFichero: ${rutaViaje(p.slug)}\nVista previa: ${vista ?? 'aún no está lista'}\n\n` +
-      'Para publicarlo, revisa y mergea el PR en GitHub.\n',
-  });
+  // Solo uno de dos POST a la vez guarda el visto bueno; el otro no comenta ni avisa.
+  const guardado = await env.DB.prepare(
+    `UPDATE propuestas SET visto_bueno = ?2, estado = 'esperando-andres'
+     WHERE id = ?1 AND sha = ?2 AND visto_bueno IS NOT ?2 AND estado NOT IN ('publicada', 'cerrada')
+     RETURNING *`,
+  )
+    .bind(p.id, p.sha)
+    .first<Propuesta>();
+  if (guardado === null) return rechazoPublicar('Esta versión ya tiene tu visto bueno.', 409);
+  // El visto bueno ya está guardado: si el comentario o el correo fallan, los reintenta el cron.
+  try {
+    await avisarVistoBueno(env, gh, guardado);
+  } catch (error) {
+    entrada.error = codigoError(error);
+  }
   return documento('Visto bueno enviado', html`<h1>Visto bueno enviado</h1><p>Andrés lo revisa y lo publica. Te llegará un correo cuando esté en la web.</p>`);
 }

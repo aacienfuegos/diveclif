@@ -1,9 +1,11 @@
 import { strToU8, zipSync } from 'fflate';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { leerArtefacto, TOPES } from '../src/capturas';
-import { aLaPagina, banco, llamar, pulsar, tokenDe, viaje, type Banco } from './banco';
+import { CORREOS_DIA_TOTAL } from '../src/limites';
+import { aLaPagina, banco, fijarContador, llamar, pulsar, tokenDe, viaje, type Banco } from './banco';
+import { capturarConsola } from './consola';
 import type { RunFalso } from './falso';
-import { ANDRES, PELAYO } from './util';
+import { ANDRES, ctx, PELAYO } from './util';
 
 const PNG = Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3, 4]);
 const png = (n = 0) => {
@@ -40,6 +42,11 @@ async function token(): Promise<string> {
   expect(t).not.toBeNull();
   return t ?? '';
 }
+
+const cron = () =>
+  capturarConsola(async () => {
+    await b.worker.scheduled!({ cron: '*/2 * * * *', scheduledTime: Date.now(), noRetry: () => undefined } as ScheduledController, b.env, ctx);
+  });
 
 const merges = () => b.falso.llamadas.filter((l) => l.endsWith('/merge'));
 
@@ -171,6 +178,40 @@ describe('botón Publicar (modo andres)', () => {
   it('un token que no existe falla', async () => {
     expect((await pulsar(b, id, 'inventado')).status).toBe(403);
   });
+
+  it('si el comentario en el PR falla, el visto bueno queda guardado y el cron comenta y avisa', async () => {
+    b.falso.fallarComentario = 502;
+    expect((await pulsar(b, id, await token())).status).toBe(200);
+    expect(b.db.sql('SELECT estado, visto_bueno FROM propuestas WHERE id = ?', id)).toEqual([{ estado: 'esperando-andres', visto_bueno: sha }]);
+    expect(b.falso.comentarios).toEqual([]);
+    expect(b.falso.correos).toEqual([]);
+    b.falso.fallarComentario = null;
+    await cron();
+    await cron();
+    expect(b.falso.comentarios).toEqual([{ pr: 1, body: `Visto bueno de ${ANDRES} al commit ${sha}.` }]);
+    expect(b.falso.correos.map((c) => c['subject'])).toEqual([expect.stringMatching(/^\[Dive Clif\] Visto bueno/)]);
+  });
+
+  it('con el tope de correos agotado, el aviso a Andrés sale al día siguiente', async () => {
+    fijarContador(b, 'global', 'correos', '2026-10-16', CORREOS_DIA_TOTAL);
+    expect((await pulsar(b, id, await token())).status).toBe(200);
+    await cron();
+    expect(b.falso.correos).toEqual([]);
+    expect(b.falso.comentarios).toHaveLength(1);
+    vi.setSystemTime(new Date('2026-10-17T00:01:00Z'));
+    await cron();
+    await cron();
+    expect(b.falso.correos.map((c) => c['subject'])).toEqual([expect.stringMatching(/^\[Dive Clif\] Visto bueno/)]);
+    expect(b.falso.comentarios).toHaveLength(1);
+  });
+
+  it('dos pulsaciones a la vez con dos tokens dan un solo visto bueno', async () => {
+    const [t1, t2] = [await token(), await token()];
+    const estados = (await Promise.all([pulsar(b, id, t1), pulsar(b, id, t2)])).map((r) => r.status).sort();
+    expect(estados).toEqual([200, 409]);
+    expect(b.falso.comentarios).toHaveLength(1);
+    expect(b.falso.correos).toHaveLength(1);
+  });
 });
 
 describe('qué runs cuentan', () => {
@@ -210,6 +251,17 @@ describe('modo directa', () => {
     expect((await pulsar(b, id, await token())).status).toBe(200);
     expect(b.falso.merges).toEqual([{ pr: 1, sha }]);
     expect(b.falso.correos[0]).toMatchObject({ to: [ANDRES], subject: expect.stringMatching(/^\[Dive Clif\] .* ha publicado/) });
+  });
+
+  it('si Resend falla después del merge, la respuesta sigue siendo "Publicado"', async () => {
+    b.env.PUBLICACION = 'directa';
+    verde();
+    const t = await token();
+    b.falso.fallarCorreo = 500;
+    const r = await pulsar(b, id, t);
+    expect(r.status).toBe(200);
+    expect(await r.text()).toContain('ya está en la web');
+    expect(b.falso.merges).toEqual([{ pr: 1, sha }]);
   });
 
   it('cualquier otro valor de PUBLICACION se trata como andres', async () => {
