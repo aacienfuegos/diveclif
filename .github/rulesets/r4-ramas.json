@@ -1,0 +1,20 @@
+{
+  "name": "conector-r4",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "include": ["~ALL"],
+      "exclude": ["refs/heads/main", "refs/heads/pelayo/**"]
+    }
+  },
+  "rules": [
+    { "type": "creation" },
+    { "type": "update" },
+    { "type": "deletion" }
+  ],
+  "bypass_actors": [
+    { "actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always" },
+    { "actor_id": "__ID_APP_CIENFUEGOS_AGENTES__", "actor_type": "Integration", "bypass_mode": "always" }
+  ]
+}

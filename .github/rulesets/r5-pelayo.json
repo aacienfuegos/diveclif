@@ -1,0 +1,19 @@
+{
+  "name": "conector-r5",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "include": ["refs/heads/pelayo/**"],
+      "exclude": []
+    }
+  },
+  "rules": [
+    { "type": "creation" },
+    { "type": "update" },
+    { "type": "deletion" }
+  ],
+  "bypass_actors": [
+    { "actor_id": "__ID_APP_PUBLICADORA__", "actor_type": "Integration", "bypass_mode": "always" }
+  ]
+}
