@@ -1,0 +1,31 @@
+{
+  "autor": "__slug-de-la-app-publicadora__[bot]",
+  "prefijoRama": "pelayo/",
+  "repo": "aacienfuegos/diveclif",
+  "maxFicheros": 10,
+  "maxBytes": 20480,
+  "rutas": { "viajes": "src/content/viajes/" },
+  "organizaObligatorio": "Te Moana Expeditions",
+  "tiposConOrganiza": ["internacional", "nacional"],
+  "clavesViaje": [
+    "titulo",
+    "destino",
+    "tipo",
+    "inicio",
+    "fin",
+    "formato",
+    "nivel",
+    "inmersionesMinimas",
+    "inmersiones",
+    "agua",
+    "precioDesde",
+    "organiza",
+    "estado",
+    "destacado",
+    "cita",
+    "fauna",
+    "incluye",
+    "noIncluye",
+    "resumen"
+  ]
+}
